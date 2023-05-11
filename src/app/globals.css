@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Eina03';
+}
+
+@font-face {
+  font-family: 'Eina04';
+  font-style: light;
+  font-weight: 200;
+  src: local(''), url('/fonts/Eina 04/Eina 04 W03 Light.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Eina04';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''), url('/fonts/Eina 04/Eina 04 W03 Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Eina04';
+  font-style: bold;
+  font-weight: 700;
+  src: local(''), url('/fonts/Eina 04/Eina 04 W03 SemiBold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'Eina03';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''), url('/fonts/Eina 03/Eina 03 W03 Regular.woff') format('woff');
+}
+
+
+@font-face {
+  font-family: 'Eina03';
+  font-style: bold;
+  font-weight: 700;
+  src: local(''), url('/fonts/Eina 03/Eina 03 W03 SemiBold.woff') format('woff');
+}
