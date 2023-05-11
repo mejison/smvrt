@@ -46,8 +46,8 @@ export default function SignUp() {
             </div>
             <label className='mb-[14px]'>
                 <span className='text-[#222] text-[14px]'>
-                    <div class="mb-4 flex items-center justify-center">
-                        <input id="default-checkbox" type="checkbox" value="" class="w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]" />
+                    <div className="mb-4 flex items-center justify-center">
+                        <input id="default-checkbox" type="checkbox" value="" className="w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]" />
                         I agree with the&nbsp; <a href='#' className='text-[#1860CC] underline underline-offset-2'>Terms of Use </a>&nbsp; and&nbsp; <a href='#' className='text-[#1860CC] underline underline-offset-2'> Privacy Policy</a>
                     </div>
                 </span>
