@@ -26,7 +26,7 @@ export default function SignIn() {
             </div>
             <div className='mt-[32px] mb-[16px]'>
                 <Button 
-                    label="Sign Up"
+                    label="Sign In"
                     className="bg-[#1860CC]"
                 ></Button>
             </div>
