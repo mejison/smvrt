@@ -4,7 +4,7 @@ import Input from '@/components/input';
 import Button from '@/components/button';
 
 export default function Forgot() {
-    return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px]'>
+    return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
             <h3 className='text-black text-[36px] mb-[12px] font-Eina04 font-bold'>Forgot password?</h3>

@@ -36,7 +36,14 @@
     font-size: 12px;
 }
 
-
 .wrapper-modal p {
     font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .wrapper-modal dialog {
+        z-index: 2;
+        min-width: 318px;
+        max-width: 318px;
+    }    
 }

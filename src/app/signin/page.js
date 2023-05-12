@@ -3,9 +3,10 @@ import LogoSVG from '@/assets/logo.svg';
 import GoogleSVG from '@/assets/google.svg';
 import Input from '@/components/input';
 import Button from '@/components/button';
+import Link from 'next/link'
 
 export default function SignIn() {
-    return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px]'>
+    return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
             <h3 className='text-black text-[36px] mb-[12px] font-Eina04 font-bold'>Welcome Back</h3>
@@ -39,10 +40,10 @@ export default function SignIn() {
             </div>
             <label className='mb-[14px]'>
                 <span className='text-[#222] text-[14px]'>
-                    <a href='#' className='text-[#1860CC] underline underline-offset-2'>Forgot password?</a>
+                    <Link href='/forgot' className='text-[#1860CC] underline underline-offset-2'>Forgot password?</Link>
                 </span>
             </label>
-            <span className='text-[#222] text-[14px]'>Don’t have an account? <a href='#' className='text-[#1860CC]  underline underline-offset-2'>Sign up</a></span>
+            <span className='text-[#222] text-[14px]'>Don’t have an account? <Link href='/signup' className='text-[#1860CC]  underline underline-offset-2'>Sign up</Link></span>
         </div>
     </div>);
 }

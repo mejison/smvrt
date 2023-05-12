@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import LogoSVG from '@/assets/logo.svg';
 import GoogleSVG from '@/assets/google.svg';
@@ -12,6 +12,7 @@ import Link from 'next/link';
  
 import VerifyEmailAddress from '@/popups/verify-email-address';
 import ServerError from '@/popups/server-error';
+import EmailVerified from '@/popups/email-verified'
 
 export default function SignUp() {
     const [errors, setErrors] = useState({
@@ -29,6 +30,9 @@ export default function SignUp() {
             visible: false,
             message: '',
         },
+        email_verified: {
+            visible: false,
+        }
     })
 
     const [form, setForm] = useState({
@@ -55,19 +59,23 @@ export default function SignUp() {
         setErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
-            api.signup(form)
+            api.signup({
+                    ...form, 
+                    redirect: `${location.protocol + "//" + location.host}`
+                })
                 .then(res => res.json())
                 .then((data) => {
                     const errors = data.errors ? Object.values(data.errors) : []
-                    if (errors.length) {
+                    if (errors.length || data.exception) {
+                        const message = Object.values(errors).flat(1).join(' ') || data.message
                         setPopup({
                             ...popup,
                             server_error: {
                                 visible: true,
-                                message: Object.values(errors).flat(1).join(' ')
+                                message
                             }
-                            
                         })
+                        return ;
                     }
 
                     setPopup({
@@ -76,6 +84,13 @@ export default function SignUp() {
                             visible: true,
                         }
                     })
+
+                    // setForm({
+                    //     email: '',
+                    //     password: '',
+                    //     confirm_password: '',
+                    //     terms_and_conditions: true
+                    // })
                 })
         }
     }
@@ -117,8 +132,26 @@ export default function SignUp() {
     }
     
     const handleResend = () => {
-        alert('2')
+        api.resend({
+            redirect: `${location.protocol + "//" + location.host}`,
+            email: form.email
+        })
     }
+
+    useEffect(() => {
+        const url = new URLSearchParams(location.search);
+        const hasEmail = url.get('email');
+        
+        if (hasEmail) {
+            setPopup({
+                ...popup,
+                email_verified: {
+                    visible: true
+                }
+            })
+            window.history.pushState({}, document.title, location.pathname);
+        }
+    }, []);
 
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
@@ -130,6 +163,7 @@ export default function SignUp() {
                     label="Email Address"
                     placeholder="Enter email address"
                     type="email"
+                    value={form.email}
                     errors={errors.email}
                     onInput={(e) => onChange('email', e.target.value, rules.email)}
                 ></Input>
@@ -139,6 +173,7 @@ export default function SignUp() {
                     label="Password"
                     placeholder="Enter password"
                     type="password"
+                    value={form.password}
                     errors={errors.password}
                     onInput={(e) => onChange('password', e.target.value, rules.password)}
                 ></Input>
@@ -148,6 +183,7 @@ export default function SignUp() {
                     label="Confirm password"
                     placeholder="Enter password"
                     type="password"
+                    value={form.confirm_password}
                     errors={errors.confirm_password}
                     onInput={(e) => onChange('confirm_password', e.target.value, rules.confirm_password)}
                 ></Input>
@@ -194,6 +230,12 @@ export default function SignUp() {
             title="Error"
             message={popup.server_error.message}
             onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+        />
+
+        <EmailVerified
+            open={popup.email_verified.visible} 
+            title="Email verified"
+            onClose={() => {setPopup({...popup, email_verified: { visible: false }})}}
         />
     </div>);
 }

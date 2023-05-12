@@ -11,9 +11,9 @@ export default function TermsAndConditionsAndPrivacyPolicy() {
         
         if (queryTab && ['terms-and-conditions', 'privacy-policy'].includes(queryTab)) {
             setTab(queryTab);
-            window.history.pushState({}, document.title, location.pathname);
+            // window.history.pushState({}, document.title, location.pathname);
         }
-    });
+    }, 0);
 
     return (<div className="bg-[#F6FAFF] min-h-screen  px-[30px] lg:px-0">
         <div className="container mx-auto pt-[60px]  max-w-[774px] pb-[50px]">
