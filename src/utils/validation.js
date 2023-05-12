@@ -42,6 +42,15 @@ export function validation(value, rules) {
                     ]
                }
             }
+
+            if (rule.includes('terms_and_conditions')) {
+                if (value == "") {
+                    messages = [
+                        ...messages,
+                        "Need to confirm terms and conditions"
+                    ]
+                }
+            }
         })
 
         return messages

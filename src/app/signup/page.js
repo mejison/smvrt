@@ -10,23 +10,39 @@ import * as api from '@/api'
 import { validation } from '@/utils/validation'
 import Link from 'next/link';
  
+import VerifyEmailAddress from '@/popups/verify-email-address';
+import ServerError from '@/popups/server-error';
+
 export default function SignUp() {
     const [errors, setErrors] = useState({
         'email': [],
         'password': [],
         'confirm_password': [],
+        'terms_and_conditions': [],
     });
+
+    const [popup, setPopup] = useState({
+        verify_email_address: {
+            visible: false,
+        },
+        server_error: {
+            visible: false,
+            message: '',
+        },
+    })
 
     const [form, setForm] = useState({
         email: '',
         password: '',
-        confirm_password: ''
+        confirm_password: '',
+        terms_and_conditions: false
     })
 
     const rules = {
         email: ['email','required'],
         password: ['password','required'],
-        confirm_password: ['required', 'password',`confirm:${form.password}`]
+        confirm_password: ['required', 'password',`confirm:${form.password}`],
+        terms_and_conditions: ['terms_and_conditions']
     }
 
     const handleSignUp = () => {
@@ -40,9 +56,42 @@ export default function SignUp() {
 
         if ( ! Object.values(messages).flat(1).length) {
             api.signup(form)
+                .then(res => res.json())
                 .then((data) => {
-                    console.log(data)
+                    const errors = data.errors ? Object.values(data.errors) : []
+                    if (errors.length) {
+                        setPopup({
+                            ...popup,
+                            server_error: {
+                                visible: true,
+                                message: Object.values(errors).flat(1).join(' ')
+                            }
+                            
+                        })
+                    }
+
+                    setPopup({
+                        ...popup,
+                        verify_email_address: {
+                            visible: true,
+                        }
+                    })
                 })
+        }
+    }
+
+    const handleTermsAndConditions = (event) => {
+        const value = event.target.checked
+        setForm({
+            ...form,
+            terms_and_conditions: value
+        })
+
+        if (value) {
+            setErrors({
+                ...errors,
+                terms_and_conditions: []
+            })
         }
     }
 
@@ -65,6 +114,10 @@ export default function SignUp() {
                 [field]: [...messages]
             })
         }
+    }
+    
+    const handleResend = () => {
+        alert('2')
     }
 
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
@@ -116,12 +169,31 @@ export default function SignUp() {
             <label className='mb-[14px]'>
                 <span className='text-[#222] text-[14px]'>
                     <div className="mb-4 inline-block lg:flex items-center justify-center">
-                        <input id="default-checkbox" type="checkbox" value="" className="w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]" />
+                        <input id="default-checkbox" type="checkbox" onChange={handleTermsAndConditions} value="" className={`w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]`} />
                         I agree with the&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy' className='text-[#1860CC] underline underline-offset-2'>Terms of Use </Link>&nbsp; and&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy?tab=privacy-policy' className='text-[#1860CC] underline underline-offset-2'> Privacy Policy</Link>
                     </div>
+                    {
+                        errors.terms_and_conditions.length ? 
+                        <p className="mt-[8px] text-sm text-[#D94042] text-left ml-[20px]" dangerouslySetInnerHTML={{__html: errors.terms_and_conditions.join('<br />')}}></p> 
+                        : <></>
+                    }
                 </span>
             </label>
-            <span className='text-[#222] text-[14px]'>Already have an account? <Link href="/signin" className='text-[#1860CC]  underline underline-offset-2'>Sign in</Link></span>
+            <span className='text-[#222] text-[14px] mb-[50px]'>Already have an account? <Link href="/signin" className='text-[#1860CC]  underline underline-offset-2'>Sign in</Link></span>
         </div>
+
+        <VerifyEmailAddress 
+            open={popup.verify_email_address.visible}
+            title="Verify email address"
+            onClose={() => {setPopup({...popup, verify_email_address: { visible: false }})}}
+            handleResend={handleResend}
+        />
+
+        <ServerError 
+            open={popup.server_error.visible} 
+            title="Error"
+            message={popup.server_error.message}
+            onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+        />
     </div>);
 }

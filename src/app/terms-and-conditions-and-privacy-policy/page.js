@@ -15,7 +15,7 @@ export default function TermsAndConditionsAndPrivacyPolicy() {
         }
     });
 
-    return (<div className="bg-[#F6FAFF] min-h-screen">
+    return (<div className="bg-[#F6FAFF] min-h-screen  px-[30px] lg:px-0">
         <div className="container mx-auto pt-[60px]  max-w-[774px] pb-[50px]">
             <div className="grid grid-cols-[1fr_1fr] gap-[15px] justify-center items-center">
                 <a href="#" onClick={() => setTab('terms-and-conditions')} className={`py-[10px] border-b-[4px] ${tab == 'terms-and-conditions' ? 'border-b-[#4ECFE0] font-bold' : 'border-b-[#E5E5E5] font-normal'} text-center `}>Terms & Conditions</a>
