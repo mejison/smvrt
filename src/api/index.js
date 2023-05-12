@@ -25,3 +25,16 @@ export function resend(data) {
             },
         })
 }
+
+export function signin(data) {
+    return fetch(API_ENDPOINT + "/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            "content-type": "application/json",
+            "accept":  "application/json",
+        },
+    })
+}

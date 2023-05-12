@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from 'next/router';
 import Image from 'next/image';
 import LogoSVG from '@/assets/logo.svg';
 import GoogleSVG from '@/assets/google.svg';
@@ -5,7 +8,77 @@ import Input from '@/components/input';
 import Button from '@/components/button';
 import Link from 'next/link'
 
+import * as api from '@/api'
+import { validation } from '@/utils/validation'
+import React, { useState } from 'react'
+
 export default function SignIn() {
+    const [errors, setErrors] = useState({
+        'email': [],
+        'password': [],
+    });
+
+    const [response, setResponse] = useState("");
+
+    const [form, setForm] = useState({
+        email: '',
+        password: '',
+    })
+
+    const rules = {
+        email: ['email','required'],
+        password: ['password','required'],
+    }
+
+    const onChange = (field, value, rules) => {
+        setForm({
+            ...form,
+            [field]: value
+        })
+
+        setErrors({
+            ...errors,
+            [field]: []
+        })
+
+        const messages = validation(value, rules);
+        
+        if (messages.length) {
+            setErrors({
+                ...errors,
+                [field]: [...messages]
+            })
+        }
+    }
+
+    const handleSignIn = () => {
+        let messages = {}
+        for(let field in rules) {
+            let message = validation(form[field], rules[field]);
+            messages[field] = message
+        }
+
+        setErrors(messages);
+
+        if ( ! Object.values(messages).flat(1).length) {
+            api.signin(form)
+                .then(data => data.json())
+                .then(data => {
+                    if (data.status == 'error') {
+                        setResponse(data.message)
+                        return;
+                    }
+
+                    setResponse("")
+
+                    localStorage.setItem('user', JSON.stringify(data.user))
+                    localStorage.setItem('token', data.authorisation.token)
+
+                    location.href = "/"
+                })
+        }
+    }
+
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
@@ -16,6 +89,9 @@ export default function SignIn() {
                     label="Email Address"
                     placeholder="Enter email address"
                     type="email"
+                    value={form.email}
+                    errors={errors.email}
+                    onInput={(e) => onChange('email', e.target.value, rules.email)}
                 ></Input>
             </div>
             <div className="mb-[20px]">
@@ -23,12 +99,21 @@ export default function SignIn() {
                     label="Password"
                     placeholder="Enter password"
                     type="password"
+                    value={form.password}
+                    errors={errors.password}
+                    onInput={(e) => onChange('password', e.target.value, rules.password)}
                 ></Input>
             </div>
+            {
+                response ? 
+                <p className="mt-[8px] text-sm text-[#D94042] text-left ml-[20px]" dangerouslySetInnerHTML={{__html: response }}></p> 
+                : <></>
+            }
             <div className='mt-[32px] mb-[16px]'>
                 <Button 
                     label="Sign In"
                     className="bg-[#1860CC]"
+                    onClick={handleSignIn}
                 ></Button>
             </div>
             <div className="mb-[18px]">
