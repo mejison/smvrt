@@ -7,6 +7,7 @@ import GoogleSVG from '@/assets/google.svg';
 import Input from '@/components/input';
 import Button from '@/components/button';
 import Link from 'next/link'
+import { setCookie } from '@/utils/helpers'
 
 import * as api from '@/api'
 import { validation } from '@/utils/validation'
@@ -74,7 +75,8 @@ export default function SignIn() {
                     localStorage.setItem('user', JSON.stringify(data.user))
                     localStorage.setItem('token', data.authorisation.token)
 
-                    location.href = "/"
+                    setCookie('token', data.authorisation.token, 86400)
+                    location.href = "/dashboard"
                 })
         }
     }
