@@ -8,12 +8,17 @@ import Image from 'next/image';
 
 export default function Input(props) {
     const { label } = props
-    const hasError = false;
+    const errors = props.errors || []
 
     const [showPassword, setShowPassword] = useState(false);
+    const [payload, setPayload] = useState(false);
 
     const handleClick = () => {
         setShowPassword( ! showPassword)
+    }
+
+    const onChange = (event) => {
+        setPayload(event.target.value);
     }
   return (
     <div className="text-left">
@@ -25,7 +30,7 @@ export default function Input(props) {
             <input
                 id="success"
                 {...props}
-                className="border text-[14px] rounded-[6px] block w-full p-2.5 focus:outline outline-[4px] outline-[#D3E4FE] focus:border-[#1860CC]" 
+                className={`border text-[14px] rounded-[6px] block w-full p-2.5 focus:outline outline-[4px] outline-[#D3E4FE] ${ ! errors.length ? 'focus:border-[#1860CC]' : 'focus:border-[#D94042]' }`}
                 type={showPassword ? 'text' : props.type}
             />
             {
@@ -42,9 +47,9 @@ export default function Input(props) {
         </div>
         
         {
-            hasError ? 
-            <p className="mt-[8px] text-sm text-[#D94042]">
-                Some success message.
+            errors.length ? 
+            <p className="mt-[8px] text-sm text-[#D94042]" dangerouslySetInnerHTML={{__html: errors.join('<br />')}}>
+                
             </p> : <></>
         }
     </div>
