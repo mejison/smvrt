@@ -81,6 +81,12 @@ export default function SignIn() {
         }
     }
 
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSignIn();
+        }
+    };
+
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
@@ -94,6 +100,7 @@ export default function SignIn() {
                     value={form.email}
                     errors={errors.email}
                     onInput={(e) => onChange('email', e.target.value, rules.email)}
+                    onKeyDown={handleKeyDown}
                 ></Input>
             </div>
             <div className="mb-[20px]">
@@ -104,6 +111,7 @@ export default function SignIn() {
                     value={form.password}
                     errors={errors.password}
                     onInput={(e) => onChange('password', e.target.value, rules.password)}
+                    onKeyDown={handleKeyDown}
                 ></Input>
             </div>
             {

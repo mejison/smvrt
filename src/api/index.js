@@ -52,3 +52,29 @@ export function me() {
         },
     })
 }
+
+export function forgot(data) {
+    return fetch(API_ENDPOINT + "/api/auth/forgot", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            "content-type": "application/json",
+            "accept":  "application/json",
+        },
+    })
+}
+
+export function reset(data) {
+    return fetch(API_ENDPOINT + "/api/auth/reset", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            "content-type": "application/json",
+            "accept":  "application/json",
+        },
+    })
+}
