@@ -1,4 +1,4 @@
-const API_ENDPOINT = 'https://smvrt-api.local'
+const API_ENDPOINT = 'https://smvrt-api.dev'
 const getToken = () => {
     return localStorage.getItem('token') ?? ''
 }
@@ -72,6 +72,16 @@ export function reset(data) {
         body: JSON.stringify({
             ...data,
         }),
+        headers: {
+            "content-type": "application/json",
+            "accept":  "application/json",
+        },
+    })
+}
+
+export function googleauth() {
+    return fetch(API_ENDPOINT + "/api/auth/google/redirect", {
+        method: "GET",
         headers: {
             "content-type": "application/json",
             "accept":  "application/json",

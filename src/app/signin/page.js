@@ -3,7 +3,7 @@
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import LogoSVG from '@/assets/logo.svg';
-import GoogleSVG from '@/assets/google.svg';
+import GoogleAuthBtn from '@/components/google-auth-btn';
 import Input from '@/components/input';
 import Button from '@/components/button';
 import Link from 'next/link'
@@ -127,11 +127,7 @@ export default function SignIn() {
                 ></Button>
             </div>
             <div className="mb-[18px]">
-                <Button 
-                    label="Continue with Google"
-                    className="bg-white !text-[#222] !font-normal shadow"
-                    icon={GoogleSVG}
-                ></Button>
+                <GoogleAuthBtn />
             </div>
             <label className='mb-[14px]'>
                 <span className='text-[#222] text-[14px]'>
