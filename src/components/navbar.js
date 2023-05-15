@@ -3,7 +3,7 @@ import largeLogo from "@/assets/large-logo.svg"
 import Notifications from "@/components/notifications";
 
 export default function navbar({ user, logout }) {
-    return (<nav className="fixed top-0 z-40 w-full bg-white border-b border-gray-200">
+    return (<nav className="fixed top-0 z-40 w-full bg-[#F5F5F5] border-b border-gray-200 ">
     <div className="px-[20px] py-[20px] lg:px-5 lg:pl-3 lg:ml-64 ml-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-start">

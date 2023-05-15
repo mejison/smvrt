@@ -35,14 +35,14 @@ export default function DashboardLayout({
     }
 
     return (
-      <section>
+      <div>
         <Navbar user={user}  />
         <Sidebar user={user} logout={handleLogout} />
-        <div className="p-4 sm:ml-64">
-          <div className="p-4 mt-14">
+        <div className="bg-[#F5F5F5] min-h-screen">
+          <div>
             {children}
           </div>
         </div>
-      </section>
+      </div>
     );
   }

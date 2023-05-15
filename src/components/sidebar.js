@@ -11,7 +11,7 @@ export default function Sidebar({ logout }) {
       return pathname.includes(page);
    }
 
-    return (<aside id="logo-sidebar" className="fixed flex flex-col top-0 left-0 z-40 w-64 h-screen px-[33px] py-[41px] bg-[#222] transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
+    return (<aside id="logo-sidebar" className="fixed flex flex-col top-0 left-0 z-40 w-64 h-screen px-[33px] py-[41px] bg-[#222] transition-transform -translate-x-full border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
             <Link href="/" className="block mb-[48px]">
                <Image src={largeLogo} width="180px" height="40" alt="logo" />
             </Link>
