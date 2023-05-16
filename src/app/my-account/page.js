@@ -2,7 +2,7 @@
 import Card from "@/components/card";
 import Input from "@/components/input";
 import Tabs from "@/components/tabs";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import pencilsvg from '@/assets/pencil.svg'
 import Image from 'next/image';
 import Button from "@/components/button";
@@ -13,8 +13,21 @@ import { validation } from '@/utils/validation'
 import ServerError from '@/popups/server-error';
 import ServerSuccess from '@/popups/server-success';
 
-export default function MyAccount() {
+import { useUser } from '@/context/user';
 
+export default function MyAccount() {
+    const { user, setUser } = useUser();
+
+    useEffect(() => {
+        setFormProfile({
+            avatar: user.avatar,
+            fname: user.fname,
+            lname: user.lname,
+            phone: user.phone,
+            email: user.email,
+        })
+    }, [user])
+    
     const tabs = [
         {
             label: "Profile",
@@ -29,6 +42,7 @@ export default function MyAccount() {
             slug: "teams",
         }
     ];
+
     const [active, setActive] = useState(tabs[0])
 
     const [state, setState] = useState({
@@ -38,14 +52,31 @@ export default function MyAccount() {
         }
     })
 
+    const [previewAvatar, setPreviewAvatar] = useState("")
+
     const [errorsPassword, setPasswordErrors] = useState({
         'password': [],
         'confirm_password': [],
     });
+
+    const [errorsProfile, setProfileErrors] = useState({
+        'fname': [],
+        'lname': [],
+        'phone': [],
+        'email': [],
+    });
     
-    const [formPassword, setForm] = useState({
+    const [formPassword, setFormPassword] = useState({
         password: '',
         confirm_password: '',
+    })
+
+    const [formProfile, setFormProfile] = useState({
+        avatar: '',
+        fname: '',
+        lname: '',
+        phone: '',
+        email: '',
     })
 
     const [popup, setPopup] = useState({
@@ -64,8 +95,15 @@ export default function MyAccount() {
         confirm_password: ['password','required'],
     }
 
+    const rulesProfile = {
+        fname: [],
+        lname: [],
+        phone: [],
+        email: ['email', 'required'],
+    }
+
     const onChangePassword = (field, value, rules) => {
-        setForm({
+        setFormPassword({
             ...formPassword,
             [field]: value
         })
@@ -80,6 +118,27 @@ export default function MyAccount() {
         if (messages.length) {
             setPasswordErrors({
                 ...errorsPassword,
+                [field]: [...messages]
+            })
+        }
+    }
+
+    const onChangeProfile = (field, value, rules) => {
+        setFormProfile({
+            ...formProfile,
+            [field]: value
+        })
+
+        setProfileErrors({
+            ...errorsProfile,
+            [field]: []
+        })
+
+        const messages = validation(value, rules);
+        
+        if (messages.length) {
+            setProfileErrors({
+                ...errorsProfile,
                 [field]: [...messages]
             })
         }
@@ -121,7 +180,7 @@ export default function MyAccount() {
         if ( ! Object.values(messages).flat(1).length) {
             api.reset({
                 ...formPassword,
-                email: 'test@test.com'
+                email: user.email
             })
                 .then(data => data.json())
                 .then(data => {
@@ -149,32 +208,133 @@ export default function MyAccount() {
             }
     }
 
+    const updateProfile = () => {
+        let messages = {}
+        for(let field in rulesProfile) {
+            let message = validation(formProfile[field], rulesProfile[field]);
+            messages[field] = message
+        }
+
+        setProfileErrors(messages);
+
+        if ( ! Object.values(messages).flat(1).length) {
+            const fd = new FormData();
+            for(let field in formProfile) {
+                fd.append(field, formProfile[field])
+            }
+            api.update_profile(fd)
+                .then(data => data.json())
+                .then(data => {
+                    const errors = data.errors ? Object.values(data.errors) : []
+                    if (errors.length || data.exception) {
+                        const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                        setPopup({
+                            ...popup,
+                            server_error: {
+                                visible: true,
+                                message
+                            }
+                        })
+                        return ;
+                    }
+
+                    setPopup({
+                        ...popup,
+                        server_success: {
+                            visible: true,
+                            message: data.message
+                        }
+                    })
+                    
+                    setUser(data.data)
+                    localStorage.setItem('user', JSON.stringify(data.data))
+                })
+        }
+    }
+
+    const handleEditImage = () => {
+        const input = document.createElement('input')
+        input.type = 'file'
+        input.accept = 'image/*'
+        input.onchange = ({ target: { files : [file]}}) => {
+            const fr = new FileReader
+            fr.onloadend = () => {
+                setPreviewAvatar(fr.result)
+            }
+            setFormProfile({
+                ...formProfile,
+                avatar: file
+            })
+            fr.readAsDataURL(file)
+        }
+        input.click();
+    }
+
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
         <Tabs tabs={tabs} active={active} change={changeTab} />
         <div className="pt-[30px] grid grid-cols-[1fr_1fr_20%] gap-[20px]">
             <Card>
                 <div className="mb-[40px] grid grid-cols-[100px_1fr] gap-[20px] items-center content-center">
                     <div>
-                        <div className="w-[86px] h-[86px] rounded-full bg-[#222]" ></div>
+                        <div className="w-[86px] h-[86px] rounded-full bg-[#222]">
+                            {
+                                previewAvatar ? 
+                                    <img className="w-full h-full object-contain rounded-full" src={previewAvatar} alt="preview" />
+                                : <></>
+                            }
+                            {
+                                user.avatar && ! previewAvatar ? 
+                                    <img className="w-full h-full object-contain rounded-full" src={user.avatar} alt="avatar" />
+                                : <></>
+                            }
+                        </div>
                     </div>
                     <div className="relative flex flex-col text-[#222]">
-                        <h3 className="font-bold text-[28px]">Alex Fisher</h3>
-                        <span className="text-[12px] underline cursor-pointer">Edit display images</span>
-                        <a href="#" onClick={handleEditProfile} className="absolute top-3 right-5">
+                        <h3 className="font-bold text-[28px] whitespace-nowrap text-ellipsis overflow-hidden max-w-[240px]">{user.fname && user.lname ? user.fname + ' ' + user.lname : user.email}</h3>
+                        <span className="text-[12px] underline cursor-pointer" onClick={handleEditImage}>Edit display images</span>
+                        <a href="#" onClick={handleEditProfile} className="absolute top-0 right-0">
                             <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                         </a>
                     </div>
                 </div>
                 <div className="mb-[20px]">
-                    <Input label="First name"  type="text" placeholder="First name" />
+                    <Input 
+                        label="First name"  
+                        type="text" 
+                        placeholder="First name"
+                        value={formProfile.fname || ''}
+                        errors={errorsProfile.fname}
+                        onInput={(e) => onChangeProfile('fname', e.target.value, rulesProfile.fname)}
+                    />
                 </div>
                 <div className="mb-[20px]">
-                    <Input label="Last name"  type="text" placeholder="Last name" />
+                    <Input 
+                        label="Last name"
+                        type="text" 
+                        placeholder="Last name"
+                        value={formProfile.lname || ''}
+                        errors={errorsProfile.lname}
+                        onInput={(e) => onChangeProfile('lname', e.target.value, rulesProfile.lname)}
+                    />
                 </div>
                 <div className="mb-[20px]">
-                    <Input label="Phone Number"  type="phone" placeholder="Phone Number" />
+                    <Input 
+                        label="Phone Number"  
+                        type="phone" 
+                        placeholder="Phone Number"
+                        value={formProfile.phone || ''}
+                        errors={errorsProfile.phone}
+                        onInput={(e) => onChangeProfile('phone', e.target.value, rulesProfile.phone)}
+                    />
                 </div>
-                <Input label="Email Address"  type="email" placeholder="Email Address" />
+                <Input 
+                    label="Email Address"  
+                    type="email" 
+                    placeholder="Email Address" 
+                    value={formProfile.email || ''}
+                    errors={errorsProfile.email}
+                    onInput={(e) => onChangeProfile('email', e.target.value, rulesProfile.email)}
+                />
                 {
                     state.edit.profile ? (
                         <div className="flex justify-end mt-[32px]">
@@ -184,9 +344,10 @@ export default function MyAccount() {
                                 className="bg-white !text-[#222] !py-2 px-4 border border-[#222] font-Eina03">
                                 Cencel
                             </Button>
-                            <Button 
+                            <Button  
                                 label="Update"
                                 className="bg-[#1860CC] !py-2 px-4 ml-[12px] font-Eina03 font-bold"
+                                onClick={updateProfile}
                             ></Button>
                         </div>
                     ) : <></>
@@ -234,6 +395,7 @@ export default function MyAccount() {
                     }
             </Card>
         </div>
+
         <ServerError 
             open={popup.server_error.visible} 
             title="Error"

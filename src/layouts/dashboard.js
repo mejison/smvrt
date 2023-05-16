@@ -5,12 +5,11 @@ import Navbar from '@/components/navbar'
 import Sidebar from '@/components/sidebar'
 
 import {setCookie} from '@/utils/helpers'
+import UserContext from '@/context/user';
 
-export default function DashboardLayout({
-    children,
-  }) {
-
-    const [user, setUser] = useState({});
+export default function DashboardLayout({ children }) {
+    
+  const [user, setUser] = useState({});
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -41,9 +40,11 @@ export default function DashboardLayout({
         <Sidebar user={user} logout={handleLogout} />
         <div className="bg-[#F5F5F5] min-h-screen">
           <div>
-            {
-              children
-            }
+            <UserContext.Provider value={{ user, setUser }}>
+              {
+                children
+              }
+            </UserContext.Provider>
           </div>
         </div>
       </div>

@@ -3,16 +3,18 @@ const getToken = () => {
     return localStorage.getItem('token') ?? ''
 }
 
+const headers = {
+    "content-type": "application/json",
+    "accept":  "application/json",
+}
+
 export function signup(data) {
         return fetch(API_ENDPOINT + "/api/auth/register", {
             method: "POST",
             body: JSON.stringify({
                 ...data,
             }),
-            headers: {
-                "content-type": "application/json",
-                "accept":  "application/json",
-            },
+            headers,
         })
 }
 
@@ -22,10 +24,7 @@ export function resend(data) {
             body: JSON.stringify({
                 ...data,
             }),
-            headers: {
-                "content-type": "application/json",
-                "accept":  "application/json",
-            },
+            headers,
         })
 }
 
@@ -35,10 +34,7 @@ export function signin(data) {
         body: JSON.stringify({
             ...data,
         }),
-        headers: {
-            "content-type": "application/json",
-            "accept":  "application/json",
-        },
+        headers,
     })
 }
 
@@ -46,8 +42,7 @@ export function me() {
     return fetch(API_ENDPOINT + "/api/auth/me", {
         method: "GET",
         headers: {
-            "content-type": "application/json",
-            "accept":  "application/json",
+            ...headers,
             "authorization": `Bearer ${getToken()}`
         },
     })
@@ -59,10 +54,7 @@ export function forgot(data) {
         body: JSON.stringify({
             ...data,
         }),
-        headers: {
-            "content-type": "application/json",
-            "accept":  "application/json",
-        },
+        headers,
     })
 }
 
@@ -72,19 +64,24 @@ export function reset(data) {
         body: JSON.stringify({
             ...data,
         }),
-        headers: {
-            "content-type": "application/json",
-            "accept":  "application/json",
-        },
+        headers,
     })
 }
 
 export function googleauth() {
     return fetch(API_ENDPOINT + "/api/auth/google/redirect", {
         method: "GET",
+        headers,
+    })
+}
+
+export function update_profile(fd) {
+    return fetch(API_ENDPOINT + "/api/profile", {
+        method: "POST",
+        body: fd,
         headers: {
-            "content-type": "application/json",
-            "accept":  "application/json",
+            "authorization": `Bearer ${getToken()}`,
+            'accept': 'application/json',
         },
     })
 }
