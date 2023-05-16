@@ -6,8 +6,9 @@ import Link from "next/link"
 import { usePathname } from 'next/navigation';
 
 export default function Sidebar({ logout }) {
-   const isActivePage = (page) => {
-      const pathname = usePathname();
+   const pathname = usePathname();
+
+   const isActivePage = (page) => {  
       return pathname.includes(page);
    }
 

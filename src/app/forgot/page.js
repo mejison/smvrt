@@ -4,7 +4,7 @@ import Image from 'next/image';
 import LogoSVG from '@/assets/logo.svg';
 import Input from '@/components/input';
 import Button from '@/components/button';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import * as api from '@/api'
 import { validation } from '@/utils/validation'
@@ -23,8 +23,15 @@ export default function Forgot() {
 
     const [form, setForm] = useState({
         email: '',
-        link: location.protocol + '//' + location.host
-    })
+        link: '',
+    });
+
+    useEffect(() => {
+        setForm({
+            email: '',
+            link: window.location.protocol + '//' +  window.location.host
+        })
+    }, []);
 
     const rules = {
         email: ['email','required'],

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState  } from 'react';
+import React, { useEffect, useState  } from 'react';
 import * as api from '@/api'
 import Navbar from '@/components/navbar'
 import Sidebar from '@/components/sidebar'
@@ -9,6 +9,7 @@ import {setCookie} from '@/utils/helpers'
 export default function DashboardLayout({
     children,
   }) {
+
     const [user, setUser] = useState({});
 
     useEffect(() => {
@@ -40,7 +41,9 @@ export default function DashboardLayout({
         <Sidebar user={user} logout={handleLogout} />
         <div className="bg-[#F5F5F5] min-h-screen">
           <div>
-            {children}
+            {
+              children
+            }
           </div>
         </div>
       </div>

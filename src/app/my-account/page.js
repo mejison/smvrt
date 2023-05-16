@@ -5,8 +5,16 @@ import Tabs from "@/components/tabs";
 import React, { useState } from 'react';
 import pencilsvg from '@/assets/pencil.svg'
 import Image from 'next/image';
+import Button from "@/components/button";
+
+import * as api from '@/api'
+import { validation } from '@/utils/validation'
+
+import ServerError from '@/popups/server-error';
+import ServerSuccess from '@/popups/server-success';
 
 export default function MyAccount() {
+
     const tabs = [
         {
             label: "Profile",
@@ -21,15 +29,124 @@ export default function MyAccount() {
             slug: "teams",
         }
     ];
-
     const [active, setActive] = useState(tabs[0])
+
+    const [state, setState] = useState({
+        edit: {
+            password: false,
+            profile: false,
+        }
+    })
+
+    const [errorsPassword, setPasswordErrors] = useState({
+        'password': [],
+        'confirm_password': [],
+    });
+    
+    const [formPassword, setForm] = useState({
+        password: '',
+        confirm_password: '',
+    })
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
+    const rulesPassword = {
+        password: ['password','required'],
+        confirm_password: ['password','required'],
+    }
+
+    const onChangePassword = (field, value, rules) => {
+        setForm({
+            ...formPassword,
+            [field]: value
+        })
+
+        setPasswordErrors({
+            ...errorsPassword,
+            [field]: []
+        })
+
+        const messages = validation(value, rules);
+        
+        if (messages.length) {
+            setPasswordErrors({
+                ...errorsPassword,
+                [field]: [...messages]
+            })
+        }
+    }
 
     const changeTab = (tab) => {
         setActive(tab)
     }
 
     const handleEditPassword = () => {
-        alert('handleEditPassword')
+        setState({
+            ...state,
+            edit: {
+                ...state.edit,
+                password: ! state.edit.password
+            }
+        })
+    }
+
+    const handleEditProfile = () => {
+        setState({
+            ...state,
+            edit: {
+                ...state.edit,
+                profile: ! state.edit.profile
+            }
+        })
+    }
+
+    const updatePasswords = () => {
+        let messages = {}
+        for(let field in rulesPassword) {
+            let message = validation(formPassword[field], rulesPassword[field]);
+            messages[field] = message
+        }
+
+        setPasswordErrors(messages);
+
+        if ( ! Object.values(messages).flat(1).length) {
+            api.reset({
+                ...formPassword,
+                email: 'test@test.com'
+            })
+                .then(data => data.json())
+                .then(data => {
+                    const errors = data.errors ? Object.values(data.errors) : []
+                    if (errors.length || data.exception) {
+                        const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                        setPopup({
+                            ...popup,
+                            server_error: {
+                                visible: true,
+                                message
+                            }
+                        })
+                        return ;
+                    }
+
+                    setPopup({
+                        ...popup,
+                        server_success: {
+                            visible: true,
+                            message: data.message
+                        }
+                    })
+                })
+            }
     }
 
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
@@ -41,9 +158,9 @@ export default function MyAccount() {
                         <div className="w-[86px] h-[86px] rounded-full bg-[#222]" ></div>
                     </div>
                     <div className="relative flex flex-col text-[#222]">
-                        <h3 class="font-bold text-[28px]">Alex Fisher</h3>
-                        <span class="text-[12px] underline cursor-pointer">Edit display images</span>
-                        <a href="#" onClick={handleEditPassword} className="absolute top-3 right-5">
+                        <h3 className="font-bold text-[28px]">Alex Fisher</h3>
+                        <span className="text-[12px] underline cursor-pointer">Edit display images</span>
+                        <a href="#" onClick={handleEditProfile} className="absolute top-3 right-5">
                             <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                         </a>
                     </div>
@@ -58,6 +175,22 @@ export default function MyAccount() {
                     <Input label="Phone Number"  type="phone" placeholder="Phone Number" />
                 </div>
                 <Input label="Email Address"  type="email" placeholder="Email Address" />
+                {
+                    state.edit.profile ? (
+                        <div className="flex justify-end mt-[32px]">
+                            <Button
+                                label="Cencel"
+                                onClick={handleEditProfile}
+                                className="bg-white !text-[#222] !py-2 px-4 border border-[#222] font-Eina03">
+                                Cencel
+                            </Button>
+                            <Button 
+                                label="Update"
+                                className="bg-[#1860CC] !py-2 px-4 ml-[12px] font-Eina03 font-bold"
+                            ></Button>
+                        </div>
+                    ) : <></>
+                }
             </Card>
             <Card className="relative">
                 <h4 className="font-Eina03 font-bold mb-[20px]">Change password</h4>
@@ -65,10 +198,54 @@ export default function MyAccount() {
                     <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                 </a>
                 <div className="mb-[20px]">
-                    <Input label="Password"  type="password" placeholder="Password" />
+                    <Input 
+                        label="Password"  
+                        type="password" 
+                        placeholder="******" 
+                        value={formPassword.password}
+                        errors={errorsPassword.password}
+                        onInput={(e) => onChangePassword('password', e.target.value, rulesPassword.password)}
+                        />
                 </div>
-                <Input label="Confirm password"  type="password" placeholder="Confirm password" />
+                <Input 
+                    label="Confirm password"  
+                    type="password" 
+                    placeholder="******" 
+                    value={formPassword.confirm_password}
+                    errors={errorsPassword.confirm_password}
+                    onInput={(e) => onChangePassword('confirm_password', e.target.value, [...rulesPassword.confirm_password, `confirm:${formPassword.password}`])}
+                    />
+                    {
+                        state.edit.password ? (
+                            <div className="flex justify-end mt-[32px]">
+                                <Button
+                                    label="Cencel"
+                                    onClick={handleEditPassword}
+                                    className="bg-white !text-[#222] !py-2 px-4 border border-[#222] font-Eina03">
+                                    Cencel
+                                </Button>
+                                <Button 
+                                    label="Update"
+                                    onClick={updatePasswords}
+                                    className="bg-[#1860CC] !py-2 px-4 ml-[12px] font-Eina03 font-bold"
+                                ></Button>
+                            </div>
+                        ) : <></>
+                    }
             </Card>
         </div>
+        <ServerError 
+            open={popup.server_error.visible} 
+            title="Error"
+            message={popup.server_error.message}
+            onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+        />
+
+        <ServerSuccess
+            open={popup.server_success.visible} 
+            title="Success"
+            message={popup.server_success.message}
+            onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+        />
     </div>);
 }
