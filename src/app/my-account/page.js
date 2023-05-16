@@ -15,8 +15,10 @@ import ServerSuccess from '@/popups/server-success';
 
 import { useUser } from '@/context/user';
 
+import { useRouter } from 'next/navigation'
 export default function MyAccount() {
     const { user, setUser } = useUser();
+    const { push } = useRouter();
 
     useEffect(() => {
         setFormProfile({
@@ -31,7 +33,7 @@ export default function MyAccount() {
     const tabs = [
         {
             label: "Profile",
-            slug: "profile",
+            slug: "",
         },
         {
             label: "Notification",
@@ -145,7 +147,8 @@ export default function MyAccount() {
     }
 
     const changeTab = (tab) => {
-        setActive(tab)
+        // setActive(tab)
+        push("/my-account/" + tab.slug)
     }
 
     const handleEditPassword = () => {
