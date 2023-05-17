@@ -8,11 +8,14 @@ export default function Select({ label, options, value, onSelect, children }) {
     }
 
     return (<div>
-        <label 
-            className="block mb-2 text-sm font-Eina03 font-bold"
-            >{label}</label>
-        <div onFocus={() => setOpen(! open)} onClick={() => setOpen(! open)} className="bg-white rounded-[6px] shadow w-full flex items-center justify-between py-[10px] px-[12px] cursor-pointer">
-            <div className="text-[#222] text-[14px] font-Eina03">
+        {
+            label ? 
+            <label 
+                className="block mb-2 text-sm font-Eina03 font-bold "
+                >{label}</label> : ""
+        }
+        <div onFocus={() => setOpen(! open)} onClick={() => setOpen(! open)} className="border bg-white rounded-[6px] w-full flex items-center justify-between py-[10px] px-[12px] cursor-pointer">
+            <div className={`text-[#222] text-[14px] font-Eina03 ${ ! value.value ? 'text-[#B8C2CC]': ''}`}>
                 { value.label }
             </div>
             <svg className={`ml-auto transition-all ${open ? 'rotate-[-90deg]' : 'rotate-[-180deg]'}`} width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +29,7 @@ export default function Select({ label, options, value, onSelect, children }) {
                         <div 
                             key={index}
                             onClick={() => handleClick(option)} 
-                            className={`p-[12px] cursor-pointer ${option.value == value.value ? 'bg-[#F7FAFF] border-b border-b-[#E5E5E5] border-t border-t-[#E5E5E5]' : ''}`}>
+                            className={`p-[12px] cursor-pointer ${ ! option.value ? 'text-[#B8C2CC]': ''} ${option.value == value.value ? 'bg-[#F7FAFF] border-b border-b-[#E5E5E5] border-t border-t-[#E5E5E5]' : ''}`}>
                             { option.label }
                         </div>
                     );

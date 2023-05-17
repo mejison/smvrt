@@ -11,7 +11,7 @@ export default function WrapperModal({ children, open, title, icon, onClose }) {
                         {
                             icon ? (<Image src={ icon } alt="time" width="25" height="25" />) : <></>
                         }
-                        <h3 className="ml-[20px]">{ title }</h3>
+                        <h3 className="">{ title }</h3>
                         <a href="#" className="times" onClick={onClose}>
                             <Image src={ timesSVG } alt="time" width="24" height="24" />
                             </a>

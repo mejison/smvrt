@@ -22,10 +22,13 @@ export default function Input(props) {
     }
   return (
     <div className="text-left">
-        <label 
-            htmlFor="success" 
-            className="block mb-2 text-sm font-Eina03 font-bold"
-            >{label}</label>
+        {
+            label ? 
+            <label 
+                htmlFor="success" 
+                className="block mb-2 text-sm font-Eina03 font-bold"
+                >{label}</label> : ""
+        }
         <div className='relative'>
             <input
                 id="success"
