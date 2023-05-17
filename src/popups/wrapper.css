@@ -1,9 +1,10 @@
 .wrapper-modal {
     display: none;
+    z-index: 9999999;
 }
 
 .wrapper-modal dialog {
-    z-index: 2;
+    z-index: 9999999;
     min-width: 518px;
     max-width: 518px;
 }
