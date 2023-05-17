@@ -125,7 +125,7 @@ export default function Notification () {
                                 alt="image" 
                                 className="mr-3"
                             />
-                            <p>Notification settings can be customized for each Workspace you're part of</p>
+                            <p>Notification settings can be customized for each Workspace you&apos;re part of</p>
                         </div>
                         <div className="text-[14px]  flex items-center font-Eina03">
                             <Image 
@@ -135,7 +135,7 @@ export default function Notification () {
                                 alt="image" 
                                 className="mr-3"
                             />
-                            By default, you'll receive notifications for tasks that you're a viewer on.
+                            By default, you&apos;ll receive notifications for tasks that you&apos;re a viewer on.
                         </div>
                     </Card>
                     <div className="mb-[20px]"></div>

@@ -1,4 +1,4 @@
-const API_ENDPOINT = 'https://smvrt-api.dev'
+const API_ENDPOINT = 'https://zendevs.us'
 const getToken = () => {
     return localStorage.getItem('token') ?? ''
 }
