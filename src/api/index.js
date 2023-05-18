@@ -86,6 +86,16 @@ export function update_profile(fd) {
     })
 }
 
+export function get_profile_teams() {
+    return fetch(API_ENDPOINT + "/api/profile/teams", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
 export function roles() {
     return fetch(API_ENDPOINT + "/api/roles", {
         method: "GET",
@@ -120,7 +130,7 @@ export function update_settings(data) {
 }
 
 export function remove_member_from_team(data) {
-    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/remove", {
+    return fetch(API_ENDPOINT + "/api/team/" + data.team_id + "/member/remove", {
         method: "DELETE",
         body: JSON.stringify({
             ...data,
@@ -133,7 +143,7 @@ export function remove_member_from_team(data) {
 }
 
 export function update_role_on_team(data) {
-    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/update", {
+    return fetch(API_ENDPOINT + "/api/team/" + data.team_id + "/member/update", {
         method: "PUT",
         body: JSON.stringify({
             ...data,
@@ -146,7 +156,7 @@ export function update_role_on_team(data) {
 }
 
 export function add_member_to_team(data) {
-    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/add", {
+    return fetch(API_ENDPOINT + "/api/team/" + data.team_id + "/member/add", {
         method: "POST",
         body: JSON.stringify({
             ...data,
@@ -159,7 +169,7 @@ export function add_member_to_team(data) {
 }
 
 export function create_team(data) {
-    return fetch(API_ENDPOINT + "/team", {
+    return fetch(API_ENDPOINT + "/api/team", {
         method: "POST",
         body: JSON.stringify({
             ...data,
