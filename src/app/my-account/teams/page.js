@@ -13,6 +13,8 @@ import * as api from '@/api'
 import ServerError from '@/popups/server-error';
 import ServerSuccess from '@/popups/server-success';
 
+import { getAttrFromName } from '@/utils/helpers'
+import Image from 'next/image'
 
 export default function Teams () {
     const { push } = useRouter();
@@ -48,17 +50,8 @@ export default function Teams () {
     const [activeTab, setActiveTab] = useState(tabs[2])
 
     const [teams, setTeams] = useState([]);
-
-    const [members, setMembers] = useState([
-        {
-            fname: 'Victoria',
-            lname: 'Kettle',
-            email: 'victoriakettle@gmail.com',
-            role: null
-        },
-    ])
     
-    const [activeTeam, setActiveTeam] = useState({ members: [] })
+    const [activeTeam, setActiveTeam] = useState({ label: 'Select the team', value: '', members: [] })
     const [popups, setPopUps] = useState({
         add_member: false,
         create_new_team: false
@@ -114,12 +107,18 @@ export default function Teams () {
                 const teams = [
                     ...data.data.map(team => ({label : team.name, value: team.id, ...team}))
                 ]
-                setTeams(teams)
-                if ( ! activeTeam.id) {
-                    setActiveTeam(teams[0])
-                } else {
-                    setActiveTeam({...activeTeam})
+
+                let targetTeam = activeTeam.id && teams.length? {...teams.find(team => activeTeam.id == team.id)} : teams[0]
+                if( ! Object.keys(targetTeam).length) {
+                    targetTeam = teams[0]
                 }
+                setActiveTeam(targetTeam)
+                setTeams(teams)
+           }
+
+           if ( ! data.data.length) {
+            setTeams([])
+            setActiveTeam({ label: 'Select the team', value: '', members: [] })
            }
         })
     }
@@ -178,9 +177,8 @@ export default function Teams () {
                     message: data.message
                 }
             })
-            
+            getTeams();
         })
-
     }
 
     const onAddedNewMember = (members) => {
@@ -201,6 +199,8 @@ export default function Teams () {
                 return ;
             }
 
+            getTeams();
+
             setPopup({
                 ...popup,
                 server_success: {
@@ -208,12 +208,11 @@ export default function Teams () {
                     message: data.message
                 }
             })
-            
+
         })
     }
 
     const onChangeRole = (member, role) => {
-        
         api.update_role_on_team({
             team_id: activeTeam.id,
             email: member.email,
@@ -231,6 +230,8 @@ export default function Teams () {
                 })
                 return ;
             }
+
+            getTeams();
 
             setPopup({
                 ...popup,
@@ -269,16 +270,22 @@ export default function Teams () {
                         </div>
                     </Select>
                 </div>
-                <div className="flex flex-col pt-[24px] mb-[36px]">
+                <div className="flex flex-col pt-[24px] mb-[36px] overflow-y-auto max-h-[calc(100vh-350px)]">
                     {
                         activeTeam.members.map((member, index) => {
                             return (
                                 <div className="grid grid-cols-[210px_1fr_85px] gap-[16px] mb-[12px] font-Eina03 text-[14px]" key={`${activeTab.id}-${index}`}>
                                     <div className="rounded-[6px] py-[5px] px-[4px] bg-white flex items-center">
-                                        <div className="w-[32px] h-[32px] rounded-full bg-[#1ED9C6] mr-[9px]">
+                                        <div className="w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter">
                                             
+                                            {
+                                                member.user && member.user.avatar ? 
+                                                <img src={member.user.avatar} className="w-full h-full object-contain" />
+                                                :
+                                                getAttrFromName(member.name ? member.name : member.email)
+                                            }
                                         </div>
-                                        <h3>{member.name ? member.name : member.email}</h3>
+                                        <h3>{ member.name ? member.name : member.email }</h3>
                                     </div>
                                     <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
                                         { member.email }
@@ -299,20 +306,25 @@ export default function Teams () {
                         })
                     }
                 </div>
-                <div>
-                    <div className='flex' >
-                        <a href="#" onClick={handleAddMember} className="inline-flex ml-auto mb-[24px] font-bold font-Eina03 !text-[14px] items-center text-[#1860CC] border border-[#1860CC] rounded-[6px] px-[16px] py-[8px]">
-                            <svg className="mr-[10px]" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6.15407 6.15367C7.30112 6.15367 8.23099 5.22384 8.23099 4.07683C8.23099 2.92983 7.30112 2 6.15407 2C5.00702 2 4.07715 2.92983 4.07715 4.07683C4.07715 5.22384 5.00702 6.15367 6.15407 6.15367Z" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M5.69231 13.0753H2V11.6907C2.00735 10.9872 2.1929 10.297 2.53933 9.68457C2.88576 9.07217 3.38175 8.55757 3.98099 8.18882C4.58023 7.82007 5.26316 7.60922 5.96598 7.57595C6.66881 7.54268 7.3686 7.68807 8 7.99856" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M11.2305 8.46191V14.0001" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                <path d="M8.46094 11.2305H13.9994" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                            </svg>
-                            Add member
-                        </a>
+                {
+                    activeTeam.id ? 
+                    <div>
+                        <div className='flex' >
+                            <a href="#" onClick={handleAddMember} className="inline-flex ml-auto mb-[24px] font-bold font-Eina03 !text-[14px] items-center text-[#1860CC] border border-[#1860CC] rounded-[6px] px-[16px] py-[8px]">
+                                <svg className="mr-[10px]" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.15407 6.15367C7.30112 6.15367 8.23099 5.22384 8.23099 4.07683C8.23099 2.92983 7.30112 2 6.15407 2C5.00702 2 4.07715 2.92983 4.07715 4.07683C4.07715 5.22384 5.00702 6.15367 6.15407 6.15367Z" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M5.69231 13.0753H2V11.6907C2.00735 10.9872 2.1929 10.297 2.53933 9.68457C2.88576 9.07217 3.38175 8.55757 3.98099 8.18882C4.58023 7.82007 5.26316 7.60922 5.96598 7.57595C6.66881 7.54268 7.3686 7.68807 8 7.99856" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M11.2305 8.46191V14.0001" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M8.46094 11.2305H13.9994" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Add member
+                            </a>
+                        </div>
+                        <hr />
                     </div>
-                    <hr />
-                </div>
+                    :<></>
+                }
+                
                 <CreateNewTeam 
                     open={popups.create_new_team}
                     onSave={onCreateTeam}

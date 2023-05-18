@@ -30,7 +30,10 @@ export default function AddTeamMemberPopUp(props) {
 
     const handleSave = (e) => {
         e.preventDefault();
-        onAddedNewMember(members)
+        if (members.length) {
+            onAddedNewMember(members)
+            setNewMember([])
+        }
     }
    
     return (<WrapperModal title="Add team member" open={props.open} {...props}>

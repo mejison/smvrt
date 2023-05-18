@@ -16,3 +16,8 @@ export const getCookie = (cookie, name) => {
         }
     }
 }
+
+export const getAttrFromName = (name) => {
+    const parts = name.split(' ');
+    return parts.length >= 2 ? parts[0].charAt(0).toUpperCase() + " " + parts[1].charAt(0).toUpperCase() : name.charAt(0).toUpperCase()
+}

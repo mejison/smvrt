@@ -23,11 +23,11 @@ export default function Select(props) {
         {
             label ? 
             <label 
-                className="block mb-2 text-sm font-Eina03 font-bold "
+                className={`block mb-2 text-sm font-Eina03 font-bold`}
                 >{label}</label> : ""
         }
         <div onFocus={() => setOpen(! open)} onClick={() => {  setOpen(! open); }} className={`border bg-white rounded-[6px] w-full flex items-center justify-between py-[10px] px-[12px] cursor-pointer ${className}`} >
-            <div className={`text-[#222] text-[14px] mr-[10px] font-Eina03 ${value.value ? 'text-[#B8C2CC]': ''}`}>
+            <div className={`text-[14px] mr-[10px] font-Eina03 text-[#B8C2CC]`}>
                 { value.label }
             </div>
             <svg className={`ml-auto transition-all ${open ? 'rotate-[-90deg]' : 'rotate-[-180deg]'}`} width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">

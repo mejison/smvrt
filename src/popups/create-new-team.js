@@ -50,7 +50,7 @@ export default function CreateNewTeam(props) {
     }
 
     return (<WrapperModal title="Create new team" open={props.open} {...props}>
-                <div className=''>
+                <div>
                     <div className='flex flex-col'>
                         <div 
                             className="mb-[24px]">
