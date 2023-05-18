@@ -85,3 +85,88 @@ export function update_profile(fd) {
         },
     })
 }
+
+export function roles() {
+    return fetch(API_ENDPOINT + "/api/roles", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function get_settings() {
+    return fetch(API_ENDPOINT + "/api/profile/settings", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function update_settings(data) {
+    return fetch(API_ENDPOINT + "/api/profile/settings", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function remove_member_from_team(data) {
+    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/remove", {
+        method: "DELETE",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function update_role_on_team(data) {
+    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/update", {
+        method: "PUT",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function add_member_to_team(data) {
+    return fetch(API_ENDPOINT + "/team/" + data.team_id + "/member/add", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
+export function create_team(data) {
+    return fetch(API_ENDPOINT + "/team", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}

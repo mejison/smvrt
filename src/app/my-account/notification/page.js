@@ -3,13 +3,29 @@ import Card from "@/components/card";
 import Tabs from "@/components/tabs";
 import Image  from "next/image";
 import infosvg from "@/assets/info.svg"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from 'next/navigation'
 import Accordion from '@/components/accordion'
 
+import ServerError from '@/popups/server-error';
+import ServerSuccess from '@/popups/server-success';
+
+import * as api from '@/api';
+
 export default function Notification () {
     const { push } = useRouter();
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
 
     const tabs = [
         {
@@ -26,6 +42,106 @@ export default function Notification () {
         }
     ];
 
+    useEffect(() => {
+        api.get_settings()
+            .then(data => data.json())
+                .then(({ data }) => {
+                    if (data) {
+                        setTasks([
+                        {   
+                            label: 'Assignee changes',
+                            value: !!data.assignee_changes,
+                            slug: 'assignee_changes'
+                        },
+                        {
+                            label: 'Status changes',
+                            value: !!data.status_cahnges,
+                            slug: 'status_cahnges'
+                        },
+                        {
+                            label: 'Tasks assigned to me',
+                            value: !!data.tasks_assigned_to_me,
+                            slug: 'tasks_assigned_to_me'
+                        },
+                        {
+                            label: 'Document edited',
+                            value: !!data.document_edited,
+                            slug: 'document_edited'
+                        },
+                        {
+                            label: 'New version published',
+                            value: !!data.new_version_published,
+                            slug: 'new_version_published'
+                        }
+                        ])
+        
+                        setDueDates([
+                            {
+                                label: 'Due date changes',
+                                value: !!data.due_date_changes,
+                                slug: 'due_date_changes'
+                            },
+                            {
+                                label: 'Due date overdue',
+                                value: !!data.due_date_overdue,
+                                slug: 'due_date_overdue'
+                            },
+                            {
+                                label: 'Before due date reminder',
+                                value: !!data.before_due_date_reminder,
+                                slug: 'before_due_date_reminder'
+                            },
+                        ])
+                    } else {
+                        setTasks([
+                            {
+                                label: 'Assignee changes',
+                                value: false,
+                                slug: 'assignee_changes'
+                            },
+                            {
+                                label: 'Status changes',
+                                value: false,
+                                slug: 'status_cahnges'
+                            },
+                            {
+                                label: 'Tasks assigned to me',
+                                value: false,
+                                slug: 'tasks_assigned_to_me'
+                            },
+                            {
+                                label: 'Document edited',
+                                value: false,
+                                slug: 'document_edited'
+                            },
+                            {
+                                label: 'New version published',
+                                value: false,
+                                slug: 'new_version_published'
+                            },
+                        ])
+
+                        setDueDates([
+                            {
+                                label: 'Due date changes',
+                                value: false,
+                                slug: 'due_date_changes'
+                            },
+                            {
+                                label: 'Due date overdue',
+                                value: false,
+                                slug: 'due_date_overdue'
+                            },
+                            {
+                                label: 'Before due date reminder',
+                                value: false,
+                                slug: 'before_due_date_reminder'
+                            },
+                        ])
+                    }
+            })
+    }, [])
+
     const [active, setActive] = useState(tabs[1])
 
     const changeTab = (tab) => {
@@ -33,43 +149,28 @@ export default function Notification () {
     }
 
     const [comments, setComments] = useState([])
-    const [tasks, setTasks] = useState([
-        {
-            label: 'Assignee changes',
-            value: true
-        },
-        {
-            label: 'Status changes',
-            value: false
-        },
-        {
-            label: 'Tasks assigned to me',
-            value: false
-        },
-        {
-            label: 'Document edited',
-            value: false
-        },
-        {
-            label: 'New version published',
-            value: false
-        },
-    ])
+    const [tasks, setTasks] = useState([])
+    const [duedates, setDueDates] = useState([]);
 
-    const [duedates, setDueDates] = useState([
-        {
-            label: 'Due date changes',
-            value: false
-        },
-        {
-            label: 'Due date overdue',
-            value: false
-        },
-        {
-            label: 'Before due date reminder',
-            value: false
-        },
-    ]);
+    const updateSettings = (option) => {
+        api.update_settings({
+            setting: option.slug,
+            value: ! option.value
+        }).then(data => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+        })
+    }
 
     const handleChangeComments = (option) => {
         setComments([
@@ -77,13 +178,16 @@ export default function Notification () {
                 if (row.label == option.label) {
                     return {
                         label: row.label,
-                        value: ! option.value
+                        value: ! option.value,
+                        slug: row.slug
                     }
                 }
                 return row
             })
         ])
+        updateSettings(option);
     }
+    
     
     const handleChangeTasks = (option) => {
         setTasks([
@@ -91,12 +195,14 @@ export default function Notification () {
                 if (row.label == option.label) {
                     return {
                         label: row.label,
-                        value: ! option.value
+                        value: ! option.value,
+                        slug: row.slug
                     }
                 }
                 return row
             })
-        ])
+        ]);
+        updateSettings(option);
     }
 
     const handleChangeDueDates = (option) => {
@@ -105,12 +211,14 @@ export default function Notification () {
                 if (row.label == option.label) {
                     return {
                         label: row.label,
-                        value: ! option.value
+                        value: ! option.value,
+                        slug: row.slug
                     }
                 }
                 return row
             })
-        ])
+        ]);
+        updateSettings(option);
     }
 
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
@@ -151,6 +259,19 @@ export default function Notification () {
                         <Accordion label="Due dates" items={duedates} handleChange={handleChangeDueDates} />
                     </Card>
                 </div>
+                <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                />
         </div>
     );
 }
