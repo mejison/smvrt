@@ -47,7 +47,7 @@ export function validation(value, rules) {
                 if (value == "") {
                     messages = [
                         ...messages,
-                        "Need to confirm terms and conditions"
+                        "Please confirm the terms and conditions to proceed."
                     ]
                 }
             }

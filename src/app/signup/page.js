@@ -12,7 +12,7 @@ import Link from 'next/link';
  
 import VerifyEmailAddress from '@/popups/verify-email-address';
 import ServerError from '@/popups/server-error';
-import EmailVerified from '@/popups/email-verified'
+
 
 export default function SignUp() {
     const [errors, setErrors] = useState({
@@ -29,9 +29,6 @@ export default function SignUp() {
         server_error: {
             visible: false,
             message: '',
-        },
-        email_verified: {
-            visible: false,
         }
     })
 
@@ -138,21 +135,6 @@ export default function SignUp() {
         })
     }
 
-    useEffect(() => {
-        const url = new URLSearchParams(location.search);
-        const hasEmail = url.get('email');
-        
-        if (hasEmail) {
-            setPopup({
-                ...popup,
-                email_verified: {
-                    visible: true
-                }
-            })
-            window.history.pushState({}, document.title, location.pathname);
-        }
-    }, []);
-
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
@@ -228,10 +210,6 @@ export default function SignUp() {
             onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
         />
 
-        <EmailVerified
-            open={popup.email_verified.visible} 
-            title="Email verified"
-            onClose={() => {setPopup({...popup, email_verified: { visible: false }})}}
-        />
+
     </div>);
 }

@@ -1,6 +1,9 @@
 "use client";
 import React, {useState, useEffect} from 'react';
-    
+import LogoSVG from '@/assets/logo.svg';
+import Link from 'next/link'
+import Image from 'next/image';
+
 export default function TermsAndConditionsAndPrivacyPolicy() {
     const [tab, setTab] = useState('terms-and-conditions');
 
@@ -17,6 +20,11 @@ export default function TermsAndConditionsAndPrivacyPolicy() {
 
     return (<div className="bg-[#F6FAFF] min-h-screen  px-[30px] lg:px-0">
         <div className="container mx-auto pt-[60px]  max-w-[774px] pb-[50px]">
+            <div className='text-center'>
+                <Link href="/">
+                    <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
+                </Link>
+            </div>
             <div className="grid grid-cols-[1fr_1fr] gap-[15px] justify-center items-center">
                 <a href="#" onClick={() => setTab('terms-and-conditions')} className={`py-[10px] border-b-[4px] ${tab == 'terms-and-conditions' ? 'border-b-[#4ECFE0] font-bold' : 'border-b-[#E5E5E5] font-normal'} text-center `}>Terms & Conditions</a>
                 <a href="#" onClick={() => setTab('privacy-policy')} className={`py-[10px] border-b-[4px] ${tab == 'privacy-policy' ? 'border-b-[#4ECFE0] font-bold' : 'border-b-[#E5E5E5] font-normal'} text-center`}>Privacy Policy</a>
