@@ -14,6 +14,9 @@ import ServerSuccess from '@/popups/server-success';
 
 import { useRouter } from 'next/navigation'
 
+import Link from 'next/link';
+ 
+
 export default function Forgot() {
     const { push } = useRouter();
 
@@ -135,6 +138,8 @@ export default function Forgot() {
                     onClick={handleSend}
                 ></Button>
             </div>
+            <span className='text-[#222] text-[14px]  mb-[10px]'>Already have an account? <Link href="/signin" className='text-[#1860CC]  underline underline-offset-2'>Sign in</Link></span>
+            <span className='text-[#222] text-[14px]  mb-[50px]'>Don’t have an account? <Link href='/signup' className='text-[#1860CC]  underline underline-offset-2'>Sign up</Link></span>
         </div>
 
         <ServerError 

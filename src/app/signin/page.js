@@ -11,7 +11,9 @@ import { setCookie } from '@/utils/helpers'
 
 import * as api from '@/api'
 import { validation } from '@/utils/validation'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+
+import EmailVerified from '@/popups/email-verified'
 
 export default function SignIn() {
     const [errors, setErrors] = useState({
@@ -23,7 +25,13 @@ export default function SignIn() {
 
     const [form, setForm] = useState({
         email: '',
-        password: '',
+        password: ''
+    })
+
+    const [popup, setPopup] = useState({
+        email_verified: {
+            visible: false,
+        }
     })
 
     const rules = {
@@ -87,6 +95,21 @@ export default function SignIn() {
         }
     };
 
+    useEffect(() => {
+        const url = new URLSearchParams(location.search);
+        const hasEmail = url.get('email');
+        
+        if (hasEmail) {
+            setPopup({
+                ...popup,
+                email_verified: {
+                    visible: true
+                }
+            })
+            window.history.pushState({}, document.title, location.pathname);
+        }
+    }, []);
+
     return (<div className='bg-[#F6FAFF] min-h-screen pt-[30px] px-[30px] lg:px-0'>
         <div className='container text-center flex flex-col justify-center h-full max-w-[400px] mx-auto'>
             <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
@@ -136,5 +159,11 @@ export default function SignIn() {
             </label>
             <span className='text-[#222] text-[14px]'>Don’t have an account? <Link href='/signup' className='text-[#1860CC]  underline underline-offset-2'>Sign up</Link></span>
         </div>
+
+        <EmailVerified
+            open={popup.email_verified.visible} 
+            title="Email verified"
+            onClose={() => {setPopup({...popup, email_verified: { visible: false }})}}
+        />
     </div>);
 }
