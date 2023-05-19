@@ -1,15 +1,36 @@
 'use client'
 import Card from "@/components/card";
 import Tabs from "@/components/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from 'next/navigation'
 import Select from "@/components/select"
 
 import CreateNewTeam from "@/popups/create-new-team"
+import AddTeamMember from "@/popups/add-team-member";
+import * as api from '@/api'
+
+import ServerError from '@/popups/server-error';
+import ServerSuccess from '@/popups/server-success';
+
+import { getAttrFromName } from '@/utils/helpers'
+import Image from 'next/image'
 
 export default function Teams () {
     const { push } = useRouter();
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
+    const [roles, setRoles] = useState([])
 
     const tabs = [
         {
@@ -28,22 +49,13 @@ export default function Teams () {
 
     const [activeTab, setActiveTab] = useState(tabs[2])
 
-    const [teams, setTeams] = useState([
-        {
-            label: 'French',
-            value: 'french'
-        },
-        {
-            label: 'English',
-            value: 'english'
-        },
-        {
-            label: 'Spanish',
-            value: 'spanish'
-        }
-    ]);
-
-    const [activeTeam, setActiveTeam] = useState(teams[1])
+    const [teams, setTeams] = useState([]);
+    
+    const [activeTeam, setActiveTeam] = useState({ label: 'Select the team', value: '', members: [] })
+    const [popups, setPopUps] = useState({
+        add_member: false,
+        create_new_team: false
+    })
 
     const changeTab = (tab) => {
         // setActive(tab)
@@ -55,7 +67,185 @@ export default function Teams () {
     }
 
     const handleCreateNewTeam = () => {
-       
+        setPopUps({
+            ...popups,
+            create_new_team: true
+        })
+    }
+
+    const handleAddMember = () => {
+        setPopUps({
+            ...popups,
+            add_member: true
+        })
+    }
+
+    useEffect(() => {
+        api.roles()
+            .then(data => data.json())
+            .then((data) => {
+               if (data && data.data) {
+                const roles = [
+                    {
+                        label: 'Set role',
+                        value: ''
+                    },
+                    ...data.data.map(role => ({label : role.name, value: role.id}) )
+                ]
+                setRoles(roles)
+               }
+            })
+
+            getTeams();
+    }, [])
+
+    const getTeams = () => {
+        api.get_profile_teams()
+        .then(data => data.json())
+        .then((data) => {
+           if (data && data.data && data.data.length) {
+                const teams = [
+                    ...data.data.map(team => ({label : team.name, value: team.id, ...team}))
+                ]
+
+                let targetTeam = activeTeam.id && teams.length? {...teams.find(team => activeTeam.id == team.id)} : teams[0]
+                if( ! Object.keys(targetTeam).length) {
+                    targetTeam = teams[0]
+                }
+                setActiveTeam(targetTeam)
+                setTeams(teams)
+           }
+
+           if (data.data && ! data.data.length) {
+            setTeams([])
+            setActiveTeam({ label: 'Select the team', value: '', members: [] })
+           }
+        })
+    }
+
+    const handleRemoveMember = (member) => {
+        api.remove_member_from_team({
+            team_id: activeTeam.id,
+            email: member.email
+        })
+            .then(data => data.json())
+            .then((data) => {
+                const errors = data.errors ? Object.values(data.errors) : []
+                    if (errors.length || data.exception) {
+                        const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                        setPopup({
+                            ...popup,
+                            server_error: {
+                                visible: true,
+                                message
+                            }
+                        })
+                        return ;
+                    }
+
+                    setPopup({
+                        ...popup,
+                        server_success: {
+                            visible: true,
+                            message: data.message
+                        }
+                    })
+
+                    getTeams()
+            })
+    }
+
+    const onCreateTeam = (data) => {
+        api.create_team({
+            ...data,
+            redirect: `${location.protocol + "//" + location.host}`
+        }).then(data => data.json()).then(data => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: data.message
+                }
+            })
+            getTeams();
+        })
+    }
+
+    const onAddedNewMember = (members) => {
+        api.add_member_to_team({
+            team_id: activeTeam.id,
+            members,
+            redirect: `${location.protocol + "//" + location.host}`
+        }).then(data => data.json()).then(data => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            getTeams();
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: data.message
+                }
+            })
+
+        })
+    }
+
+    const onChangeRole = (member, role) => {
+        api.update_role_on_team({
+            team_id: activeTeam.id,
+            email: member.email,
+            role: role.value
+        }).then(data => data.json()).then(data => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            getTeams();
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: data.message
+                }
+            })
+            
+        })
     }
 
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
@@ -84,8 +274,87 @@ export default function Teams () {
                         </div>
                     </Select>
                 </div>
+                <div className="flex flex-col pt-[24px] mb-[36px] ">
+                    {
+                        activeTeam.members.map((member, index) => {
+                            return (
+                                <div className="grid grid-cols-[210px_1fr_85px] gap-[16px] mb-[12px] font-Eina03 text-[14px]" key={`${activeTab.id}-${index}`}>
+                                    <div className="rounded-[6px] py-[5px] px-[4px] bg-white flex items-center">
+                                        <div className="w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter">
+                                            
+                                            {
+                                                member.user && member.user.avatar ? 
+                                                <img src={member.user.avatar} className="w-full h-full object-contain" />
+                                                :
+                                                getAttrFromName(member.name ? member.name : member.email)
+                                            }
+                                        </div>
+                                        <h3>{ member.name ? member.name : member.email }</h3>
+                                    </div>
+                                    <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
+                                        { member.email }
+                                        <div className="ml-auto">
+                                            <Select 
+                                                options={roles}
+                                                value={roles.find(role => role.value == member.role_id)}
+                                                className=" px-[10px] !text-[12px] border-none !py-[0]"
+                                                onSelect={(newRole) => onChangeRole(member, newRole)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <a href="#" onClick={() => handleRemoveMember(member)} className="rounded-[6px] text-center border font-bold text-[12px] border-[#737373] text-[#737373] py-[10px] px-[12px] bg-white">
+                                        Remove
+                                    </a>
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+                {
+                    activeTeam.id ? 
+                    <div>
+                        <div className='flex' >
+                            <a href="#" onClick={handleAddMember} className="inline-flex ml-auto mb-[24px] font-bold font-Eina03 !text-[14px] items-center text-[#1860CC] border border-[#1860CC] rounded-[6px] px-[16px] py-[8px]">
+                                <svg className="mr-[10px]" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6.15407 6.15367C7.30112 6.15367 8.23099 5.22384 8.23099 4.07683C8.23099 2.92983 7.30112 2 6.15407 2C5.00702 2 4.07715 2.92983 4.07715 4.07683C4.07715 5.22384 5.00702 6.15367 6.15407 6.15367Z" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M5.69231 13.0753H2V11.6907C2.00735 10.9872 2.1929 10.297 2.53933 9.68457C2.88576 9.07217 3.38175 8.55757 3.98099 8.18882C4.58023 7.82007 5.26316 7.60922 5.96598 7.57595C6.66881 7.54268 7.3686 7.68807 8 7.99856" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M11.2305 8.46191V14.0001" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M8.46094 11.2305H13.9994" stroke="#1860CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Add member
+                            </a>
+                        </div>
+                        <hr />
+                    </div>
+                    :<></>
+                }
+                
                 <CreateNewTeam 
-                    open={false}
+                    open={popups.create_new_team}
+                    onSave={onCreateTeam}
+                    roles={roles}
+                    onClose={() => setPopUps({...popups, create_new_team: false})}
+                />
+
+                <AddTeamMember 
+                    open={popups.add_member}
+                    roles={roles}
+                    onAddedNewMember={onAddedNewMember}
+                    onClose={() => setPopUps({...popups, add_member: false})}
+                />
+
+                <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
                 />
         </div>
     );
