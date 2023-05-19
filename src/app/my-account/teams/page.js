@@ -116,7 +116,7 @@ export default function Teams () {
                 setTeams(teams)
            }
 
-           if ( ! data.data.length) {
+           if (data.data && ! data.data.length) {
             setTeams([])
             setActiveTeam({ label: 'Select the team', value: '', members: [] })
            }
@@ -156,7 +156,10 @@ export default function Teams () {
     }
 
     const onCreateTeam = (data) => {
-        api.create_team(data).then(data => data.json()).then(data => {
+        api.create_team({
+            ...data,
+            redirect: `${location.protocol + "//" + location.host}`
+        }).then(data => data.json()).then(data => {
             const errors = data.errors ? Object.values(data.errors) : []
             if (errors.length || data.exception) {
                 const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
@@ -184,7 +187,8 @@ export default function Teams () {
     const onAddedNewMember = (members) => {
         api.add_member_to_team({
             team_id: activeTeam.id,
-            members
+            members,
+            redirect: `${location.protocol + "//" + location.host}`
         }).then(data => data.json()).then(data => {
             const errors = data.errors ? Object.values(data.errors) : []
             if (errors.length || data.exception) {
@@ -270,7 +274,7 @@ export default function Teams () {
                         </div>
                     </Select>
                 </div>
-                <div className="flex flex-col pt-[24px] mb-[36px] overflow-y-auto max-h-[calc(100vh-350px)]">
+                <div className="flex flex-col pt-[24px] mb-[36px] ">
                     {
                         activeTeam.members.map((member, index) => {
                             return (
