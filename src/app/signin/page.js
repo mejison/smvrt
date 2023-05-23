@@ -141,7 +141,7 @@ export default function SignIn() {
             </div>
             {
                 response ? 
-                    <p className="mt-[8px] text-left mx-auto max-w-[400px] flex items-center border-l-2 border-l-[#D94042] text-[12px] shadow-sm text-[#D94042]  bg-white right-[0] px-3 py-2">
+                    <p className="mt-[8px] text-left max-w-[400px] flex items-center border-l-2 border-l-[#D94042] text-[12px] shadow-sm text-[#D94042]  bg-white right-[0] px-3 py-2">
                         <div className='w-[13px] h-[13px] min-w-[13px] mr-2 flex items-center'>
                             <svg fill='#D94042' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
                         </div>
