@@ -12,6 +12,20 @@ export function validation(value, rules) {
                 }
             }
 
+            if (['strong-password'].includes(rule)) {
+                const regexp = /^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/;
+                if ( ! regexp.test(value)) {
+                    messages = [
+                        ...messages,
+                        `
+                        - An English uppercase character (A-Z)<br />
+                        - An English lowercase character (a-z)<br />
+                        - A number (0-9) and/or symbol (such as !, #, or %)<br />
+                        `
+                    ]
+                }
+            }
+
             if(['password'].includes(rule)) {
                 if (value.length < 6) {
                     messages = [
