@@ -14,7 +14,12 @@ import ServerError from '@/popups/server-error';
 import ServerSuccess from '@/popups/server-success';
 
 
+import { useRouter } from 'next/navigation'
+
+
 export default function Reset() {
+    const { push } = useRouter();
+
     const [errors, setErrors] = useState({
         'password': [],
         'confirm_password': [],
@@ -38,8 +43,8 @@ export default function Reset() {
 
 
     const rules = {
-        password: ['password','required'],
-        confirm_password: ['password','required'],
+        password: ['password','required', 'strong-password'],
+        confirm_password: ['required'],
     }
 
     const onChange = (field, value, rules) => {
@@ -100,6 +105,10 @@ export default function Reset() {
                             message: data.message
                         }
                     })
+
+                    setTimeout(() => {
+                        push("/signin")
+                    }, 1500)
                 })
             }
     }

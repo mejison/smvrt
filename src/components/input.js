@@ -7,7 +7,7 @@ import CloseEyeSVG from '@/assets/eye-close.svg';
 import Image from 'next/image';
 
 export default function Input(props) {
-    const { label } = props
+    let { label, zIndex } = props
     const errors = props.errors || []
 
     const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +21,7 @@ export default function Input(props) {
         setPayload(event.target.value);
     }
   return (
-    <div className="text-left z-[1]">
+    <div className="text-left z-[999]">
         {
             label ? 
             <label 
@@ -29,7 +29,7 @@ export default function Input(props) {
                 className="block mb-2 text-sm font-Eina03 font-bold"
                 >{label}</label> : ""
         }
-        <div className='relative z-[2]'>
+        <div className={`relative ${zIndex}`}>
             <input
                 id="success"
                 {...props}
@@ -49,7 +49,12 @@ export default function Input(props) {
             }
             {
                 errors.length ? 
-                <p className="mt-[8px] text-[12px] shadow-sm text-[#D94042] absolute left-[0] z-index-[3] bg-white right-[0] px-3 py-2" dangerouslySetInnerHTML={{__html: errors.join(' ')}}></p> : <></>
+                <p className="z-[999] mt-[8px] flex items-center border-l-2 border-l-[#D94042] text-[12px] shadow-sm text-[#D94042] absolute left-[0]  bg-white right-[0] px-3 py-2">
+                    <div className='w-[13px] h-[13px] min-w-[13px] mr-2'>
+                        <svg  fill='#D94042' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                    </div>
+                    <span dangerouslySetInnerHTML={{__html: errors.join(' ')}}></span>
+                </p> : <></>
             }
         </div>
     </div>
