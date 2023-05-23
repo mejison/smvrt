@@ -25,7 +25,7 @@ export default function NewProjectLayout({ children }) {
         }
     ])
 
-    const [activeStep, setActiveStep] = useState('team-collaborators')
+    const [activeStep, setActiveStep] = useState('approvals-signatures')
 
     const onChangeActiveStep = (step) => {
         setActiveStep(step.slug)

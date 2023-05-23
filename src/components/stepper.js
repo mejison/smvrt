@@ -17,7 +17,7 @@ export default function Stepper({ steps, active, onChange }) {
                         {step.label}
                         <div className={`absolute transition-all bg-white z-[2] top-[-42px] left-[50%] translate-x-[-50%] text-[16px] font-normal
                                 w-[36px] h-[36px] ${active == step.slug || completedSteps.includes(step.slug) ? 'text-[#4ECFE0] shadow-[0_0_0_4px_rgba(225,225,254,1)] !border-[#4ECFE0]' : 'text-[#737373]'} 
-                                rounded-full border-[#E5E5E5] border-2 flex items-center justify-center ${ completedSteps.includes(step.slug) ? 'bg-[#4ECFE0] text-white' : '' }`}>0{ index + 1}</div>
+                                rounded-full border-[#E5E5E5] border-2 flex items-center justify-center ${ completedSteps.includes(step.slug) ? '!bg-[#4ECFE0] text-white' : '' }`}>0{ index + 1}</div>
                     </div>);
         }) }
     </div>);
