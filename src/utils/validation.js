@@ -20,7 +20,7 @@ export function validation(value, rules) {
                         `
                         - An English uppercase character (A-Z)<br />
                         - An English lowercase character (a-z)<br />
-                        - A number (0-9) and/or symbol (such as !, #, or %)<br />
+                        - A number (0-9) and symbol (such as !, #, or %)
                         `
                     ]
                 }
