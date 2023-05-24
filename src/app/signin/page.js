@@ -82,7 +82,7 @@ export default function SignIn() {
 
                     localStorage.setItem('user', JSON.stringify(data.user))
                     localStorage.setItem('token', data.authorisation.token)
-
+                   
                     setCookie('token', data.authorisation.token, 86400)
                     location.href = "/dashboard"
                 })

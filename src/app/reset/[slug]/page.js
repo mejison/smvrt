@@ -106,9 +106,7 @@ export default function Reset() {
                         }
                     })
 
-                    setTimeout(() => {
-                        push("/signin")
-                    }, 1500)
+                    location.href = "/signin"
                 })
             }
     }
