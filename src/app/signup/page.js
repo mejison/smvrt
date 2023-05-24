@@ -187,7 +187,7 @@ export default function SignUp() {
                 <span className='text-[#222] text-[14px]'>
                     <div className="mb-4 inline-block lg:flex items-center justify-center">
                         <input id="default-checkbox" type="checkbox" onChange={handleTermsAndConditions} value="" className={`w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]`} />
-                        I agree with the&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy' className='text-[#1860CC] underline underline-offset-2'>Terms of Use </Link>&nbsp; and&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy?tab=privacy-policy' className='text-[#1860CC] underline underline-offset-2'> Privacy Policy</Link>
+                        I agree with the&nbsp; <Link  target="_blank" href='/terms-and-conditions-and-privacy-policy' className='text-[#1860CC] underline underline-offset-2'>Terms of Use </Link>&nbsp; and&nbsp; <Link  target="_blank" href='/terms-and-conditions-and-privacy-policy?tab=privacy-policy' className='text-[#1860CC] underline underline-offset-2'> Privacy Policy</Link>
                     </div>
                     
                     {
