@@ -15,7 +15,9 @@ const request = (...data) => {
     .then((response) => {
         if (response.status == 401 && response.statusText == "Unauthorized") {
             setCookie('token', '')
-            location.href = '/signin'
+            if (location.pathname != '/signin') {
+                location.href = '/signin'
+            }
         }
         return response;
     })
