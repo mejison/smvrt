@@ -7,9 +7,16 @@ import * as api from '@/api'
 import ServerError from '@/popups/server-error';
 import ServerSuccess from '@/popups/server-success';
 import MembersList from "@/components/members-list";
+import Button from "@/components/button";
+import MemberAdd from "@/components/member-add";
+import { useNewProject } from '@/context/new-project'
 
-
+import { useRouter } from "next/navigation";
 export default function StepTwo() {
+    const { push } = useRouter();
+
+    const {project, setProject, handleNext} = useNewProject();
+
     const [popups, setPopUps] = useState({
         create_new_team: false,
         server_error: {
@@ -53,6 +60,10 @@ export default function StepTwo() {
     const [activeTeam, setActiveTeam] = useState(teams[0])
     const onChangeTeam = (team) => {
         setActiveTeam(team)
+        setProject({
+            ...project,
+            team
+        })
     }
 
     const handleCreateNewTeam = () => {
@@ -104,7 +115,11 @@ export default function StepTwo() {
                 if( ! Object.keys(targetTeam).length) {
                     targetTeam = teams[0]
                 }
-                setActiveTeam(targetTeam)
+                
+                if (project.team) {
+                    targetTeam = teams.find(team => team.id == project.team.id)
+                    setActiveTeam(targetTeam)
+                }
                 setTeams([
                     {
                         label: 'Not selected',
@@ -121,89 +136,84 @@ export default function StepTwo() {
         })
     }
 
+    const handleExternalCollaborators = (members) => {
+        setProject({
+            ...project,
+            external_collaborators: members
+        })
+    }
+
+    const handleUpdateMembers = (members) => {
+        setProject({
+            ...project,
+            members: members
+        })
+    }
+
     return (<div>
-        <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Team & Collaborators</h3>
-        <Select 
-            label="Select the team" 
-            options={teams} 
-            value={activeTeam}
-            onSelect={onChangeTeam}
-        >
-            <div className="px-[24px] flex py-[15px] !pl-[10px] items-center cursor-pointer text-[#1860CC] font-bold font-Eina03" onClick={handleCreateNewTeam}>
-                <svg className="mr-[8px]" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clipPath="url(#clip0_49_19660)">
-                            <path d="M8.99972 17.3569C13.6152 17.3569 17.3569 13.6152 17.3569 8.99972C17.3569 4.3842 13.6152 0.642578 8.99972 0.642578C4.3842 0.642578 0.642578 4.3842 0.642578 8.99972C0.642578 13.6152 4.3842 17.3569 8.99972 17.3569Z" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M9 5.14258V12.8569" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M5.14258 9H12.8569" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_49_19660">
-                            <rect width="18" height="18" fill="white"/>
-                        </clipPath>
-                        </defs>
-                </svg>
-                Create new team
-            </div>
-        </Select>
-        <MembersList 
-            team={activeTeam}
-            members={activeTeam.members}
-            roles={roles}
-            getTeams={getTeams}
-        />
-        <h3 className="font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px] flex items-center">Add team members
-            <a href="#" className="ml-auto">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <g clip-path="url(#clip0_49_9784)">
-                        <path d="M12 6.85718V17.1429" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M6.85742 12H17.1431" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M18.0003 0.857178H6.00028C3.15996 0.857178 0.857422 3.15971 0.857422 6.00003V18C0.857422 20.8404 3.15996 23.1429 6.00028 23.1429H18.0003C20.8406 23.1429 23.1431 20.8404 23.1431 18V6.00003C23.1431 3.15971 20.8406 0.857178 18.0003 0.857178Z" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </g>
-                    <defs>
-                    <clipPath id="clip0_49_9784">
-                    <rect width="24" height="24" fill="white"/>
-                    </clipPath>
-                    </defs>
-                </svg>
-            </a>
-        </h3>
-        <hr />
-        <h3 className="font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px]  flex items-center">Add external collaborators
-            <a href="#" className="ml-auto">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_49_9784)">
-                            <path d="M12 6.85718V17.1429" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M6.85742 12H17.1431" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M18.0003 0.857178H6.00028C3.15996 0.857178 0.857422 3.15971 0.857422 6.00003V18C0.857422 20.8404 3.15996 23.1429 6.00028 23.1429H18.0003C20.8406 23.1429 23.1431 20.8404 23.1431 18V6.00003C23.1431 3.15971 20.8406 0.857178 18.0003 0.857178Z" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        </g>
-                        <defs>
-                        <clipPath id="clip0_49_9784">
-                        <rect width="24" height="24" fill="white"/>
-                        </clipPath>
-                        </defs>
-                    </svg>
-                </a>
-        </h3>
-        <hr />
-        <CreateNewTeam 
-                    open={popups.create_new_team}
-                    onSave={onCreateTeam}
+                <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Team & Collaborators</h3>
+                <Select 
+                    label="Select the team" 
+                    options={teams} 
+                    value={activeTeam}
+                    onSelect={onChangeTeam}
+                >
+                    <div className="px-[24px] flex py-[15px] !pl-[10px] items-center cursor-pointer text-[#1860CC] font-bold font-Eina03" onClick={handleCreateNewTeam}>
+                        <svg className="mr-[8px]" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clipPath="url(#clip0_49_19660)">
+                                    <path d="M8.99972 17.3569C13.6152 17.3569 17.3569 13.6152 17.3569 8.99972C17.3569 4.3842 13.6152 0.642578 8.99972 0.642578C4.3842 0.642578 0.642578 4.3842 0.642578 8.99972C0.642578 13.6152 4.3842 17.3569 8.99972 17.3569Z" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M9 5.14258V12.8569" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M5.14258 9H12.8569" stroke="#74A6F1" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
+                                </g>
+                                <defs>
+                                <clipPath id="clip0_49_19660">
+                                    <rect width="18" height="18" fill="white"/>
+                                </clipPath>
+                                </defs>
+                        </svg>
+                        Create new team
+                    </div>
+                </Select>
+                <MembersList 
+                    team={activeTeam}
+                    members={activeTeam.members}
                     roles={roles}
-                    onClose={() => setPopUps({...popups, create_new_team: false})}
+                    getTeams={getTeams}
+                />
+                <div className=" mb-[24px]">
+                    <MemberAdd label="Add team members" 
+                        value={project.members} 
+                        roles={roles} 
+                        onUpdate={handleUpdateMembers}
+                    />
+                </div>
+                <div className=" mb-[24px]">
+                    <MemberAdd label="Add external collaborators" 
+                        value={project.external_collaborators} 
+                        roles={roles}
+                        onUpdate={handleExternalCollaborators} 
+                    />
+                </div>
+                <Button  label="Skip and later" onClick={() => handleNext()} className="bg-[#1860CC] !text-white font-bold !w-full text-[14px] px-[20px]" />
+                <CreateNewTeam 
+                            open={popups.create_new_team}
+                            onSave={onCreateTeam}
+                            roles={roles}
+                            onClose={() => setPopUps({...popups, create_new_team: false})}
+                        />
+
+                <ServerError 
+                    open={popups.server_error.visible} 
+                    title="Error"
+                    message={popups.server_error.message}
+                    onClose={() => {setPopUps({...popups, server_error: { visible: false }})}}
                 />
 
-        <ServerError 
-            open={popups.server_error.visible} 
-            title="Error"
-            message={popups.server_error.message}
-            onClose={() => {setPopUps({...popups, server_error: { visible: false }})}}
-        />
-
-        <ServerSuccess
-            open={popups.server_success.visible} 
-            title="Success"
-            message={popups.server_success.message}
-            onClose={() => {setPopUps({...popups, server_success: { visible: false }})}}  
-        />
-    </div>);
+                <ServerSuccess
+                    open={popups.server_success.visible} 
+                    title="Success"
+                    message={popups.server_success.message}
+                    onClose={() => {setPopUps({...popups, server_success: { visible: false }})}}  
+                />
+            </div>);
 }

@@ -6,25 +6,41 @@ import UploadArea from '@/components/upload-area.js';
 import { useState } from 'react';
 
 export default function VerifyEmailAddress(props) {
+    const { onUpload }  = props;
     const [types, setTypes] = useState([
         {
             label: 'NDA',
-            slug: 'nda'
-        }
+            value: 'nda'
+        },
+        {
+            label: 'NDA2',
+            value: 'nda2'
+        },
+        {
+            label: 'NDA3',
+            value: 'nda3'
+        },
     ]);
 
     const [categories, setCategories] = useState([
         {
             label: 'Bussiness',
-            slug: 'bussiness'
+            value: 'bussiness'
+        },
+        {
+            label: 'Bussiness2',
+            value: 'bussiness2'
+        },
+        {
+            label: 'Bussiness3',
+            value: 'bussiness3'
         }
     ])
 
-    const [type, setType] = useState(types[0])
-    const [category, setCategory] = useState(categories[0])
-
     const [form, setForm] = useState({
-        name: '',
+        others: '',
+        type: types[0],
+        category: categories[0],
         file: null
     })
 
@@ -35,12 +51,18 @@ export default function VerifyEmailAddress(props) {
         })
     }
 
-    const handleChangeOthers = () => {
-
+    const handleChangeCategory = (option) => {
+        setForm({
+            ...form,
+            category: option
+        })
     }
 
-    const handleChangeTypes = () => {
-
+    const handleChangeTypes = (option) => {
+        setForm({
+            ...form,
+            type: option
+        })
     }
 
     return (<WrapperModal open={props.open} {...props}>
@@ -49,13 +71,13 @@ export default function VerifyEmailAddress(props) {
                     <div className='grid gap-[16px] grid-cols-[1fr_1fr]'>
                         <Select 
                             options={types}
-                            value={type}
-                            onChange={handleChangeTypes}
+                            value={form.type}
+                            onSelect={handleChangeTypes}
                         />
                         <Input 
                             placeholder="Others"
-                            value={form.name}
-                            onChange={handleChangeOthers}
+                            value={form.others}
+                            onInput={(event) => setForm({...form, others: event.target.value})}
                         />
                     </div>
                 </div>
@@ -70,12 +92,13 @@ export default function VerifyEmailAddress(props) {
                     <Select 
                         label="Category"
                         options={categories}
-                        value={category}
+                        value={form.category}
+                        onSelect={handleChangeCategory}
                     />
                 </div>
                 <div className='mb-[15px]'>
                     <UploadArea onUpload={handleUpload} />
                 </div>
-                <Button label="Upload" className="bg-[#1860CC] text-[14px] text-white" />
+                <Button label="Upload" onClick={() => onUpload(form)} disabled={!(form.file && form.type && form.category)} className="bg-[#1860CC] text-[14px] text-white" />
             </WrapperModal>);
 }

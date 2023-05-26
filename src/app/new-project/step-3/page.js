@@ -3,19 +3,45 @@ import Button from '@/components/button';
 import Input from '@/components/input';
 import UploadDocument from '@/popups/upload-document'
 import { useState } from 'react';
+import { useNewProject } from '@/context/new-project'
 
 export default function StepThree() {
-    const [file, setFile] = useState(null);
+    const {project, setProject} = useNewProject();
 
+    const [popups, setPopups] = useState({
+        upload_document: false,
+    })
 
     const handleEdit = () => {
-        console.log('handleEdit')
+        setPopups({
+            ...popups,
+            upload_document: true
+        })
     }
 
     const handleDelete = () => {
-        console.log('handleDelete')
+        setProject({
+            ...project,
+            file: null,
+            type: '',
+            category: ''
+        })
     }
 
+    const handleUpload = (upload) => {
+        console.log(upload)
+        setProject({
+            ...project,
+            file: upload.file,
+            type: upload.type.value || upload.others,
+            category: upload.category.value,
+        })
+        setPopups({...popups, upload_document: false})
+    }
+
+    const handleEditDocument = () => {
+        console.log('handleEditDocument')
+    }
     
     return (<div>
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Analyze document</h3>
@@ -23,9 +49,11 @@ export default function StepThree() {
                 <Input 
                     placeholder="File name"
                     className="mb-[24px]"
+                    value={project.filename}
+                    onInput={(event) => setProject({...project, filename: event.target.value})}
                 />
                 <div className='grid gap-[18px] grid-cols-[1fr_1fr] mb-[24px]'>
-                    <div className='flex flex-col items-center justify-center font-Eina03 text-[16px] border-dashed border border-[#E5E5E5] rounded-[6px] font-bold bg-[#F6FAFF] py-[20px] text-center'>
+                    <div onClick={() => setPopups({...popups, upload_document: true})} className='flex flex-col items-center justify-center font-Eina03 text-[16px] border-dashed border border-[#E5E5E5] rounded-[6px] font-bold bg-[#F6FAFF] py-[20px] text-center'>
                         <svg className="mb-[18px]" width="21" height="26" viewBox="0 0 21 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4.27795 24.2001H16.7224C18.097 24.2001 19.2113 23.0857 19.2113 21.7112V9.78218C19.2113 9.45213 19.0802 9.13561 18.8468 8.90223L12.1091 2.16454C11.8757 1.93116 11.5592 1.80005 11.2292 1.80005H4.27795C2.90338 1.80005 1.78906 2.91436 1.78906 4.28894V21.7112C1.78906 23.0857 2.90338 24.2001 4.27795 24.2001Z" fill="#F7FAFF"/>
                             <path d="M6.76684 14.2445H14.2335M10.5002 10.5112L10.5002 17.9778M16.7224 24.2H4.27795C2.90338 24.2 1.78906 23.0857 1.78906 21.7112V4.28894C1.78906 2.91436 2.90338 1.80005 4.27795 1.80005H11.2292C11.5592 1.80005 11.8757 1.93116 12.1091 2.16454L18.8468 8.90223C19.0802 9.13561 19.2113 9.45213 19.2113 9.78218V21.7112C19.2113 23.0857 18.097 24.2 16.7224 24.2Z" stroke="#4ECFE0" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
@@ -45,8 +73,8 @@ export default function StepThree() {
                     </div>
                 </div>
                 {
-                    file ? (
-                        <div className="grid grid-cols-[48px_1fr] gap-[12px] p-2 border rounded-lg mt-[24px]">
+                    project.file ? (
+                        <div className="grid grid-cols-[48px_1fr] gap-[12px] p-2 border rounded-lg mt-[24px]  mb-[24px]">
                             <div className="bg-[#E9F0FB] rounded-[6px] text-center flex  justify-center items-center max-h-[48px]">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M17.8574 17.8572C17.8574 18.2361 17.7068 18.5995 17.4389 18.8674C17.1711 19.1352 16.8076 19.2858 16.4288 19.2858H3.57164C3.19275 19.2858 2.82939 19.1352 2.56148 18.8674C2.29358 18.5995 2.14307 18.2361 2.14307 17.8572V2.14293C2.14307 1.76404 2.29358 1.40068 2.56148 1.13277C2.82939 0.864865 3.19275 0.714355 3.57164 0.714355H10.7145L17.8574 7.85721V17.8572Z" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
@@ -55,8 +83,8 @@ export default function StepThree() {
                             </div>
                             <div className="flex">
                                 <div>
-                                    <h3 className="font-bold text-[14px] text-[#232F3E]">{file.name}</h3>
-                                    <p className="text-[#667085] text-[12px]">{Math.round((file.size / 1024) * 100) / 100} KB</p>
+                                    <h3 className="font-bold text-[14px] text-[#232F3E]">{project.file.name}</h3>
+                                    <p className="text-[#667085] text-[12px]">{Math.round((project.file.size / 1024) * 100) / 100} KB</p>
                                 </div>
                                 <div className="ml-auto flex items-center">
                                     <a href="#" onClick={handleEdit}>
@@ -82,9 +110,14 @@ export default function StepThree() {
                         </div>
                     ) :<></>
                 }
-                <Button className="bg-[#B8C2CC] text-white w-full text-[14px]" label="Analyze document" />
+                <Button disabled={!project.file} onClick={handleEditDocument} className={`${!project.file ? 'bg-[#B8C2CC]' : 'bg-[#1860CC]'} text-white w-full text-[14px]`} label="Edit document" />
             
-                <UploadDocument title="Upload document" open={false} />
+                <UploadDocument 
+                    title="Upload document" 
+                    open={popups.upload_document}
+                    onClose={ () => setPopups({...popups, upload_document: false}) }
+                    onUpload={handleUpload}
+                />
             </div>
     );
 }

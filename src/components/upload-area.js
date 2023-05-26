@@ -11,9 +11,16 @@ export default function UploadArea({ onUpload }) {
         setProgress(100)
         setFile(file)
         setTimeout(() => {
-            setUploading(false)
-            onUpload(file);
+            // setUploading(false)
+            onUpload(file)
         }, 1000)
+    }
+
+    const handleReset = () => {
+        setProgress(0)
+        setUploading(false)
+        setFile(null)
+        onUpload(null)
     }
 
     return (
@@ -39,14 +46,14 @@ export default function UploadArea({ onUpload }) {
                 {
                         uploading ? (
                             <>
-                                <h3 className="text-[#171717] text-[14px] font-bold">Uploading File</h3>
+                                <h3 className="text-[#171717] text-[14px] font-bold">{progress == 100 ? 'Uploaded' : 'Uploading'} File</h3>
                                 <p className="text-[#737373] text-[12px]">{Math.round((file.size / 1024) * 100) / 100} KB</p>
                                 <div className="flex items-center">
                                     <span className="mr-[16px] text-[#A3A3A3] text-[16px] font-bold font-Eina03">{progress}%</span>
                                     <div className="border-b-[6px] border-b-[#CCFFFA] w-[200px] relative z-[1]">
                                         <div style={{width: `${progress}%`}} className="bg-[#4ECFE0] h-[6px] absolute left-0 top-0 z-[2]"></div>
                                     </div>
-                                    <a href="#" className="ml-[16px]">
+                                    <a href="#" className="ml-[16px]" onClick={(e) => {e.preventDefault(); handleReset(); }}>
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.1329 13.8668L11.9996 12.0001M11.9996 12.0001L13.8663 10.1334M11.9996 12.0001L10.1329 10.1334M11.9996 12.0001L13.8663 13.8668M20.3996 12.0001C20.3996 16.6393 16.6388 20.4001 11.9996 20.4001C7.36042 20.4001 3.59961 16.6393 3.59961 12.0001C3.59961 7.36091 7.36042 3.6001 11.9996 3.6001C16.6388 3.6001 20.3996 7.36091 20.3996 12.0001Z" stroke="black" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
