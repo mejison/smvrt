@@ -13,7 +13,6 @@ const headers = {
 const request = (...data) => {
    return fetch(...data)
     .then((response) => {
-        console.log(response)
         if (response.status == 401 && response.statusText == "Unauthorized") {
             setCookie('token', '')
             location.href = '/signin'

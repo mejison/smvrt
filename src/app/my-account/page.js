@@ -16,6 +16,7 @@ import ServerSuccess from '@/popups/server-success';
 import { useUser } from '@/context/user';
 
 import { useRouter } from 'next/navigation'
+import Prompt from "@/popups/prompt";
 export default function MyAccount() {
     const { user, setUser } = useUser();
     const { push } = useRouter();
@@ -28,6 +29,27 @@ export default function MyAccount() {
             phone: user.phone,
             email: user.email,
         })
+
+        const url = new URLSearchParams(location.search);
+        const action = url.get('action');
+        
+        if (['email-changed'].includes(action)) {
+            api.me()
+                .then(data => data.json())
+                .then(data => {
+                    setUser({...data.user})
+                    localStorage.setItem('user', JSON.stringify(data.user))
+                })
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: 'Email has been successfully changed!'
+                }
+            })
+            window.history.pushState({}, document.title, location.pathname);
+        }
     }, [user])
     
     const tabs = [
@@ -51,7 +73,8 @@ export default function MyAccount() {
         edit: {
             password: false,
             profile: false,
-        }
+        },
+        confirm: false
     })
 
     const [previewAvatar, setPreviewAvatar] = useState("")
@@ -87,6 +110,10 @@ export default function MyAccount() {
             message: '',
         },
         server_success: {
+            visible: false,
+            message: '',
+        },
+        prompt: {
             visible: false,
             message: '',
         },
@@ -211,7 +238,7 @@ export default function MyAccount() {
             }
     }
 
-    const updateProfile = () => {
+    const updateProfile = (confirm = false) => {
         let messages = {}
         for(let field in rulesProfile) {
             let message = validation(formProfile[field], rulesProfile[field]);
@@ -221,10 +248,23 @@ export default function MyAccount() {
         setProfileErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
+            if ((user.email != formProfile.email) && ! confirm) {
+                setPopup({
+                    ...popup,
+                    prompt: {
+                        ...popup.prompt,
+                        visible: true,
+                        message: 'Are you sure you want to change email?'
+                    }
+                })
+                return;
+            }
+
             const fd = new FormData();
             for(let field in formProfile) {
                 fd.append(field, formProfile[field])
             }
+            fd.append('redirect', location.protocol + '//' + location.host + '/my-account?action=email-changed')
             api.update_profile(fd)
                 .then(data => data.json())
                 .then(data => {
@@ -243,6 +283,10 @@ export default function MyAccount() {
 
                     setPopup({
                         ...popup,
+                        prompt: {
+                            visible: false,
+                            message: '',
+                        },
                         server_success: {
                             visible: true,
                             message: data.message
@@ -273,6 +317,18 @@ export default function MyAccount() {
         input.click();
     }
 
+    const handleConfirmChangeEmail = () => {
+        setPopup({
+            ...popup,
+            prompt: {
+                ...popup.prompt,
+                visible: false
+            }
+        })
+
+        updateProfile(true);
+    }
+
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
         <Tabs tabs={tabs} active={active} change={changeTab} />
         <div className="pt-[30px] grid grid-cols-[1fr_1fr_20%] gap-[20px]">
@@ -295,7 +351,7 @@ export default function MyAccount() {
                     <div className="relative flex flex-col text-[#222]">
                         <h3 className="font-bold text-[28px] whitespace-nowrap text-ellipsis overflow-hidden max-w-[240px]">{user.fname && user.lname ? user.fname + ' ' + user.lname : user.email}</h3>
                         <span className="text-[12px] underline cursor-pointer" onClick={handleEditImage}>Edit display images</span>
-                        <a href="#" onClick={handleEditProfile} className="absolute top-0 right-0">
+                        <a href="#" onClick={(e) => {e.preventDefault();handleEditProfile()}} className="absolute top-0 right-0">
                             <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                         </a>
                     </div>
@@ -350,7 +406,7 @@ export default function MyAccount() {
                             <Button  
                                 label="Update"
                                 className="bg-[#1860CC] !py-2 px-4 ml-[12px] font-Eina03 font-bold"
-                                onClick={updateProfile}
+                                onClick={() => {updateProfile(false)}}
                             ></Button>
                         </div>
                     ) : <></>
@@ -358,7 +414,7 @@ export default function MyAccount() {
             </Card>
             <Card className="relative">
                 <h4 className="font-Eina03 font-bold mb-[20px]">Change password</h4>
-                <a href="#" onClick={handleEditPassword} className="absolute top-[24px] right-[24px]">
+                <a href="#" onClick={(e) => {e.preventDefault(); handleEditPassword();}} className="absolute top-[24px] right-[24px]">
                     <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                 </a>
                 <div className="mb-[20px]">
@@ -411,6 +467,14 @@ export default function MyAccount() {
             title="Success"
             message={popup.server_success.message}
             onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+        />
+
+        <Prompt 
+            open={popup.prompt.visible} 
+            title="Are you sure?"
+            message={popup.prompt.message}
+            onClose={() => {setPopup({...popup, prompt: { visible: false }})}}  
+            onConfirm={() => {handleConfirmChangeEmail()}}
         />
     </div>);
 }
