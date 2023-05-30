@@ -127,7 +127,7 @@ export default function MyAccount() {
     const rulesProfile = {
         fname: [],
         lname: [],
-        phone: [],
+        phone: ['phone'],
         email: ['email', 'required'],
     }
 
