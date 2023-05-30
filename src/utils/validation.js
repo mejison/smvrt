@@ -67,13 +67,13 @@ export function validation(value, rules) {
             }
 
             if (rule.includes('phone')) {
-                const phone_regexp = /\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/;
+                const phone_regexp = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
                 const check = phone_regexp.test(value);
                 
                 if ( ! check) {
                     messages = [
                         ...messages,
-                        "Please enter a valid phone address."
+                        "Please enter a valid phone number."
                     ]
                 }
             }
