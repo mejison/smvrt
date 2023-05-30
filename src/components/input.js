@@ -7,14 +7,16 @@ import CloseEyeSVG from '@/assets/eye-close.svg';
 import Image from 'next/image';
 
 export default function Input(props) {
-    let { label, zIndex } = props
+    let { label, zIndex, readonly } = props
     const errors = props.errors || []
 
     const [showPassword, setShowPassword] = useState(false);
     const [payload, setPayload] = useState(false);
 
     const handleClick = () => {
-        setShowPassword( ! showPassword)
+        if ( ! readonly) {
+            setShowPassword( ! showPassword)
+        }
     }
 
     const onChange = (event) => {

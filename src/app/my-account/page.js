@@ -80,6 +80,7 @@ export default function MyAccount() {
     const [previewAvatar, setPreviewAvatar] = useState("")
 
     const [errorsPassword, setPasswordErrors] = useState({
+        'oldpassword': [],
         'password': [],
         'confirm_password': [],
     });
@@ -92,8 +93,14 @@ export default function MyAccount() {
     });
     
     const [formPassword, setFormPassword] = useState({
+        oldpassword: '',
         password: '',
         confirm_password: '',
+    })
+
+    const [readonly, setReadOnly] = useState({
+        profile: true,
+        password: true,
     })
 
     const [formProfile, setFormProfile] = useState({
@@ -120,6 +127,7 @@ export default function MyAccount() {
     })
 
     const rulesPassword = {
+        oldpassword: ['required'],
         password: ['password','required'],
         confirm_password: ['password','required'],
     }
@@ -186,6 +194,11 @@ export default function MyAccount() {
                 password: ! state.edit.password
             }
         })
+
+        setReadOnly({
+            ...readonly,
+            password: state.edit.password
+        })
     }
 
     const handleEditProfile = () => {
@@ -195,6 +208,11 @@ export default function MyAccount() {
                 ...state.edit,
                 profile: ! state.edit.profile
             }
+        })
+
+        setReadOnly({
+            ...readonly,
+            profile: state.edit.profile
         })
     }
 
@@ -208,14 +226,14 @@ export default function MyAccount() {
         setPasswordErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
-            api.reset({
+            api.reset_password({
                 ...formPassword,
                 email: user.email
             })
                 .then(data => data.json())
                 .then(data => {
                     const errors = data.errors ? Object.values(data.errors) : []
-                    if (errors.length || data.exception) {
+                    if (errors.length || data.exception || data.status == 'error') {
                         const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
                         setPopup({
                             ...popup,
@@ -232,6 +250,25 @@ export default function MyAccount() {
                         server_success: {
                             visible: true,
                             message: data.message
+                        }
+                    })
+
+                    setFormPassword({
+                        oldpassword: '',
+                        password: '',
+                        confirm_password: '',
+                    })
+
+                    setReadOnly({
+                        ...readonly,
+                        password: true
+                    })
+
+                    setState({
+                        ...state,
+                        edit: {
+                            ...state.edit,
+                            password: false
                         }
                     })
                 })
@@ -273,6 +310,10 @@ export default function MyAccount() {
                         const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
                         setPopup({
                             ...popup,
+                            prompt: {
+                                visible: false,
+                                message: '',
+                            },
                             server_error: {
                                 visible: true,
                                 message
@@ -281,20 +322,37 @@ export default function MyAccount() {
                         return ;
                     }
 
-                    setPopup({
-                        ...popup,
-                        prompt: {
-                            visible: false,
-                            message: '',
-                        },
-                        server_success: {
-                            visible: true,
-                            message: data.message
-                        }
-                    })
+                    //if (user.email == formProfile.email) {
+                        setPopup({
+                            ...popup,
+                            prompt: {
+                                visible: false,
+                                message: '',
+                            },
+                            server_success: {
+                                visible: true,
+                                message: data.message
+                            }
+                        })
+
+                        setUser(data.data)
+                        localStorage.setItem('user', JSON.stringify(data.data))
+
+                        setReadOnly({
+                            ...readonly,
+                            profile: true,
+                        })
+
+                        setState({
+                            ...state,
+                            edit: {
+                                ...state.edit,
+                                profile: false
+                            }
+                        })
+                    //}
                     
-                    setUser(data.data)
-                    localStorage.setItem('user', JSON.stringify(data.data))
+                    
                 })
         }
     }
@@ -363,6 +421,8 @@ export default function MyAccount() {
                         placeholder="First name"
                         value={formProfile.fname || ''}
                         errors={errorsProfile.fname}
+                        readonly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('fname', e.target.value, rulesProfile.fname)}
                     />
                 </div>
@@ -373,6 +433,8 @@ export default function MyAccount() {
                         placeholder="Last name"
                         value={formProfile.lname || ''}
                         errors={errorsProfile.lname}
+                        readonly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('lname', e.target.value, rulesProfile.lname)}
                     />
                 </div>
@@ -383,6 +445,8 @@ export default function MyAccount() {
                         placeholder="Phone Number"
                         value={formProfile.phone || ''}
                         errors={errorsProfile.phone}
+                        readonly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('phone', e.target.value, rulesProfile.phone)}
                     />
                 </div>
@@ -392,6 +456,8 @@ export default function MyAccount() {
                     placeholder="Email Address" 
                     value={formProfile.email || ''}
                     errors={errorsProfile.email}
+                    readonly={readonly.profile}
+                    disabled={readonly.profile}
                     onInput={(e) => onChangeProfile('email', e.target.value, rulesProfile.email)}
                 />
                 {
@@ -419,9 +485,23 @@ export default function MyAccount() {
                 </a>
                 <div className="mb-[20px]">
                     <Input 
+                        label="Old Password"  
+                        type="password" 
+                        placeholder="******" 
+                        readonly={readonly.password}
+                        disabled={readonly.password}
+                        value={formPassword.oldpassword}
+                        errors={errorsPassword.oldpassword}
+                        onInput={(e) => onChangePassword('oldpassword', e.target.value, rulesPassword.oldpassword)}
+                        />
+                </div>
+                <div className="mb-[20px]">
+                    <Input 
                         label="Password"  
                         type="password" 
                         placeholder="******" 
+                        readonly={readonly.password}
+                        disabled={readonly.password}
                         value={formPassword.password}
                         errors={errorsPassword.password}
                         onInput={(e) => onChangePassword('password', e.target.value, rulesPassword.password)}
@@ -431,6 +511,8 @@ export default function MyAccount() {
                     label="Confirm password"  
                     type="password" 
                     placeholder="******" 
+                    readonly={readonly.password}
+                        disabled={readonly.password}
                     value={formPassword.confirm_password}
                     errors={errorsPassword.confirm_password}
                     onInput={(e) => onChangePassword('confirm_password', e.target.value, [...rulesPassword.confirm_password, `confirm:${formPassword.password}`])}
