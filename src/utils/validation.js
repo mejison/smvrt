@@ -67,7 +67,7 @@ export function validation(value, rules) {
             }
 
             if (rule.includes('phone')) {
-                const phone_regexp = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+                const phone_regexp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
                 const check = phone_regexp.test(value);
                 
                 if ( ! check) {

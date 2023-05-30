@@ -83,6 +83,19 @@ export function reset(data) {
     })
 }
 
+export function reset_password(data) {
+    return request(API_ENDPOINT + "/api/profile/password-reset", {
+        method: "POST",
+        body: JSON.stringify({
+            ...data,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    })
+}
+
 export function googleauth() {
     return request(API_ENDPOINT + "/api/auth/google/redirect", {
         method: "GET",
