@@ -36,7 +36,7 @@ export default function DashboardLayout({ children }) {
     },
   ])
 
-    useEffect(() => {
+    useEffect(() => {            
         const storedUser = localStorage.getItem('user');
         if ( ! storedUser) {
           api
@@ -44,11 +44,17 @@ export default function DashboardLayout({ children }) {
               .then(data => data.json())
               .then(data => {
                   setUser(data.user ?? {});
+                  connectToPusher(data.user ?? {});
               })
               return;
         }
         setUser(JSON.parse(storedUser));
+        connectToPusher(JSON.parse(storedUser));
     }, [])
+
+    const connectToPusher = (user) => {
+      api.initPusher(user);
+    }
 
     const handleLogout = () => {
         localStorage.setItem('user', '')

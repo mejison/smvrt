@@ -23,6 +23,49 @@ const request = (...data) => {
     })
 }
 
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+ 
+
+export function initPusher(user) {
+    const echoInstance = new Echo({
+        broadcaster: 'pusher',
+        key: '35a2bae16f9fe596d52c',
+        cluster: 'mt1',
+        forceTLS: true,
+        authorizer: (channel, options) => {
+            return {
+                authorize: (socketId, callback) => {
+                    fetch(API_ENDPOINT + "/broadcasting/auth", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            socket_id: socketId,
+                            channel_name: channel.name
+                        }),
+                        headers: {
+                            ...headers,
+                            "authorization": `Bearer ${getToken()}`
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(response => {
+                        callback(null, response);
+                    })
+                    .catch(error => {
+                        console.eror(error)
+                        callback(error);
+                    });
+                }
+            };
+        },
+      });
+
+    echoInstance.private(`App.Models.User.${user.id}`)
+    .notification((notification) => {
+        console.log(notification);
+    });
+}
+
 export function signup(data) {
         return request(API_ENDPOINT + "/api/auth/register", {
             method: "POST",
