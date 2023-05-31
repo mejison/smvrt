@@ -4,54 +4,70 @@ import Button from "./button";
 import Image from "next/image";
 import belsvg from "@/assets/bell.svg"
 import moment from 'moment'
+import * as api from '@/api';
 
 export default function Notifications(props) {
-    const {  } = props
+    const { user }  = props
 
     const [show, setShow] = useState(false);
 
     const handleToggleShow = () => {
         setShow( ! show)   
+        if ( ! show) {
+            getNotifications();
+        }
     }
 
-    const [notifications, setNotifications] = useState([
-        {
-
-            team: {
-                id: 23,
-                name: 'Zephyr & Virgin Galactic',
-            },
-            message: 'asked to change his role to Editor',
-            user: {
-                fname: 'Jason',
-                lname: 'Hopp',
-            },
-            created_at: '2023-05-31 12:25',
-            readed: true,
-        },
-        {
-
-            team: {
-                id: 23,
-                name: 'Zephyr & Virgin Galactic',
-            },
-            message: 'asked to change his role to Co-Lead',
-            user: {
-                fname: 'Gilbert',
-                lname: 'Mazkenzi',
-            },
-            created_at: '2023-05-31 12:25',
-            readed: false,
-        },
-    ])
+    const [notifications, setNotifications] = useState([])
 
     const handleAccept = (notify) => {
-        console.log(notify)
+        api.accept_notification(notify)
+            .then((data) => {
+                getNotifications();
+            })
     }
 
     const handleReject = (notify) => {
-        console.log(notify)
+        api.reject_notification(notify)
+            .then((data) => {
+                getNotifications();
+            })
     }
+
+    const getNotifications = () => {
+        api.get_notifications().then(({ data }) => {
+            if (data && data.length) {
+                data = data.map(row => {
+                    return {
+                        id: row.id,
+                        user: row.data.from,
+                        message: row.data.message,
+                        role: row.data.role,
+                        team: row.data.team,
+                        read_at: row.data.read_at,
+                        created_at: row.created_at_humans,
+                        need_to_confirm: row.data.confirm,
+                    }
+                })
+                setNotifications(data);
+            }
+        })
+    }
+
+    useEffect(() => {
+        if (window.echoInstance) {
+            window.echoInstance.private(`App.Models.User.${user.id}`)
+            .notification((notification) => {
+                getNotifications();
+            });
+        }
+
+        getNotifications();
+
+        // setTimeout(() => {
+        //     getNotifications();
+        // }, 120000)
+    }, [user])
 
     return (<div className={`relative`}>
                 <span onClick={handleToggleShow} className="relative inline-block text-right select-none text-blue-700 text-[14px] cursor-pointer">
@@ -78,16 +94,21 @@ export default function Notifications(props) {
                             {
                                 notifications.map((notification, key) => {
                                     return (
-                                        <div className={`relative border-b px-[10px] py-[12px] ${!notification.readed ? 'bg-[#F6FAFF]' : ''}`} key={key}>
+                                        <div className={`relative border-b px-[10px] py-[12px] ${!notification.read_at ? 'bg-[#F6FAFF]' : ''}`} key={key}>
                                             <h3 className="text-[#4BA3F5] text-[14px] underline underline-offset-2">{notification.team.name}</h3>
-                                            <p className="text-[14px] text-[#000] font-Eina03 my-[8px] max-w-[230px]">
-                                                <strong>{notification.user.fname} {notification.user.lname}</strong>  {notification.message }
+                                            <p className="text-[14px] text-[#000] font-Eina03 my-[8px] max-w-[230px]" dangerouslySetInnerHTML={{ __html: notification.message }} >
+                                              
                                             </p>
-                                            <span className="absolute right-[3px] top-[12px] text-[12px] text-[#737373]">{moment.duration().humanize()}</span>
-                                            <div className="grid grid-cols-[110px_110px] gap-[15px] items-center ">
-                                                <Button onClick={() => handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
-                                                <Button onClick={() => handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold" />
-                                            </div>
+                                            <span className="absolute right-[3px] top-[12px] text-[12px] text-[#737373]">{ notification.created_at }</span>
+                                            {
+                                                notification.need_to_confirm ? 
+                                                (
+                                                    <div className="grid grid-cols-[110px_110px] gap-[15px] items-center ">
+                                                        <Button onClick={() => handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
+                                                        <Button onClick={() => handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold" />
+                                                    </div>
+                                                ): <></>
+                                            }
                                         </div>
                                     )
                                 })

@@ -24,7 +24,7 @@ export default function navbar({ user, projects, roles, logout }) {
         </div>
         <div className="flex items-center">
             <div className="grid grid-cols-[70px_1fr] gap-[25px]">
-              <Notifications />
+              <Notifications user={user} />
               <div className="flex items-center leading-4">
                 <div className="mr-[10px] text-Eina03">
                   <h4 className="text-[16px] text-[#141522] m-0 p-0 font-bold">{user.lname && user.fname ? user.fname + ' ' +  user.lname : user.email}</h4>

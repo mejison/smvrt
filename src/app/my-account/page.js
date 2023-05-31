@@ -421,7 +421,7 @@ export default function MyAccount() {
                         placeholder="First name"
                         value={formProfile.fname || ''}
                         errors={errorsProfile.fname}
-                        readonly={readonly.profile}
+                        readOnly={readonly.profile}
                         disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('fname', e.target.value, rulesProfile.fname)}
                     />
@@ -433,7 +433,7 @@ export default function MyAccount() {
                         placeholder="Last name"
                         value={formProfile.lname || ''}
                         errors={errorsProfile.lname}
-                        readonly={readonly.profile}
+                        readOnly={readonly.profile}
                         disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('lname', e.target.value, rulesProfile.lname)}
                     />
@@ -445,7 +445,7 @@ export default function MyAccount() {
                         placeholder="Phone Number"
                         value={formProfile.phone || ''}
                         errors={errorsProfile.phone}
-                        readonly={readonly.profile}
+                        readOnly={readonly.profile}
                         disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('phone', e.target.value, rulesProfile.phone)}
                     />
@@ -456,7 +456,7 @@ export default function MyAccount() {
                     placeholder="Email Address" 
                     value={formProfile.email || ''}
                     errors={errorsProfile.email}
-                    readonly={readonly.profile}
+                    readOnly={readonly.profile}
                     disabled={readonly.profile}
                     onInput={(e) => onChangeProfile('email', e.target.value, rulesProfile.email)}
                 />
@@ -488,7 +488,7 @@ export default function MyAccount() {
                         label="Old Password"  
                         type="password" 
                         placeholder="******" 
-                        readonly={readonly.password}
+                        readOnly={readonly.password}
                         disabled={readonly.password}
                         value={formPassword.oldpassword}
                         errors={errorsPassword.oldpassword}
@@ -500,7 +500,7 @@ export default function MyAccount() {
                         label="Password"  
                         type="password" 
                         placeholder="******" 
-                        readonly={readonly.password}
+                        readOnly={readonly.password}
                         disabled={readonly.password}
                         value={formPassword.password}
                         errors={errorsPassword.password}
@@ -511,7 +511,7 @@ export default function MyAccount() {
                     label="Confirm password"  
                     type="password" 
                     placeholder="******" 
-                    readonly={readonly.password}
+                    readOnly={readonly.password}
                         disabled={readonly.password}
                     value={formPassword.confirm_password}
                     errors={errorsPassword.confirm_password}

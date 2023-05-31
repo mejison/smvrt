@@ -1,3 +1,5 @@
+'use clinet'
+
 import { setCookie } from "@/utils/helpers"
 
 const API_ENDPOINT = 'https://smvrt-api.dev'
@@ -28,7 +30,7 @@ import Pusher from 'pusher-js';
  
 
 export function initPusher(user) {
-    const echoInstance = new Echo({
+    window.echoInstance = new Echo({
         broadcaster: 'pusher',
         key: '35a2bae16f9fe596d52c',
         cluster: 'mt1',
@@ -60,10 +62,6 @@ export function initPusher(user) {
         },
       });
 
-    echoInstance.private(`App.Models.User.${user.id}`)
-    .notification((notification) => {
-        console.log(notification);
-    });
 }
 
 export function signup(data) {
@@ -250,4 +248,34 @@ export function create_team(data) {
             "authorization": `Bearer ${getToken()}`
         },
     })
+}
+
+export function get_notifications() {
+    return request(API_ENDPOINT + "/api/profile/notifications", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function accept_notification(notification) {
+    return request(API_ENDPOINT + "/api/notification/" + notification.id + "/accept", {
+        method: "POST",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function reject_notification(notification) {
+    return request(API_ENDPOINT + "/api/notification/" + notification.id + "/reject", {
+        method: "POST",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
 }
