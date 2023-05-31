@@ -279,3 +279,13 @@ export function reject_notification(notification) {
         },
     }).then(data => data.json())
 }
+
+export function mark_as_readed_notification(notification) {
+    return request(API_ENDPOINT + "/api/notification/" + notification.id + "/read", {
+        method: "POST",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}

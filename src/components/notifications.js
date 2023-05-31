@@ -22,16 +22,23 @@ export default function Notifications(props) {
 
     const handleAccept = (notify) => {
         api.accept_notification(notify)
-            .then((data) => {
+            .then(() => {
                 getNotifications();
             })
     }
 
     const handleReject = (notify) => {
         api.reject_notification(notify)
-            .then((data) => {
+            .then(() => {
                 getNotifications();
             })
+    }
+
+    const handleRead = (notify) => {
+        api.mark_as_readed_notification(notify)
+            .then(() => {
+                getNotifications();
+            })    
     }
 
     const getNotifications = () => {
@@ -44,7 +51,7 @@ export default function Notifications(props) {
                         message: row.data.message,
                         role: row.data.role,
                         team: row.data.team,
-                        read_at: row.data.read_at,
+                        read_at: row.read_at,
                         created_at: row.created_at_humans,
                         need_to_confirm: row.data.confirm,
                     }
@@ -73,7 +80,7 @@ export default function Notifications(props) {
                 <span onClick={handleToggleShow} className="relative inline-block text-right select-none text-blue-700 text-[14px] cursor-pointer">
                     <Image src={belsvg} width="48px" height="48px" alt="notify" />
                     {
-                        notifications.filter(notify => notify.readed).length ? (
+                        notifications.filter(notify => !notify.read_at).length ? (
                             <span className="absolute top-[0px] right-[2px] rounded-full w-2 h-2 bg-[red]"></span>
                         ) : <></>
                     }
@@ -100,15 +107,25 @@ export default function Notifications(props) {
                                               
                                             </p>
                                             <span className="absolute right-[3px] top-[12px] text-[12px] text-[#737373]">{ notification.created_at }</span>
-                                            {
-                                                notification.need_to_confirm ? 
-                                                (
-                                                    <div className="grid grid-cols-[110px_110px] gap-[15px] items-center ">
-                                                        <Button onClick={() => handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
-                                                        <Button onClick={() => handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold" />
-                                                    </div>
-                                                ): <></>
-                                            }
+                                            <div className="grid grid-cols-[110px_110px] gap-[15px] items-center ">
+                                                {
+                                                    notification.need_to_confirm && ! notification.read_at ? 
+                                                    (
+                                                        <>
+                                                            <Button onClick={() => handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
+                                                            <Button onClick={() => handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold" />
+                                                        </>
+                                                    ): <></>
+                                                }
+                                                {
+                                                    ! notification.read_at && ! notification.need_to_confirm ? 
+                                                    (
+                                                        <>
+                                                            <Button onClick={() => handleRead(notification)} label="Mark as read" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
+                                                        </>
+                                                    ): <></>
+                                                }
+                                            </div>
                                         </div>
                                     )
                                 })
