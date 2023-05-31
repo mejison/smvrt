@@ -56,7 +56,11 @@ export default function Notifications(props) {
     return (<div className={`relative`}>
                 <span onClick={handleToggleShow} className="relative inline-block text-right select-none text-blue-700 text-[14px] cursor-pointer">
                     <Image src={belsvg} width="48px" height="48px" alt="notify" />
-                    <span className="absolute top-[0px] right-[2px] rounded-full w-2 h-2 bg-[red]"></span>
+                    {
+                        notifications.filter(notify => notify.readed).length ? (
+                            <span className="absolute top-[0px] right-[2px] rounded-full w-2 h-2 bg-[red]"></span>
+                        ) : <></>
+                    }
                 </span>
                 <div className={`text-left absolute min-w-[380px] max-w-[380px] right-[0] translate-y-[10px]  shadow-2xl rounded-[8px] ${! show ? 'hidden' : 'block'}`}>
                     <Card>
@@ -81,8 +85,8 @@ export default function Notifications(props) {
                                             </p>
                                             <span className="absolute right-[3px] top-[12px] text-[12px] text-[#737373]">{moment.duration().humanize()}</span>
                                             <div className="grid grid-cols-[110px_110px] gap-[15px] items-center ">
-                                                <Button onClick={handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold"></Button>
-                                                <Button onClick={handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold"></Button>
+                                                <Button onClick={() => handleAccept(notification)} label="Accept" className="bg-[#297FFF] text-white text-[14px] font-Eina03 font-bold" />
+                                                <Button onClick={() => handleReject(notification)} label="Reject" className="!text-[#012D55] !border-[#012D55] border text-[14px] font-Eina03 font-bold" />
                                             </div>
                                         </div>
                                     )
