@@ -10,6 +10,31 @@ import UserContext from '@/context/user';
 export default function DashboardLayout({ children }) {
     
   const [user, setUser] = useState({});
+  const [roles] = useState([
+    {
+      label: 'role1',
+      value: 'role1'
+    },
+    {
+      label: 'role2',
+      value: 'role2'
+    },
+  ])
+
+  const [projects] = useState([
+    {
+        label: 'Please select project',
+        value: '',
+    },
+    {
+      label: 'project1',
+      value: 'project1'
+    },
+    {
+      label: 'project2',
+      value: 'project2'
+    },
+  ])
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
@@ -36,11 +61,11 @@ export default function DashboardLayout({ children }) {
 
     return (
       <div>
-        <Navbar user={user}  />
+        <Navbar user={user} roles={roles} projects={projects}  />
         <Sidebar user={user} logout={handleLogout} />
         <div className="bg-[#F5F5F5] min-h-screen">
           <div>
-            <UserContext.Provider value={{ user, setUser }}>
+            <UserContext.Provider value={{ user, setUser, roles }}>
               {
                 children
               }
