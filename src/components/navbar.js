@@ -1,8 +1,11 @@
 import Image from "next/image";
 import largeLogo from "@/assets/large-logo.svg"
 import Notifications from "@/components/notifications";
+import ChangeRole from "@/components/change-role";
+import { useState } from "react";
 
-export default function navbar({ user, logout }) {
+export default function navbar({ user, roles, logout }) {
+   
     return (<nav className="fixed top-0 z-40 w-full bg-[#F5F5F5] border-b border-gray-200 ">
     <div className="px-[20px] py-[20px] lg:px-5 lg:pl-3 lg:ml-64 ml-0">
       <div className="flex items-center justify-between">
@@ -21,11 +24,17 @@ export default function navbar({ user, logout }) {
         </div>
         <div className="flex items-center">
             <div className="grid grid-cols-[70px_1fr] gap-[25px]">
-              <Notifications />
+              <Notifications user={user} />
               <div className="flex items-center leading-4">
                 <div className="mr-[10px] text-Eina03">
                   <h4 className="text-[16px] text-[#141522] m-0 p-0 font-bold">{user.lname && user.fname ? user.fname + ' ' +  user.lname : user.email}</h4>
-                  <p className="text-[12px] text-[#54577A] m-0 p-0 text-right">{user.role ?? 'Lead'}</p>
+                  <div className="ml-auto text-right">
+                    <ChangeRole 
+                        className="text-[12px] text-[#54577A] m-0 p-0"
+                        roles={roles}
+                        user={user}
+                      />
+                  </div>
                 </div>
                 <button type="button" className="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                   <div className="w-8 h-8 rounded-full">

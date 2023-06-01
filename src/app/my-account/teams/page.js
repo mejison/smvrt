@@ -15,9 +15,13 @@ import ServerSuccess from '@/popups/server-success';
 
 import { getAttrFromName } from '@/utils/helpers'
 import Image from 'next/image'
+import IncomingRequestsToChangeRoles from "@/components/incoming-requests-to-change-roles";
+
+import { useUser } from '@/context/user';
 
 export default function Teams () {
     const { push } = useRouter();
+    const { user, setUser } = useUser();
 
     const [popup, setPopup] = useState({
         server_error: {
@@ -274,6 +278,11 @@ export default function Teams () {
                         </div>
                     </Select>
                 </div>
+                
+                <div>
+                 <IncomingRequestsToChangeRoles user={user} />
+                </div>
+
                 <div className="flex flex-col pt-[24px] mb-[36px] ">
                     {
                         activeTeam.members.map((member, index) => {
