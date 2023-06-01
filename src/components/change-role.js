@@ -125,7 +125,7 @@ export default function ChangeRole(props) {
     }
 
     return (<div className={`relative`}>
-        <span onClick={handleToggleShow} className="inline-block mt-1 text-right select-none text-blue-700 border-dashed border-b border-blue-700 text-[14px] cursor-pointer">Role</span>
+        <span onClick={handleToggleShow} className="inline-block mt-1 text-right select-none text-blue-700 border-dashed border-b border-blue-700 text-[14px] cursor-pointer">{ (defaultRole && roles.find(r => r.value === defaultRole).label) || 'Role' }</span>
         <div className={`text-left absolute min-w-[380px] max-w-[380px] right-[0] translate-y-[10px]  shadow-2xl rounded-[8px] ${! show ? 'hidden' : 'block'}`}>
             <Card>
                 <div className="flex items-center mb-[22px]">
@@ -139,9 +139,9 @@ export default function ChangeRole(props) {
                     </a>
                 </div>
                 <div>
-                    <Alert type="error" 
+                    {/* <Alert type="error" 
                         message="Unfortunately, you don’t have permission to make the change."
-                        />
+                        /> */}
                     <div  className="pt-[16px]">
                         <Select 
                             label="Select one of your projects"
