@@ -289,3 +289,26 @@ export function mark_as_readed_notification(notification) {
         },
     }).then(data => data.json())
 }
+
+export function projects() {
+    return request(API_ENDPOINT + "/api/profile/projects", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function request_to_change_role(data) {
+    return request(API_ENDPOINT + "/api/project/" + data.project.value + "/member/" + data.user_id + "/role", {
+        method: "PUT",
+        body: JSON.stringify({
+            role: data.role.value,
+        }),
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}

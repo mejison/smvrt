@@ -4,7 +4,7 @@ import Notifications from "@/components/notifications";
 import ChangeRole from "@/components/change-role";
 import { useState } from "react";
 
-export default function navbar({ user, projects, roles, logout }) {
+export default function navbar({ user, roles, logout }) {
    
     return (<nav className="fixed top-0 z-40 w-full bg-[#F5F5F5] border-b border-gray-200 ">
     <div className="px-[20px] py-[20px] lg:px-5 lg:pl-3 lg:ml-64 ml-0">
@@ -32,7 +32,7 @@ export default function navbar({ user, projects, roles, logout }) {
                     <ChangeRole 
                         className="text-[12px] text-[#54577A] m-0 p-0"
                         roles={roles}
-                        projects={projects} 
+                        user={user}
                       />
                   </div>
                 </div>

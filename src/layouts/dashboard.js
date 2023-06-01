@@ -10,31 +10,8 @@ import UserContext from '@/context/user';
 export default function DashboardLayout({ children }) {
     
   const [user, setUser] = useState({});
-  const [roles] = useState([
-    {
-      label: 'role1',
-      value: 'role1'
-    },
-    {
-      label: 'role2',
-      value: 'role2'
-    },
-  ])
 
-  const [projects] = useState([
-    {
-        label: 'Please select project',
-        value: '',
-    },
-    {
-      label: 'project1',
-      value: 'project1'
-    },
-    {
-      label: 'project2',
-      value: 'project2'
-    },
-  ])
+  const [roles, setRoles] = useState([]);
 
     useEffect(() => {            
         const storedUser = localStorage.getItem('user');
@@ -50,6 +27,17 @@ export default function DashboardLayout({ children }) {
         }
         setUser(JSON.parse(storedUser));
         connectToPusher(JSON.parse(storedUser));
+
+        api.roles()
+          .then(data => data.json())
+          .then((data) => {
+            if (data && data.data) {
+              const roles = [
+                  ...data.data.map(role => ({label : role.name, value: role.id}) )
+              ]
+              setRoles(roles)
+            }
+          })
     }, [])
 
     const connectToPusher = (user) => {
@@ -67,7 +55,7 @@ export default function DashboardLayout({ children }) {
 
     return (
       <div>
-        <Navbar user={user} roles={roles} projects={projects}  />
+        <Navbar user={user} roles={roles}   />
         <Sidebar user={user} logout={handleLogout} />
         <div className="bg-[#F5F5F5] min-h-screen">
           <div>

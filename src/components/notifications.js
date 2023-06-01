@@ -5,9 +5,22 @@ import Image from "next/image";
 import belsvg from "@/assets/bell.svg"
 import moment from 'moment'
 import * as api from '@/api';
+import ServerSuccess from "@/popups/server-success";
+import ServerError from "@/popups/server-error";
 
 export default function Notifications(props) {
     const { user }  = props
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
 
     const [show, setShow] = useState(false);
 
@@ -22,14 +35,54 @@ export default function Notifications(props) {
 
     const handleAccept = (notify) => {
         api.accept_notification(notify)
-            .then(() => {
+            .then((data) => {
+                const errors = data.errors ? Object.values(data.errors) : []
+                if (errors.length || data.exception) {
+                    const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                    setPopup({
+                        ...popup,
+                        server_error: {
+                            visible: true,
+                            message
+                        }
+                    })
+                    return ;
+                }
+
+                setPopup({
+                    ...popup,
+                    server_success: {
+                        visible: true,
+                        message: data.message
+                    }
+                })
                 getNotifications();
             })
     }
 
     const handleReject = (notify) => {
         api.reject_notification(notify)
-            .then(() => {
+            .then((data) => {
+                const errors = data.errors ? Object.values(data.errors) : []
+                if (errors.length || data.exception) {
+                    const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                    setPopup({
+                        ...popup,
+                        server_error: {
+                            visible: true,
+                            message
+                        }
+                    })
+                    return ;
+                }
+
+                setPopup({
+                    ...popup,
+                    server_success: {
+                        visible: true,
+                        message: data.message
+                    }
+                })
                 getNotifications();
             })
     }
@@ -70,10 +123,6 @@ export default function Notifications(props) {
         }
 
         getNotifications();
-
-        // setTimeout(() => {
-        //     getNotifications();
-        // }, 120000)
     }, [user])
 
     return (<div className={`relative`}>
@@ -133,5 +182,18 @@ export default function Notifications(props) {
                         </div>
                     </Card>
                 </div>
+                <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                />
             </div>);
 }

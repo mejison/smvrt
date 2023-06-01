@@ -3,26 +3,64 @@ import Alert from "./alert";
 import Card from "./card";
 import Select from "./select";
 import Button from "./button";
+import { userAgent } from "next/server";
+import * as api from '@/api'
+import ServerSuccess from "@/popups/server-success";
+import ServerError from "@/popups/server-error";
+
 
 export default function ChangeRole(props) {
-    const { roles, projects, onChange } = props
+    const { roles, onChange, user } = props
+    const [projects, setProjects] = useState([])
     const [selected, setSelected] = useState({
         project: '',
         role: null
     })
 
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
+    const getProjects = () => {
+        api.projects()
+        .then((data) => {
+          if (data && data.data) {
+            const projects = [
+                {
+                  value: '',
+                  label: 'Select project',
+                },
+                ...data.data.map(project => ({label : project.name, value: project.id, ...project}) )
+            ]
+            setProjects(projects)
+            setSelected({
+                ...selected,
+                project: projects[0],
+            })
+          }
+        })
+    }
+
     const [show, setShow] = useState(false);
+    const [defaultRole, setDefaultRole] = useState(null);
 
     const handleToggleShow = () => {
         setShow( ! show)   
+        if ( ! show) {
+            getProjects();
+        }
     }
 
     useEffect(() => {
-        setSelected({
-            ...selected,
-            project: projects[0],
-        })
-    }, [projects])
+        getProjects();
+    }, [])
 
     const handleChangeRole = (role) => {
         setSelected({
@@ -32,14 +70,58 @@ export default function ChangeRole(props) {
     }
 
     const handleChangeProject = (project) => {
-        setSelected({
-            ...selected,
-            project: project
-        })
+        const member = project.team.members.find(member => member.email == user.email);
+        if (member) {
+            setDefaultRole(member.pivot.role_id);
+            const role = roles.find(role => role.value === member.pivot.role_id);
+            setSelected({
+                project: project,
+                role,
+            })
+        }
     }
 
     const handleRequestToChange = () => {
-        alert('sd')
+        api.request_to_change_role({user_id: user.id, ...selected})
+            .then((data) => {
+                const errors = data.errors ? Object.values(data.errors) : []
+                if (errors.length || data.exception || data.status == 'error') {
+                    const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                    setPopup({
+                        ...popup,
+                        server_error: {
+                            visible: true,
+                            message
+                        }
+                    })
+                    return ;
+                }
+
+                setPopup({
+                    ...popup,
+                    server_success: {
+                        visible: true,
+                        message: data.message
+                    }
+                })
+
+                setSelected({
+                    role: null,
+                    project: projects[0]
+                })
+                setDefaultRole(null)
+
+            }).catch(() => {
+                setSelected({
+                    role: null,
+                    project: ''
+                })
+                setDefaultRole(null)
+            })
+    }
+
+    const canRequestToChange = () => {
+        return selected.role && selected.project &&  selected.role.value != defaultRole
     }
 
     return (<div className={`relative`}>
@@ -90,10 +172,29 @@ export default function ChangeRole(props) {
                                 ) : <></>
                             }
                         
-                        <Button className="bg-[#297FFF] text-white text-center text-[14px] font-Eina03 mt-[20px]" onClick={handleRequestToChange} label="Request to change"></Button>
+                        <Button 
+                            disabled={!canRequestToChange()} 
+                            className={`${!canRequestToChange() ? 'bg-[#B8C2CC]' : 'bg-[#297FFF]'}  text-white text-center text-[14px] font-Eina03 mt-[20px]`} 
+                            onClick={handleRequestToChange}
+                            label="Request to change"></Button>
                     </div>
                 </div>
             </Card>
+        </div>
+        <div className="text-left">
+            <ServerError 
+                open={popup.server_error.visible} 
+                title="Error"
+                message={popup.server_error.message}
+                onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+            />
+
+            <ServerSuccess
+                open={popup.server_success.visible} 
+                title="Success"
+                message={popup.server_success.message}
+                onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+            />
         </div>
     </div>);
 }
