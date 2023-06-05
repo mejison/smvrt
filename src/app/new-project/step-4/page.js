@@ -1,10 +1,22 @@
-import Button from "@/components/button";
+'use client'
 
-export default function StepFour() {
-    return (<div className="font-Eina03 pt-[30px] flex flex-col">
-        <h3 className="mb-[24px] text-[#222] text-[20px] font-bold">Your document has been analyzed successfully</h3>
-        <p className="text-[14px] ">Reroute to processed document with SMVRT Boxes & Active Projects &gt;  FULL VIEW</p>
+import CKeditor from '@/components/ckeditor'
+import { useState, useEffect } from 'react';
 
-        <Button label="View Document" className="bg-[#1860CC] text-white text-[14px] mt-[200px]" />
+export default function EditDocument() {
+    const [editorLoaded, setEditorLoaded] = useState(false);
+    const [data, setData] = useState("");
+
+    useEffect(() => {
+        setEditorLoaded(true);
+    }, []);
+
+    return (<div className='mt-[35px]'>
+        <CKeditor 
+            onChange={(data) => {
+                setData(data);
+            }}
+            editorLoaded={editorLoaded}
+        />
     </div>);
 }

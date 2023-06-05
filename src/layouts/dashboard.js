@@ -11,7 +11,9 @@ export default function DashboardLayout({ children }) {
     
   const [user, setUser] = useState({});
 
-    useEffect(() => {
+  const [roles, setRoles] = useState([]);
+
+    useEffect(() => {            
         const storedUser = localStorage.getItem('user');
         if ( ! storedUser) {
           api
@@ -19,11 +21,28 @@ export default function DashboardLayout({ children }) {
               .then(data => data.json())
               .then(data => {
                   setUser(data.user ?? {});
+                  connectToPusher(data.user ?? {});
               })
               return;
         }
         setUser(JSON.parse(storedUser));
+        connectToPusher(JSON.parse(storedUser));
+
+        api.roles()
+          .then(data => data.json())
+          .then((data) => {
+            if (data && data.data) {
+              const roles = [
+                  ...data.data.map(role => ({label : role.name, value: role.id}) )
+              ]
+              setRoles(roles)
+            }
+          })
     }, [])
+
+    const connectToPusher = (user) => {
+      api.initPusher(user);
+    }
 
     const handleLogout = () => {
         localStorage.setItem('user', '')
@@ -36,11 +55,11 @@ export default function DashboardLayout({ children }) {
 
     return (
       <div>
-        <Navbar user={user}  />
+        <Navbar user={user} roles={roles}   />
         <Sidebar user={user} logout={handleLogout} />
         <div className="bg-[#F5F5F5] min-h-screen">
           <div>
-            <UserContext.Provider value={{ user, setUser }}>
+            <UserContext.Provider value={{ user, setUser, roles }}>
               {
                 children
               }

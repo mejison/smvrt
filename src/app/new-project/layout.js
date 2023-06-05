@@ -28,6 +28,10 @@ export default function NewProjectLayout({ children }) {
         {
             label: 'Edit Document',
             slug: 'step-4'
+        },
+        {
+            label: 'Analyze document',
+            slug: 'step-5'
         }
     ])
 
@@ -64,8 +68,10 @@ export default function NewProjectLayout({ children }) {
     const handleNext = () => {
         const currentIndex = steps.findIndex(item => item.slug == activeStep)
         const targetStep = steps[currentIndex + 1]
-        setActiveStep(targetStep.slug);
-        push("/new-project/step-" + (currentIndex + 2))
+        if (currentIndex != steps.length - 1) { 
+            setActiveStep(targetStep.slug);
+            push("/new-project/step-" + (currentIndex + 2))
+        }
     }
 
     const isCanPrev = () => {

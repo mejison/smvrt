@@ -12,6 +12,20 @@ export function validation(value, rules) {
                 }
             }
 
+            if (['strong-password'].includes(rule)) {
+                const regexp = /^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/;
+                if ( ! regexp.test(value)) {
+                    messages = [
+                        ...messages,
+                        `
+                        - An English uppercase character (A-Z)<br />
+                        - An English lowercase character (a-z)<br />
+                        - A number (0-9) and symbol (such as !, #, or %)
+                        `
+                    ]
+                }
+            }
+
             if(['password'].includes(rule)) {
                 if (value.length < 6) {
                     messages = [
@@ -48,6 +62,18 @@ export function validation(value, rules) {
                     messages = [
                         ...messages,
                         "Please confirm the terms and conditions to proceed."
+                    ]
+                }
+            }
+
+            if (rule.includes('phone')) {
+                const phone_regexp = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+                const check = phone_regexp.test(value);
+                
+                if ( ! check) {
+                    messages = [
+                        ...messages,
+                        "Please enter a valid phone number."
                     ]
                 }
             }

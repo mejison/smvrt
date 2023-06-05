@@ -4,9 +4,16 @@ import LogoSVG from '@/assets/logo.svg';
 import Link from 'next/link'
 import Image from 'next/image';
 
+import { useRouter } from 'next/navigation'
+
 export default function TermsAndConditionsAndPrivacyPolicy() {
     const [tab, setTab] = useState('terms-and-conditions');
+    const { back, push } = useRouter();
 
+    const handleBack = (e) => {
+        e.preventDefault();
+        push('/signup')
+    }
 
     useEffect(() => {
         const url = new URLSearchParams(location.search);
@@ -20,10 +27,11 @@ export default function TermsAndConditionsAndPrivacyPolicy() {
 
     return (<div className="bg-[#F6FAFF] min-h-screen  px-[30px] lg:px-0">
         <div className="container mx-auto pt-[60px]  max-w-[774px] pb-[50px]">
-            <div className='text-center'>
-                <Link href="/">
-                    <Image className='mx-auto mb-[12px]' src={LogoSVG} width={57} height={57} alt="logo" />
-                </Link>
+            <div className='text-left text-[14px] opacity-[0.7]'>
+                <a href="#" onClick={handleBack} className='flex items-center'>
+                    <svg className='w-3 h-3 mr-3' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                    Back
+                </a>
             </div>
             <div className="grid grid-cols-[1fr_1fr] gap-[15px] justify-center items-center">
                 <a href="#" onClick={() => setTab('terms-and-conditions')} className={`py-[10px] border-b-[4px] ${tab == 'terms-and-conditions' ? 'border-b-[#4ECFE0] font-bold' : 'border-b-[#E5E5E5] font-normal'} text-center `}>Terms & Conditions</a>

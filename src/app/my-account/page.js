@@ -16,6 +16,7 @@ import ServerSuccess from '@/popups/server-success';
 import { useUser } from '@/context/user';
 
 import { useRouter } from 'next/navigation'
+import Prompt from "@/popups/prompt";
 export default function MyAccount() {
     const { user, setUser } = useUser();
     const { push } = useRouter();
@@ -28,6 +29,27 @@ export default function MyAccount() {
             phone: user.phone,
             email: user.email,
         })
+
+        const url = new URLSearchParams(location.search);
+        const action = url.get('action');
+        
+        if (['email-changed'].includes(action)) {
+            api.me()
+                .then(data => data.json())
+                .then(data => {
+                    setUser({...data.user})
+                    localStorage.setItem('user', JSON.stringify(data.user))
+                })
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: 'Email has been successfully changed!'
+                }
+            })
+            window.history.pushState({}, document.title, location.pathname);
+        }
     }, [user])
     
     const tabs = [
@@ -51,12 +73,14 @@ export default function MyAccount() {
         edit: {
             password: false,
             profile: false,
-        }
+        },
+        confirm: false
     })
 
     const [previewAvatar, setPreviewAvatar] = useState("")
 
     const [errorsPassword, setPasswordErrors] = useState({
+        'oldpassword': [],
         'password': [],
         'confirm_password': [],
     });
@@ -69,8 +93,14 @@ export default function MyAccount() {
     });
     
     const [formPassword, setFormPassword] = useState({
+        oldpassword: '',
         password: '',
         confirm_password: '',
+    })
+
+    const [readonly, setReadOnly] = useState({
+        profile: true,
+        password: true,
     })
 
     const [formProfile, setFormProfile] = useState({
@@ -90,9 +120,14 @@ export default function MyAccount() {
             visible: false,
             message: '',
         },
+        prompt: {
+            visible: false,
+            message: '',
+        },
     })
 
     const rulesPassword = {
+        oldpassword: ['required'],
         password: ['password','required'],
         confirm_password: ['password','required'],
     }
@@ -100,7 +135,7 @@ export default function MyAccount() {
     const rulesProfile = {
         fname: [],
         lname: [],
-        phone: [],
+        phone: ['phone'],
         email: ['email', 'required'],
     }
 
@@ -159,6 +194,11 @@ export default function MyAccount() {
                 password: ! state.edit.password
             }
         })
+
+        setReadOnly({
+            ...readonly,
+            password: state.edit.password
+        })
     }
 
     const handleEditProfile = () => {
@@ -168,6 +208,11 @@ export default function MyAccount() {
                 ...state.edit,
                 profile: ! state.edit.profile
             }
+        })
+
+        setReadOnly({
+            ...readonly,
+            profile: state.edit.profile
         })
     }
 
@@ -181,14 +226,14 @@ export default function MyAccount() {
         setPasswordErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
-            api.reset({
+            api.reset_password({
                 ...formPassword,
                 email: user.email
             })
                 .then(data => data.json())
                 .then(data => {
                     const errors = data.errors ? Object.values(data.errors) : []
-                    if (errors.length || data.exception) {
+                    if (errors.length || data.exception || data.status == 'error') {
                         const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
                         setPopup({
                             ...popup,
@@ -207,11 +252,30 @@ export default function MyAccount() {
                             message: data.message
                         }
                     })
+
+                    setFormPassword({
+                        oldpassword: '',
+                        password: '',
+                        confirm_password: '',
+                    })
+
+                    setReadOnly({
+                        ...readonly,
+                        password: true
+                    })
+
+                    setState({
+                        ...state,
+                        edit: {
+                            ...state.edit,
+                            password: false
+                        }
+                    })
                 })
             }
     }
 
-    const updateProfile = () => {
+    const updateProfile = (confirm = false) => {
         let messages = {}
         for(let field in rulesProfile) {
             let message = validation(formProfile[field], rulesProfile[field]);
@@ -221,10 +285,23 @@ export default function MyAccount() {
         setProfileErrors(messages);
 
         if ( ! Object.values(messages).flat(1).length) {
+            if ((user.email != formProfile.email) && ! confirm) {
+                setPopup({
+                    ...popup,
+                    prompt: {
+                        ...popup.prompt,
+                        visible: true,
+                        message: 'Are you sure you want to change email?'
+                    }
+                })
+                return;
+            }
+
             const fd = new FormData();
             for(let field in formProfile) {
                 fd.append(field, formProfile[field])
             }
+            fd.append('redirect', location.protocol + '//' + location.host + '/my-account?action=email-changed')
             api.update_profile(fd)
                 .then(data => data.json())
                 .then(data => {
@@ -233,6 +310,10 @@ export default function MyAccount() {
                         const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
                         setPopup({
                             ...popup,
+                            prompt: {
+                                visible: false,
+                                message: '',
+                            },
                             server_error: {
                                 visible: true,
                                 message
@@ -241,16 +322,37 @@ export default function MyAccount() {
                         return ;
                     }
 
-                    setPopup({
-                        ...popup,
-                        server_success: {
-                            visible: true,
-                            message: data.message
-                        }
-                    })
+                    //if (user.email == formProfile.email) {
+                        setPopup({
+                            ...popup,
+                            prompt: {
+                                visible: false,
+                                message: '',
+                            },
+                            server_success: {
+                                visible: true,
+                                message: data.message
+                            }
+                        })
+
+                        setUser(data.data)
+                        localStorage.setItem('user', JSON.stringify(data.data))
+
+                        setReadOnly({
+                            ...readonly,
+                            profile: true,
+                        })
+
+                        setState({
+                            ...state,
+                            edit: {
+                                ...state.edit,
+                                profile: false
+                            }
+                        })
+                    //}
                     
-                    setUser(data.data)
-                    localStorage.setItem('user', JSON.stringify(data.data))
+                    
                 })
         }
     }
@@ -271,6 +373,18 @@ export default function MyAccount() {
             fr.readAsDataURL(file)
         }
         input.click();
+    }
+
+    const handleConfirmChangeEmail = () => {
+        setPopup({
+            ...popup,
+            prompt: {
+                ...popup.prompt,
+                visible: false
+            }
+        })
+
+        updateProfile(true);
     }
 
     return (<div className="p-4 lg:pl-[270px] pl-0 pt-[90px]">
@@ -295,7 +409,7 @@ export default function MyAccount() {
                     <div className="relative flex flex-col text-[#222]">
                         <h3 className="font-bold text-[28px] whitespace-nowrap text-ellipsis overflow-hidden max-w-[240px]">{user.fname && user.lname ? user.fname + ' ' + user.lname : user.email}</h3>
                         <span className="text-[12px] underline cursor-pointer" onClick={handleEditImage}>Edit display images</span>
-                        <a href="#" onClick={handleEditProfile} className="absolute top-0 right-0">
+                        <a href="#" onClick={(e) => {e.preventDefault();handleEditProfile()}} className="absolute top-0 right-0">
                             <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                         </a>
                     </div>
@@ -307,6 +421,8 @@ export default function MyAccount() {
                         placeholder="First name"
                         value={formProfile.fname || ''}
                         errors={errorsProfile.fname}
+                        readOnly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('fname', e.target.value, rulesProfile.fname)}
                     />
                 </div>
@@ -317,6 +433,8 @@ export default function MyAccount() {
                         placeholder="Last name"
                         value={formProfile.lname || ''}
                         errors={errorsProfile.lname}
+                        readOnly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('lname', e.target.value, rulesProfile.lname)}
                     />
                 </div>
@@ -327,6 +445,8 @@ export default function MyAccount() {
                         placeholder="Phone Number"
                         value={formProfile.phone || ''}
                         errors={errorsProfile.phone}
+                        readOnly={readonly.profile}
+                        disabled={readonly.profile}
                         onInput={(e) => onChangeProfile('phone', e.target.value, rulesProfile.phone)}
                     />
                 </div>
@@ -336,6 +456,8 @@ export default function MyAccount() {
                     placeholder="Email Address" 
                     value={formProfile.email || ''}
                     errors={errorsProfile.email}
+                    readOnly={readonly.profile}
+                    disabled={readonly.profile}
                     onInput={(e) => onChangeProfile('email', e.target.value, rulesProfile.email)}
                 />
                 {
@@ -350,7 +472,7 @@ export default function MyAccount() {
                             <Button  
                                 label="Update"
                                 className="bg-[#1860CC] !py-2 px-4 ml-[12px] font-Eina03 font-bold"
-                                onClick={updateProfile}
+                                onClick={() => {updateProfile(false)}}
                             ></Button>
                         </div>
                     ) : <></>
@@ -358,14 +480,28 @@ export default function MyAccount() {
             </Card>
             <Card className="relative">
                 <h4 className="font-Eina03 font-bold mb-[20px]">Change password</h4>
-                <a href="#" onClick={handleEditPassword} className="absolute top-[24px] right-[24px]">
+                <a href="#" onClick={(e) => {e.preventDefault(); handleEditPassword();}} className="absolute top-[24px] right-[24px]">
                     <Image src={pencilsvg} width={22} height={22} alt="pencil" />
                 </a>
+                <div className="mb-[20px]">
+                    <Input 
+                        label="Old Password"  
+                        type="password" 
+                        placeholder="******" 
+                        readOnly={readonly.password}
+                        disabled={readonly.password}
+                        value={formPassword.oldpassword}
+                        errors={errorsPassword.oldpassword}
+                        onInput={(e) => onChangePassword('oldpassword', e.target.value, rulesPassword.oldpassword)}
+                        />
+                </div>
                 <div className="mb-[20px]">
                     <Input 
                         label="Password"  
                         type="password" 
                         placeholder="******" 
+                        readOnly={readonly.password}
+                        disabled={readonly.password}
                         value={formPassword.password}
                         errors={errorsPassword.password}
                         onInput={(e) => onChangePassword('password', e.target.value, rulesPassword.password)}
@@ -375,6 +511,8 @@ export default function MyAccount() {
                     label="Confirm password"  
                     type="password" 
                     placeholder="******" 
+                    readOnly={readonly.password}
+                        disabled={readonly.password}
                     value={formPassword.confirm_password}
                     errors={errorsPassword.confirm_password}
                     onInput={(e) => onChangePassword('confirm_password', e.target.value, [...rulesPassword.confirm_password, `confirm:${formPassword.password}`])}
@@ -411,6 +549,14 @@ export default function MyAccount() {
             title="Success"
             message={popup.server_success.message}
             onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+        />
+
+        <Prompt 
+            open={popup.prompt.visible} 
+            title="Are you sure?"
+            message={popup.prompt.message}
+            onClose={() => {setPopup({...popup, prompt: { visible: false }})}}  
+            onConfirm={() => {handleConfirmChangeEmail()}}
         />
     </div>);
 }

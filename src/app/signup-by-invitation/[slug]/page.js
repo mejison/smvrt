@@ -44,8 +44,8 @@ export default function SignUpByInvitation() {
 
     const rules = {
         email: ['email','required'],
-        password: ['password','required'],
-        confirm_password: ['required', 'password',`confirm:${form.password}`],
+        password: ['password','required', 'strong-password'],
+        confirm_password: ['required', `confirm:${form.password}`],
         terms_and_conditions: ['terms_and_conditions']
     }
 
@@ -161,6 +161,7 @@ export default function SignUpByInvitation() {
                     disabled="disabled"
                     readOnly="readonly"
                     onInput={(e) => onChange('email', e.target.value, rules.email)}
+                    z-index="1"
                 ></Input>
             </div>
             <div className="mb-[20px]">
@@ -171,6 +172,7 @@ export default function SignUpByInvitation() {
                     value={form.password}
                     errors={errors.password}
                     onInput={(e) => onChange('password', e.target.value, rules.password)}
+                    z-index="2"
                 ></Input>
             </div>
             <div>
@@ -181,6 +183,7 @@ export default function SignUpByInvitation() {
                     value={form.confirm_password}
                     errors={errors.confirm_password}
                     onInput={(e) => onChange('confirm_password', e.target.value, rules.confirm_password)}
+                    z-index="3"
                 ></Input>
             </div>
             <div className='mt-[32px] mb-[16px]'>
@@ -199,10 +202,16 @@ export default function SignUpByInvitation() {
                         <input id="default-checkbox" type="checkbox" onChange={handleTermsAndConditions} value="" className={`w-[20px] h-[20px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[17px]`} />
                         I agree with the&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy' className='text-[#1860CC] underline underline-offset-2'>Terms of Use </Link>&nbsp; and&nbsp; <Link  href='/terms-and-conditions-and-privacy-policy?tab=privacy-policy' className='text-[#1860CC] underline underline-offset-2'> Privacy Policy</Link>
                     </div>
+                    
                     {
                         errors.terms_and_conditions.length ? 
-                        <p className="mt-[8px] text-sm text-[#D94042] text-left ml-[20px]" dangerouslySetInnerHTML={{__html: errors.terms_and_conditions.join('<br />')}}></p> 
-                        : <></>
+                            <p className="mt-[8px] text-left mx-auto max-w-[400px] flex items-center border-l-2 border-l-[#D94042] text-[12px] shadow-sm text-[#D94042]  bg-white right-[0] px-3 py-2">
+                            <div className='w-[13px] h-[13px] min-w-[13px] mr-2'>
+                                <svg fill='#D94042' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                            </div>
+                            <span dangerouslySetInnerHTML={{__html: errors.terms_and_conditions.join('<br />')}}></span>
+                        </p> 
+                        :<></>
                     }
                 </span>
             </label>
