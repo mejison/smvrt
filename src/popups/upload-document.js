@@ -3,44 +3,26 @@ import WrapperModal from './wrapper.js'
 import Input from '@/components/input.js';
 import Select from '@/components/select.js';
 import UploadArea from '@/components/upload-area.js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import * as api from '@/api'
 
 export default function VerifyEmailAddress(props) {
     const { onUpload }  = props;
-    const [types, setTypes] = useState([
-        {
-            label: 'NDA',
-            value: 'nda'
-        },
-        {
-            label: 'NDA2',
-            value: 'nda2'
-        },
-        {
-            label: 'NDA3',
-            value: 'nda3'
-        },
-    ]);
 
-    const [categories, setCategories] = useState([
-        {
-            label: 'Bussiness',
-            value: 'bussiness'
-        },
-        {
-            label: 'Bussiness2',
-            value: 'bussiness2'
-        },
-        {
-            label: 'Bussiness3',
-            value: 'bussiness3'
-        }
-    ])
+    const [types, setTypes] = useState([]);
+
+    const [categories, setCategories] = useState([])
 
     const [form, setForm] = useState({
         others: '',
-        type: types[0],
-        category: categories[0],
+        type:  {
+            label: 'Select type',
+            value: '',
+        },
+        category: {
+            label: 'Select category',
+            value: '',
+        },
         file: null
     })
 
@@ -65,20 +47,52 @@ export default function VerifyEmailAddress(props) {
         })
     }
 
+    useEffect(() => {
+        api.get_categories().then(({ data }) => {
+            setCategories([
+                {
+                    label: 'Select category',
+                    value: '',
+                },
+                ...data.map((item) => {
+                    return {
+                       label: item.name,
+                       value: item.id,
+                    }
+                })
+            ]);
+        })
+
+        api.get_document_types().then(({ data}) => {
+            setTypes([
+                {
+                    label: 'Select type',
+                    value: '',
+                },
+                ...data.map((item) => {
+                    return {
+                       label: item.name,
+                       value: item.id,
+                    }
+                })
+            ])
+        })
+    }, [])
+
     return (<WrapperModal open={props.open} {...props}>
                 <div className='pt-[15px] mb-[24px]'>
                     <h3 className='block mb-2 text-sm font-Eina03 font-bold mb-[8px]'>Document Type</h3>
-                    <div className='grid gap-[16px] grid-cols-[1fr_1fr]'>
+                    <div className='grid gap-[16px] grid-cols-[1fr]'>
                         <Select 
                             options={types}
                             value={form.type}
                             onSelect={handleChangeTypes}
                         />
-                        <Input 
+                        {/* <Input 
                             placeholder="Others"
                             value={form.others}
                             onInput={(event) => setForm({...form, others: event.target.value})}
-                        />
+                        /> */}
                     </div>
                 </div>
                 <div className='mb-[24px] relative'>
@@ -99,6 +113,6 @@ export default function VerifyEmailAddress(props) {
                 <div className='mb-[15px]'>
                     <UploadArea onUpload={handleUpload} />
                 </div>
-                <Button label="Upload" onClick={() => onUpload(form)} disabled={!(form.file && form.type && form.category)} className="bg-[#1860CC] text-[14px] text-white" />
+                <Button label="Upload" onClick={() => {onUpload(form);}} disabled={!(form.file && form.type && form.category)} className="bg-[#1860CC] text-[14px] text-white" />
             </WrapperModal>);
 }

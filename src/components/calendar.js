@@ -97,8 +97,19 @@ export default function Calendar({ onSave, onClose }) {
         <div className="py-[16px]">
            <div className="my-[16px] rounded-lg shadow">
             
-            <CalendarReact {...options} value={value} onChange={handleChange} />   
+                <CalendarReact {...options} value={value} onChange={handleChange} />   
+                <div className="flex items-center text-[10px] justify-around border-t p-4">
+                    <div className="flex items-center">
+                        <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#FD7983]">00</div>
+                        Reminder date
+                    </div>
+                    <div className="flex items-center">
+                        <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#4ECFE0]">00</div>
+                        Due Date
+                    </div>
+            </div>
            </div>
+           
         </div>
         <Button label="Save" {...{disabled: !value}}  className="bg-[#1860CC] text-white text-[12px]" onClick={handleSave} />
     </div>);

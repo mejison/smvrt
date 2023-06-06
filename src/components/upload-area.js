@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function UploadArea({ onUpload }) {
     const [uploading, setUploading] = useState(false);
@@ -16,12 +16,20 @@ export default function UploadArea({ onUpload }) {
         }, 1000)
     }
 
+    const reset = () => {
+        handleReset();
+    }
+
     const handleReset = () => {
         setProgress(0)
         setUploading(false)
         setFile(null)
         onUpload(null)
     }
+
+    useEffect(() => {
+        handleReset();
+    }, [])
 
     return (
             <>

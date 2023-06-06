@@ -9,6 +9,10 @@ import searchsvg from "@/assets/search.svg"
 
 import NewProjectContext from '@/context/new-project'
 import { useRouter } from 'next/navigation'
+import * as api from '@/api'
+
+import ServerError from '@/popups/server-error';
+import ServerSuccess from '@/popups/server-success';
 
 export default function NewProjectLayout({ children }) {
     const { push } = useRouter();
@@ -35,17 +39,34 @@ export default function NewProjectLayout({ children }) {
         }
     ])
 
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
     const [project, setProject] = useState({
         name: '',
         notes: '',
         duedate: '',
-        team: null,
+        team: '',
         members: [],
         external_collaborators: [],
-        filename: '',
-        file: null,
+        documentname: '',
+        document: null,
         type: '',
         category: '',
+        approvers: [],
+        final_approver: {
+            label: 'Not selected',
+            value: null,
+        },
+        save_for_future: false,
     })
 
     const [activeStep, setActiveStep] = useState('step-1')
@@ -68,6 +89,11 @@ export default function NewProjectLayout({ children }) {
     const handleNext = () => {
         const currentIndex = steps.findIndex(item => item.slug == activeStep)
         const targetStep = steps[currentIndex + 1]
+        if (targetStep == steps[steps.length - 1]) {
+            handleCreateProject();
+            return;
+        }
+
         if (currentIndex != steps.length - 1) { 
             setActiveStep(targetStep.slug);
             push("/new-project/step-" + (currentIndex + 2))
@@ -88,20 +114,63 @@ export default function NewProjectLayout({ children }) {
             }
         }
 
-        if (activeStep == steps[1].slug) {
-            // ...
+        if (activeStep == steps[3].slug) {
+           if ( ! project.documentname || ! project.document) {
+            return false;
+           }
         }
 
         return true
     }
 
-    // useEffect(() => {
-    //     const segments = location.pathname.split('/')
-    //     const currentStep = segments.length >= 2 ? segments[2] : false
-    //     if (currentStep) {
-    //         setActiveStep(currentStep)
-    //     }
-    // }, [activeStep])
+    const handleCreateProject = () => {
+        const fd = new FormData;
+        for(let key in project) {
+            fd.append(key, project[key])
+        }
+
+        fd.set('final_approver', JSON.stringify(project.final_approver))
+        if (project.team) {
+            fd.set('team', JSON.stringify(project.team))
+        }
+       
+        project.approvers.forEach(member => {
+            fd.append('approvers[]', JSON.stringify(member))
+        })
+
+        project.members.forEach(member => {
+            fd.append('members[]', JSON.stringify(member))
+        })
+
+        fd.set('save_for_future', project.save_for_future ? 1 : 0)
+
+        api.create_project(fd)
+            .then((data) => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            setActiveStep("step-5");
+            push("/new-project/step-5")
+        })
+    }
+
+    useEffect(() => {
+        const segments = location.pathname.split('/')
+        const step = segments.pop()
+        if (['step-2', 'step-3', 'step-4', 'step-5'].includes(step)) {
+            setActiveStep(step)
+        }
+    }, [])
 
     return (
         <DashboardLayout>
@@ -123,6 +192,20 @@ export default function NewProjectLayout({ children }) {
                         <Button {...{disabled: !isCanNext() }} onClick={handleNext} label="Save and Continue" className="bg-[#1860CC] !text-white font-bold !w-auto text-[14px] px-[20px]" />
                     </div>
                 </div>
+
+            <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                    />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                    />
             </div>
         </DashboardLayout>
     );

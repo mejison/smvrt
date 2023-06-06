@@ -31,7 +31,7 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
     const handleAdd = (e) => {
         e.preventDefault();
         if (member.name && member.email && regexpEmail.test(member.email)) {
-            const defaultRole = roles[0]
+            const defaultRole = roles[0] ?? false
             const newList = [
                 ...members,
                 {
@@ -143,14 +143,18 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
                                         </div>
                                         <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
                                             { member.email }
-                                            <div className="ml-auto">
-                                                <Select 
-                                                    options={roles}
-                                                    className=" px-[10px] !text-[12px] border-none !py-[0]"
-                                                    value={member.role}
-                                                    onSelect={(event) => handleUpdateRoleMember(member, event)}
-                                                />
-                                            </div>
+                                            {
+                                                roles.length ? (
+                                                    <div className="ml-auto">
+                                                        <Select 
+                                                            options={roles}
+                                                            className=" px-[10px] !text-[12px] border-none !py-[0]"
+                                                            value={member.role}
+                                                            onSelect={(event) => handleUpdateRoleMember(member, event)}
+                                                        />
+                                                    </div>
+                                                ) : <></>
+                                            }
                                         </div>
                                         <a href="#" onClick={(e) => {e.preventDefault(); handleRemoveMember(key)}} className="rounded-[6px] text-center border font-bold text-[12px] border-[#737373] text-[#737373] py-[10px] px-[12px] bg-white">
                                             Remove

@@ -5,7 +5,7 @@ import Textarea from "@/components/textarea";
 import DatePicker from "@/components/datepicker";
 import { useState } from "react";
 import { useNewProject } from '@/context/new-project'
-
+import moment from "moment";
 export default function NewProject() {
     const {project, setProject} = useNewProject();
 
@@ -19,7 +19,7 @@ export default function NewProject() {
     const handleAddDueDate = (date) => {
         setProject({
             ...project,
-            ['duedate']: date
+            duedate: moment(date).format('MM/DD/YYYY')
         })
     }
 
