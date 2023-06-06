@@ -7,7 +7,7 @@ import CloseEyeSVG from '@/assets/eye-close.svg';
 import Image from 'next/image';
 
 export default function Input(props) {
-    let { label, zIndex, readonly } = props
+    let { label, icon, className, zIndex, readonly } = props
     const errors = props.errors || []
 
     const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +35,7 @@ export default function Input(props) {
             <input
                 id="success"
                 {...props}
-                className={`border text-[14px] rounded-[6px] block w-full p-2.5 focus:outline outline-[4px] outline-[#D3E4FE] ${ ! errors.length ? 'focus:border-[#1860CC]' : 'focus:border-[#D94042]' }`}
+                className={`border text-[14px] rounded-[6px] block w-full p-2.5 focus:outline outline-[4px] outline-[#D3E4FE] ${ ! errors.length ? 'focus:border-[#1860CC]' : 'focus:border-[#D94042]' } ${className}`}
                 type={showPassword ? 'text' : props.type}
             />
             {
@@ -47,6 +47,15 @@ export default function Input(props) {
                     height="20" 
                     className='absolute right-[12px] top-[50%] translate-y-[-50%] cursor-pointer'
                     onClick={handleClick}
+                />) : <></>
+            }
+            {
+                icon ? (<Image 
+                    src={icon} 
+                    alt="eye" 
+                    width="13" 
+                    height="13" 
+                    className='absolute right-[12px] top-[50%] translate-y-[-50%] cursor-pointer'
                 />) : <></>
             }
             {

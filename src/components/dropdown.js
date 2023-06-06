@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 
-export default function Select(props) {
-    let { label, options, value, onSelect, children, className } = props
+export default function Dropdown(props) {
+    let { label, options, value, onSelect, children, className, type, name} = props
     const [open, setOpen] = useState(false);
+
+    type = type || 'radio'
 
     value = value || {label: '', value: {}}
 
@@ -26,7 +28,8 @@ export default function Select(props) {
                 className={`block mb-2 text-sm font-Eina03 font-bold`}
                 >{label}</label> : ""
         }
-        <div onFocus={() => setOpen(! open)} onClick={() => {  setOpen(! open); }} className={`border bg-white rounded-[6px] w-full flex items-center justify-between py-[10px] px-[12px] cursor-pointer ${className}`} >
+        
+        <div onFocus={() => setOpen(! open)} onClick={() => {  setOpen(! open); }} className={`overflow-hidden border bg-white rounded-[6px] w-full flex items-center justify-between py-[10px] px-[12px] cursor-pointer ${className}`} >
             <div className={`text-[14px] mr-[10px] font-Eina03 text-[#B8C2CC]`}>
                 { value.label }
             </div>
@@ -34,15 +37,18 @@ export default function Select(props) {
                 <path d="M1 6L6 1L11 6" stroke="#737373" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
         </div>
-        <div className={`${ ! open ? 'hidden' : ''} dropdown max-h-[200px]  overflow-y-auto absolute z-[9999] left-[0] right-[0] bg-white mt-[6px] rounded-[6px] shadow w-full p-[12px] text-[#222] text-[14px] font-Eina03`}>
+        <div className={`${ ! open ? 'hidden' : ''} dropdown absolute z-[9999] left-[0] w-auto bg-white mt-[6px] rounded-[6px] shadow w-full p-[8px] text-[#222] text-[14px] font-Eina03`}>
             {
                 options.map((option, index) => {
                     return (
                         <div 
                             key={index}
-                            onClick={() => handleClick(option)} 
-                            className={`p-[12px] whitespace-nowrap cursor-pointer ${ ! option.value ? 'text-[#B8C2CC]': ''} ${option.value == value.value ? 'bg-[#F7FAFF] border-b border-b-[#E5E5E5] border-t border-t-[#E5E5E5]' : ''}`}>
-                            { option.label }
+                            // onClick={() => handleClick(option)} 
+                            className={`flex items-center p-[12px] whitespace-nowrap cursor-pointer !text-[14px]`}>
+                            <label className="inline-block lg:flex items-center justify-center select-none">
+                                <input type={type} name={name} value={option.value} className={`w-[16px] h-[16px] text-blue-600 bg-gray-100 border-[#D4D4D4] rounded focus:ring-blue-500 focus:ring-2 mr-[6px]`} />
+                                { option.label }
+                            </label>
                         </div>
                     );
                 })

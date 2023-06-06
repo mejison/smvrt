@@ -198,6 +198,27 @@ export function update_settings(data) {
     })
 }
 
+export function get_categories() {
+    return request(API_ENDPOINT + "/api/project/categories", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function get_document_types() {
+    return request(API_ENDPOINT + "/api/document/types", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+
 export function remove_member_from_team(data) {
     return request(API_ENDPOINT + "/api/team/" + data.team_id + "/member/remove", {
         method: "DELETE",
@@ -309,6 +330,17 @@ export function request_to_change_role(data) {
         headers: {
             ...headers,
             "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function create_project(fd) {
+     return request(API_ENDPOINT + "/api/project", {
+        method: "POST",
+        body: fd,
+        headers: {
+            "authorization": `Bearer ${getToken()}`,
+            'accept': 'application/json',
         },
     }).then(data => data.json())
 }
