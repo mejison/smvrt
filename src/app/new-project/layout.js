@@ -19,7 +19,7 @@ export default function NewProjectLayout({ children }) {
     const [steps, setSteps] = useState([
         {
             label: 'Add project details',
-            slug: 'step-1'
+            slug: ''
         },
         {
             label: 'Team & Collaborators',
@@ -72,7 +72,8 @@ export default function NewProjectLayout({ children }) {
     const [activeStep, setActiveStep] = useState('step-1')
 
     const onChangeActiveStep = (step) => {
-        // setActiveStep(step.slug)
+        setActiveStep(step.slug)
+        push("/new-project/" + step.slug)
     }
 
     const handlePrev = () => {
@@ -167,6 +168,11 @@ export default function NewProjectLayout({ children }) {
     useEffect(() => {
         const segments = location.pathname.split('/')
         const step = segments.pop()
+       
+        if (['new-project'].includes(step)) {
+            setActiveStep('')    
+        }
+       
         if (['step-2', 'step-3', 'step-4', 'step-5'].includes(step)) {
             setActiveStep(step)
         }
