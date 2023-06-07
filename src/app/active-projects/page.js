@@ -37,9 +37,10 @@ export default function ActiveProject() {
     ])
 
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
-        <Table
+        active project
+        {/* <Table
             fields={fields}
             data={projects}
-        />
+        /> */}
     </div>);
 }

@@ -74,8 +74,11 @@ export default function StepThree() {
         setPopups({...popups, upload_document: false})
     }
 
-    const handleEditDocument = () => {
-        push("/new-project/step-4")
+    const handleEditDocument = (e) => {
+        e.preventDefault();
+        if (project.document) {
+            push("/new-project/edit-document")
+        }
     }
 
   
@@ -123,7 +126,7 @@ export default function StepThree() {
                                     <p className="text-[#667085] text-[12px]">{Math.round((project.document.size / 1024) * 100) / 100} KB</p>
                                 </div>
                                 <div className="ml-auto flex items-center">
-                                    <a href="#" onClick={handleEdit}>
+                                    <a href="#" onClick={handleEditDocument}>
                                         <svg width="17" height="18" viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <g clipPath="url(#clip0_49_6734)">
                                             <path d="M1 16.5H13.6866" stroke="#737373" strokeWidth="1.71429" strokeLinecap="round" strokeLinejoin="round"/>
