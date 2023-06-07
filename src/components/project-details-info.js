@@ -56,7 +56,7 @@ export default function ProjectDetailsInfo({ project }) {
                                 </svg>
                                 Team
                             </div>
-                            <div className='text-[#405D80] font-bold'>{project.team}</div>
+                            <div className='text-[#405D80] font-bold'>team</div>
                         </div>
                         <div className='grid gap-[20px] grid-cols-[110px_1fr]'>
                             <div  className='text-[#B8C2CC]  flex items-center'>
