@@ -1,6 +1,8 @@
 'use client'
 import Table from "@/components/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import * as api from '@/api'
+import ProjectStatus from "@/components/project-status";
 
 export default function ActiveProject() {
     const [fields, setFields] = useState([
@@ -10,37 +12,48 @@ export default function ActiveProject() {
         },
         {
             label: 'Doc Type',
-            field: 'doctype',
+            getValue: (row) => {
+                return row['document'] && row['document']['type'] && row['document']['type']['name'] || '';
+            }
         },
         {
             label: 'Last modified',
             field: 'updated_at',
         },
         {
+            label: 'Due Date',
+            field: 'due_date',
+        },
+        {
             label: 'Status',
-            field: 'status',
+            getValue: (row) => {
+                return (
+                    <ProjectStatus type={row.status.toLowerCase().replace(/\s*/g, '')}>{ row.status }</ProjectStatus>
+                );
+            }
         },
         {
             label: 'Lead',
-            field: 'lead',
+            getValue: (row) => {
+                const members = row['team'] && row['team']['members'] || []
+                const [lead] = members;
+                return lead && lead.fname + ' ' + lead.lname || lead.email;
+            }
         }
     ]);
 
-    const [projects, setProjects] = useState([
-        {
-            name: 'Zephyr & Virgin Galactic (V3)',
-            doctype: 'NDA',
-            updated_at: 'Apr 10, 2022',
-            status: 'Internal Approval',
-            lead: 'John Dicks',
-        }
-    ])
+    const [projects, setProjects] = useState([])
+
+    useEffect(() => {
+        api.projects().then(({ data }) => {
+            setProjects(data)
+        })
+    }, []);
 
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
-        active project
-        {/* <Table
+        <Table
             fields={fields}
             data={projects}
-        /> */}
+        />
     </div>);
 }
