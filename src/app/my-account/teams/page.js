@@ -89,13 +89,16 @@ export default function Teams () {
             .then(data => data.json())
             .then((data) => {
                if (data && data.data) {
-                const roles = [
+                let roles = [
                     {
                         label: 'Set role',
                         value: ''
                     },
                     ...data.data.map(role => ({label : role.name, value: role.id}) )
                 ]
+                roles = roles.filter(role => {
+                    return role.label != 'Owner'
+                })
                 setRoles(roles)
                }
             })
