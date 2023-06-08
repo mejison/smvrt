@@ -354,3 +354,12 @@ export function create_project(fd) {
     }).then(data => data.json())
 }
 
+export function get_project_notifications(id) {
+    return request(API_ENDPOINT + "/api/project/" + id + "/notifications", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
