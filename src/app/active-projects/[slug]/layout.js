@@ -21,11 +21,11 @@ export default function ProjectDetailsLayout({ children }) {
     const [tabs, setTabs] = useState([
         {
             label: 'General',
-            slug: 'general',
+            slug: '',
         },
         {
             label: 'Full view',
-            slug: 'full view',
+            slug: 'full-view',
         },
         {
             label: 'Summary',
@@ -73,11 +73,12 @@ export default function ProjectDetailsLayout({ children }) {
     }
 
     useEffect(() => {
-        const id = location.pathname.split('/').pop();
+        const [host,page,id,tab] = location.pathname.split('/')
         api
             .get_project(id)
             .then(({ data }) => {
                 setProject({
+                    id: data.id,
                     name: data.name,
                     doctype: data.document.type.name,
                     updated_at: moment(data.updated_at).format('ll'),
@@ -97,10 +98,24 @@ export default function ProjectDetailsLayout({ children }) {
                 setRoles(data.data)
                }
             })
+
+        const currentTab = tabs.find(t => t.slug == tab)
+        if (currentTab) {
+            setActiveTab(currentTab)
+        } else {
+            setActiveTab(tabs[0])
+        }
     }, [])
 
     const handleBack = () => {
         push('/active-projects')
+    }
+
+    const handleChangeTab = (tab) => {
+        if (project?.id) {
+            setActiveTab(tab)
+            push('/active-projects/' + project.id + '/' + tab.slug)
+        }
     }
 
     return (
@@ -120,7 +135,7 @@ export default function ProjectDetailsLayout({ children }) {
                     roles={roles}
                 />
                 <ProjectContext.Provider value={{ project, setProject }}>
-                    <Tabs tabs={tabs} active={activeTab} className="mb-8" />
+                    <Tabs tabs={tabs} active={activeTab} className="mb-8" change={handleChangeTab} />
                     {children}
                 </ProjectContext.Provider>
             </div>
