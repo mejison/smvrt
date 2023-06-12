@@ -3,8 +3,10 @@ import Table from "@/components/table";
 import { useEffect, useState } from "react";
 import * as api from '@/api'
 import ProjectStatus from "@/components/project-status";
-
+import { useRouter } from "next/navigation";
 export default function ActiveProject() {
+    const { push } = useRouter();
+
     const [fields, setFields] = useState([
         {
             label: 'Project name',
@@ -42,7 +44,7 @@ export default function ActiveProject() {
         }
     ]);
 
-    const [projects, setProjects] = useState([])
+    const [projects, setProjects] = useState([]);
 
     useEffect(() => {
         api.projects().then(({ data }) => {
@@ -50,10 +52,15 @@ export default function ActiveProject() {
         })
     }, []);
 
+    const handleClickRow = (row) => {
+        push('/active-projects/' + row.id)
+    }
+
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
         <Table
             fields={fields}
             data={projects}
+            onClickRow={handleClickRow}
         />
     </div>);
 }

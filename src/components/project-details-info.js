@@ -1,4 +1,5 @@
 import Card from "./card";
+import Collaborators from "./collaborators";
 import Textarea from "./textarea";
 
 
@@ -56,7 +57,11 @@ export default function ProjectDetailsInfo({ project }) {
                                 </svg>
                                 Team
                             </div>
-                            <div className='text-[#405D80] font-bold'>{project.team}</div>
+                            <div className='text-[#405D80] font-bold'>
+                                <a href="#" className="text-[#297FFF] underline">
+                                    {project?.team?.name}
+                                </a>
+                            </div>
                         </div>
                         <div className='grid gap-[20px] grid-cols-[110px_1fr]'>
                             <div  className='text-[#B8C2CC]  flex items-center'>
@@ -66,10 +71,11 @@ export default function ProjectDetailsInfo({ project }) {
                                 <path d="M9 1.5C9.59674 1.5 10.169 1.73705 10.591 2.15901C11.0129 2.58097 11.25 3.15326 11.25 3.75C11.25 4.34674 11.0129 4.91903 10.591 5.34099C10.169 5.76295 9.59674 6 9 6" stroke="#B8C2CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                 <path d="M10.5996 8.18994C11.4514 8.51399 12.1848 9.08905 12.7026 9.83903C13.2205 10.589 13.4984 11.4786 13.4996 12.3899V13.4999H11.9996" stroke="#B8C2CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
-
                                 Collaborators
                             </div>
-                            <div className='text-[#405D80] font-bold'>...</div>
+                            <div className='text-[#405D80] font-bold'>
+                                <Collaborators project={project}/>
+                            </div>
                         </div>
                     </div>
                 </Card>

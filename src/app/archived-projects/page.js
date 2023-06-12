@@ -139,9 +139,8 @@ export default function ArchivedProjects() {
     }, [])
 
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
-        archived projects
-        {/* <div className="flex items-center items-center content-center py-[22px]"> */}
-            {/* <div className=" mr-[12px]">
+         <div className="flex items-center items-center content-center py-[22px]">
+            <div className=" mr-[12px]">
                 <Button 
                     label="All results"
                     className="bg-[#4ECFE0] text-[14px] min-w-[100px]"
@@ -187,6 +186,6 @@ export default function ArchivedProjects() {
                 />
             </div>
         </div>
-        <Table fields={fields} data={archivedProjects} /> */}
+        <Table fields={fields} data={archivedProjects} />
     </div>);
 }

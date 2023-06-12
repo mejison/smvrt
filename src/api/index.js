@@ -218,7 +218,6 @@ export function get_document_types() {
     }).then(data => data.json())
 }
 
-
 export function remove_member_from_team(data) {
     return request(API_ENDPOINT + "/api/team/" + data.team_id + "/member/remove", {
         method: "DELETE",
@@ -321,6 +320,16 @@ export function projects() {
     }).then(data => data.json())
 }
 
+export function get_project(id) {
+    return request(API_ENDPOINT + "/api/project/" + id, {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
 export function request_to_change_role(data) {
     return request(API_ENDPOINT + "/api/project/" + data.project.value + "/member/" + data.user_id + "/role", {
         method: "PUT",
@@ -341,6 +350,16 @@ export function create_project(fd) {
         headers: {
             "authorization": `Bearer ${getToken()}`,
             'accept': 'application/json',
+        },
+    }).then(data => data.json())
+}
+
+export function get_project_notifications(id) {
+    return request(API_ENDPOINT + "/api/project/" + id + "/notifications", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
         },
     }).then(data => data.json())
 }

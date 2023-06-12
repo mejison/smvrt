@@ -1,7 +1,8 @@
 import { useState } from "react";
 import ProjectDetailsStepper from "./project-details-stepper";
-
-export default function ProjectDetailsHeader({ project, steps, activeStep }) {
+import ProjectStatus from "./project-status";
+import { getRoleFromProjectBySlug } from '@/utils/helpers'
+export default function ProjectDetailsHeader({ project, steps, activeStep, roles }) {
     const [toggle, setToggle] = useState(true)
     const handleToggle = () => {
         setToggle(!toggle)
@@ -14,12 +15,15 @@ export default function ProjectDetailsHeader({ project, steps, activeStep }) {
                     <h1 className='text-white text-[24px] font-bold mb-2'>{project.name}</h1>
                     <div className='text-[#B8C2CC] text-[12px]'>
                         Created by { project.created_at }
-                        <span className='inline-block border rounded-full border-full px-2 py-1 ml-2'>Owner : { project.owner }</span>
+                        {
+                            roles.length && project.team && project.team.members ? 
+                            <span className='inline-block border rounded-full border-full px-2 py-1 ml-2'>Owner : { getRoleFromProjectBySlug(project, 'lead', roles) }</span>
+                            : <></>
+                        }
                     </div>
                 </div>
                 <div className='ml-auto inline-flex items-start'>
-                    <span className='inline-block rounded-full  px-8 py-2 bg-[#75DD7F] text-white text-[9px] font-bold '>{project.status}
-                    </span>
+                    <ProjectStatus type={project.status ? project.status.toLowerCase().replace(/\s*/g, '') : ''}>{project.status}</ProjectStatus>
                     <span href="#" className="ml-3">
                             <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10.7134 20.2858C15.8418 20.2858 19.9992 16.1284 19.9992 11.0001C19.9992 5.87171 15.8418 1.71436 10.7134 1.71436C5.58509 1.71436 1.42773 5.87171 1.42773 11.0001C1.42773 16.1284 5.58509 20.2858 10.7134 20.2858Z" stroke="#B8C2CC" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
