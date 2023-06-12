@@ -110,9 +110,9 @@ export default function Summary() {
                     </div>
                     <div className="max-h-[500px] overflow-y-auto">
                         {
-                            todos.map((item) => {
+                            todos.map((item, index) => {
                                 return (
-                                    <ToDoSection data={item} />
+                                    <ToDoSection data={item} key={index} />
                                 )
                             })
                         }
@@ -129,9 +129,9 @@ export default function Summary() {
                     </div>
                     <div className="max-h-[500px] overflow-y-auto">
                         {
-                            redlines.map((item) => {
+                            redlines.map((item, index) => {
                                 return (
-                                    <ToDoSection data={item} />
+                                    <ToDoSection data={item} key={index} />
                                 )
                             })
                         }
@@ -148,9 +148,9 @@ export default function Summary() {
                     </div>
                     <div className="max-h-[500px] overflow-y-auto">
                         {
-                            resolveds.map((item) => {
+                            resolveds.map((item, index) => {
                                 return (
-                                    <ToDoSection data={item} />
+                                    <ToDoSection data={item} key={index} />
                                 )
                             })
                         }

@@ -115,9 +115,9 @@ export default function Forum() {
                 </div>
                 <div className="max-h-[500px] overflow-y-auto">
                     {
-                        comments.map(comment => {
+                        comments.map((comment, index) => {
                             return (
-                                <div className="mb-3">
+                                <div className="mb-3" key={index}>
                                     <Comment data={comment} onMore={(e) => handleClickMore(comment,  e)} onCheck={(e) => handleClickCheck(comment, e)}/>
                                 </div>
                             );
