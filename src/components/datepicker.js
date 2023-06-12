@@ -18,7 +18,7 @@ export default function DatePicker({ label, placeholder, value, onChange }) {
                     label={label}
                     placeholder={placeholder}
                     icon={calendarsvg}
-                    className="min-w-[376px]"
+                    className="min-w-[300px]"
                     name="datepicker"
                     type="text"
                     onFocus={() => setOpen(true)}
@@ -26,11 +26,10 @@ export default function DatePicker({ label, placeholder, value, onChange }) {
                     onChange={() => {}}
                     readOnly={true}
                 />
-                <a href="#" className="text-[#1860CC] underline underline-offset-2 translate-y-[10px] ml-8 text-[14px]">Reminder setting</a>
-                
+                <a href="#" className="whitespace-nowrap text-[#1860CC] underline underline-offset-2 translate-y-[10px] ml-8 text-[14px]">Reminder setting</a>
                 {
                     open ? 
-                    <div className="absolute right-0 top-0 z-[20]">
+                    <div className="absolute right-[0] translate-x-[50%] translate-y-[-50%] top-0 z-[20]">
                         <Calendar onSave={handleSave} onClose={() => setOpen(false)} />
                     </div> : <></>
                 }

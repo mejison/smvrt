@@ -134,7 +134,7 @@ export default function ProjectDetailsLayout({ children }) {
                     activeStep={activeStep}
                     roles={roles}
                 />
-                <ProjectContext.Provider value={{ project, setProject }}>
+                <ProjectContext.Provider value={{ project, roles, setProject }}>
                     <Tabs tabs={tabs} active={activeTab} className="mb-8" change={handleChangeTab} />
                     {children}
                 </ProjectContext.Provider>

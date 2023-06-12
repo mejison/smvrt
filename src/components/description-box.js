@@ -19,7 +19,7 @@ export default function DescriptionBox({ title = 'Description box', description 
                 <a 
                     href="#" 
                     className="absolute top-[50%] right-[15px] text-[20px] translate-y-[-50%]" 
-                    onClick={handleToggle}>
+                    onClick={(e) => {e.preventDefault(); handleToggle()}}>
                         {
                             ! toggle ? 
                             <span>&#8722;</span> : <span>&#43;</span>
