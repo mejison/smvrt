@@ -30,3 +30,7 @@ export const getRoleFromProjectBySlug = (project, role, roles = []) => {
    
     return member ? (member.fname ? member.fname + ' ' + member.lname : member.email) : '-';
 }
+
+export const getRandomColor = () => {
+    return Math.floor(Math.random()*16777215).toString(16);
+}
