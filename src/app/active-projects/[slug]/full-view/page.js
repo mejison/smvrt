@@ -36,7 +36,7 @@ export default function FullView() {
                         `
     const [popup, setPopUp] = useState({
         share: false,
-        invite: true,
+        invite: false,
         confirm: false,
         success: {
             visible: false,
