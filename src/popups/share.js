@@ -92,7 +92,7 @@ export default function SharePopUp(props) {
 
     return (<WrapperModal className='relative' title="Share project" open={props.open} {...props}>
                 <p className='absolute text-[14px] text-[#8792A8] top-[50px] '>Share the link with your partner by entering their email</p>
-                <div className='flex flex-col pt-5  overflow-y-auto max-h-[calc(100vh-100px)]'>
+                <div className='flex flex-col pt-5'>
                     <div>
                         <Input 
                             placeholder="Email address"

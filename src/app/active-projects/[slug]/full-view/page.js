@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import sharesvg from '@/assets/share.svg'
 import invitesvg from '@/assets/invite.svg'
 import SharePopUp from "@/popups/share";
+import InvitePopUp from "@/popups/invite";
 import { useProject } from "@/context/project";
 import Prompt from "@/popups/prompt";
 import ServerSuccess from "@/popups/server-success";
@@ -35,9 +36,12 @@ export default function FullView() {
                         `
     const [popup, setPopUp] = useState({
         share: false,
-        invite: false,
+        invite: true,
         confirm: false,
-        success: false,
+        success: {
+            visible: false,
+            message: '',
+        },
     })
 
     const handleClickShare = () => {
@@ -50,7 +54,7 @@ export default function FullView() {
     const handleClickInvite = () => {
         setPopUp({
             ...popup,
-            share: false
+            invite: true
         })
     }
 
@@ -66,7 +70,10 @@ export default function FullView() {
         setPopUp({
             ...popup,
             confirm: false,
-            success: true,
+            success: {
+                visible: true,
+                message: 'You have successfully shared this project  to external collaborator(s).'
+            },
            })
     }
 
@@ -129,6 +136,13 @@ export default function FullView() {
             onClose={() => setPopUp({...popup, share: false})} 
             onShare={(data) => handleShare(data)}
         />
+        <InvitePopUp
+            open={popup.invite}
+            roles={roles}
+            project={project}
+            onClose={() => setPopUp({...popup, invite: false})} 
+            onInvite={() => setPopUp({...popup, invite: false, success: {visible: true, message: 'You have successfully invited external collaborator(s) to this project.'}})}
+        />
         <Prompt open={popup.confirm} 
             title="Share project" 
             message={`You are about to share the project to ${share.email}, 
@@ -136,10 +150,10 @@ export default function FullView() {
             onConfirm={handleConfirm}
             onClose={() => setPopUp({...popup, confirm: false})} 
         />
-        <ServerSuccess open={popup.success} 
+        <ServerSuccess open={popup.success.visible} 
             title="All good!" 
-            message={`You have successfully shared this project to external collaborator(s).`}
-            onClose={() => setPopUp({...popup, success: false, share: false})} 
+            message={popup.success.message}
+            onClose={() => setPopUp({...popup, success: {...popup.success, visible: false}, share: false})} 
         />
     </div>);
 }

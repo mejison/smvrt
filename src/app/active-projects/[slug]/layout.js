@@ -15,7 +15,11 @@ import { getRoleFromProjectBySlug } from "@/utils/helpers";
 export default function ProjectDetailsLayout({ children }) {
     const { push } = useRouter();
 
-    const [project, setProject] = useState({});
+    const [project, setProject] = useState({
+        collaborators: [],
+        members: [],
+        approvers: [],
+    });
     const [roles, setRoles] = useState([]);
 
     const [tabs, setTabs] = useState([
@@ -78,6 +82,7 @@ export default function ProjectDetailsLayout({ children }) {
             .get_project(id)
             .then(({ data }) => {
                 setProject({
+                    ...project,
                     id: data.id,
                     name: data.name,
                     doctype: data.document.type.name,
