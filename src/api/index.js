@@ -363,3 +363,13 @@ export function get_project_notifications(id) {
         },
     }).then(data => data.json())
 }
+export function get_archived_projects(params) {
+    const query = new URLSearchParams(params).toString()
+    return request(API_ENDPOINT + "/api/project/archived?" + query, {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}

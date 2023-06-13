@@ -5,7 +5,7 @@ import Table from "@/components/table";
 import { useEffect, useState } from "react";
 import * as api from '@/api'
 import Button from "@/components/button";
-
+import moment from "moment";
 
 export default function ArchivedProjects() {
     const fields = [
@@ -36,9 +36,12 @@ export default function ArchivedProjects() {
             field: 'versions',
             sort: 'asc'
         }
-    ]
-
-    const [roles, setRoles] = useState([
+    ];
+    const [roles] = useState([
+        {
+            label: 'Sort by Owner',
+            value: ''
+        },
         {
             label: 'Owner by A-Z',
             value: 'a-z'
@@ -47,40 +50,14 @@ export default function ArchivedProjects() {
             label: 'Owner by Z-A',
             value: 'z-a'
         }
-    ])
-    const [teams, setTeams] = useState([])
-
-    const [role, setRole] = useState(roles[0])
-    const [team, setTeam] = useState({
-        label: "Team",
-        value: '',
-    })
-
-    const [archivedProjects, setArchivedProjects] = useState([
-        {
-            name: 'Cleo',
-            type: 'NDA',
-            updated_at: 'Apr 10, 2022',
-            team: 'English',
-            versions: '3',
-        },
-        {
-            name: 'Funnel',
-            type: 'NDA',
-            updated_at: 'Apr 10, 2022',
-            team: 'English',
-            versions: '3',
-        },
-        {
-            name: 'Tibber',
-            type: 'NDA',
-            updated_at: 'Apr 10, 2022',
-            team: 'English',
-            versions: '3',
-        },
     ]);
-
-    const [sortOptions, setSortOptions] = useState([
+    const [teams, setTeams] = useState([]);
+    const [archivedProjects, setArchivedProjects] = useState([]);
+    const [sorts] = useState([
+        {
+            label: 'Sort by date',
+            value: '',
+        },
         {
             label: 'Newest first',
             value: 'newest-first',
@@ -89,36 +66,82 @@ export default function ArchivedProjects() {
             label: 'Oldest first',
             value: 'oldest-first',
         },
-    ])
-
-    const [documentTypes, setDocumentTypes] = useState([
-        {
-            label: 'Document type',
+    ]);
+    const [documentTypes, setDocumentTypes] = useState([]);
+    const [filter, setFilter] = useState({
+        team_id: {
+            label: 'Select Team',
             value: '',
         },
-        {
-            label: 'NDA',
-            value: 'nda',
+        document_id: [
+            {
+                label: "Document type",
+                value: '',
+            }
+        ],
+        owner:   {
+            label: 'Sort by owner',
+            value: '',
         },
-        {
-            label: 'DPA',
-            value: 'dpa',
+        date:   {
+            label: 'Sort by date',
+            value: '',
         },
-        {
-            label: 'Job offer letter',
-            value: 'job-offer-letter',
-        },
-        {
-            label: 'MSA',
-            value: 'msa',
-        },
-    ])
+    });
 
-    const [sort, setSort] = useState({...sortOptions[0]})
-    const [doctype, setDocType] = useState({
-        label: 'Document type',
-        value: '',
-    })
+    const getProjects = (filter) => {
+
+        const props = {
+            'team_id': filter.team_id ? filter.team_id.value : '',
+            'document_id': filter.document_id ? filter.document_id.map(item => item.value).join(',') : '',
+            'owner': filter?.owner?.value,
+            'date': filter?.date?.value,
+        };
+
+        api.get_archived_projects(props)
+            .then(({ data }) => {
+                data = data.map(item => {
+                    return {
+                        name: item.name,
+                        type: item.document?.type?.name,
+                        updated_at: moment(item.updated_at).format('ll'),
+                        team: item.team?.name,
+                        versions: '1',
+                    }
+                })
+                setArchivedProjects(data);
+            });
+    }
+
+    const handleClickReset = () => {
+        const clearFilter = {
+            team_id: {
+                label: 'Select Team',
+                value: '',
+            },
+            document_id: [
+                {
+                    label: "Document type",
+                    value: '',
+                }
+            ],owner:   {
+                label: 'Sort by owner',
+                value: '',
+            },
+            date:   {
+                label: 'Sort by date',
+                value: '',
+            },
+        }
+
+        setFilter(clearFilter)
+        getProjects(clearFilter);
+    }
+
+    const handleChangeFilter = (filter) => {
+        getProjects(filter);
+    }
+
 
     useEffect(() => {
         api.get_profile_teams()
@@ -127,15 +150,29 @@ export default function ArchivedProjects() {
            if (data && data.data && data.data.length) {
             const teams = [
                 {
-                    label: "Team",
+                    label: "Select Team",
                     value: '',
                 },
                 ...data.data.map(role => ({label : role.name, value: role.id}) )
             ]
             setTeams(teams)
-            setTeam(teams[0])
+            setFilter({...filter, team_id: teams[0]})
            }
         });
+
+        api.get_document_types()
+        .then(({ data }) => {
+            data = data.map(item => ({label: item.name, value: item.id}))
+            setDocumentTypes([
+                {
+                    label: "Document type",
+                    value: '',
+                },
+                ...data
+            ]);
+        })
+
+        getProjects(filter);
     }, [])
 
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
@@ -144,35 +181,39 @@ export default function ArchivedProjects() {
                 <Button 
                     label="All results"
                     className="bg-[#4ECFE0] text-[14px] min-w-[100px]"
+                    onClick={handleClickReset}
                 />
             </div>
             <div className="mr-[12px]">
                 <Dropdown 
                     options={roles}
-                    value={role}
+                    value={filter.owner}
                     type="radio"
                     name="name"
-                    className="max-w-[150px]"
+                    onSelect={(option) => { setFilter({...filter, date: {label: 'Sort by Date', value: ''}, owner: option });  handleChangeFilter({...filter, date: {label: 'Sort by Date', value: ''}, owner: option })}}
                 />
             </div>
             <div 
                 className="mr-[12px]">
                 <Dropdown
                     options={teams}
-                    value={team}
+                    value={filter.team_id}
                     type="radio"
                     name="team"
                     className="max-w-[150px]"
+                    onSelect={(option) => {  setFilter({...filter, team_id: option}); handleChangeFilter({...filter, team_id: option})}}
                 />
             </div>
             <div
                 className="mr-[12px]"
             >
                 <Dropdown 
-                    options={sortOptions}
-                    value={sort}
-                    type="checkbox"
+                    options={sorts}
+                    value={filter.date}
+                    type="radio"
+                    name="created_at"
                     className="max-w-[200px]  mr-[12px]"
+                    onSelect={(option) => { setFilter({...filter, owner: {label: 'Sort by Owner', value: ''}, date: option });  handleChangeFilter({...filter, owner: {label: 'Sort by Owner', value: ''}, date: option })}}
                 />
             </div>
             <div
@@ -180,9 +221,10 @@ export default function ArchivedProjects() {
                 >
                 <Dropdown 
                     options={documentTypes}
-                    value={doctype}
+                    value={filter.document_id}
                     type="checkbox"
                     className="max-w-[200px]"
+                    onSelect={(options) => { setFilter({...filter, document_id: options});  handleChangeFilter({...filter, document_id: options})}}
                 />
             </div>
         </div>
