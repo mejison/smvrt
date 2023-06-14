@@ -49,6 +49,8 @@ export default function VerifyEmailAddress(props) {
 
     useEffect(() => {
         api.get_categories().then(({ data }) => {
+            data = data || []
+            
             setCategories([
                 {
                     label: 'Select category',

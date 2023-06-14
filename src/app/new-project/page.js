@@ -23,6 +23,13 @@ export default function NewProject() {
         })
     }
 
+    const onChangeReminderSettings = (date) => {
+        setProject({
+            ...project,
+            reminderdate: moment(date).format('MM/DD/YYYY')
+        })
+    }
+
     return (
         <div>
             <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Project details</h3>
@@ -39,7 +46,9 @@ export default function NewProject() {
                     label="Due Date"
                     placeholder="01/10/2023"
                     onChange={handleAddDueDate}
+                    onChangeReminderSettings={onChangeReminderSettings}
                     value={project.duedate}
+                    reminder={project.reminderdate}
                 />
             </div>
             <Textarea 
