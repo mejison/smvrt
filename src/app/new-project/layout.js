@@ -54,6 +54,7 @@ export default function NewProjectLayout({ children }) {
         name: '',
         notes: '',
         duedate: '',
+        reminderdate: '',
         team: '',
         members: [],
         external_collaborators: [],

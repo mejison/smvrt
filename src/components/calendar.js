@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Button from "./button";
 import Select from "./select";
-
+import moment from 'moment'
 // import CalendarReact from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
@@ -13,12 +13,12 @@ const CalendarReact = dynamic(
     () => import('react-calendar'),
     { ssr: false }
 )
-export default function Calendar({ onSave, onClose }) {
+export default function Calendar({ onSave, duedate = null, reminder = null, reminderMode = false, onClose }) {
     const handleSave = () => {
         onSave(value)
     }
 
-    const [value, onChangeRange] = useState(null);
+    const [value, onChangeRange] = useState(reminderMode ? reminder :  duedate);
         
     const months = [
         {
@@ -72,11 +72,13 @@ export default function Calendar({ onSave, onClose }) {
     ]
 
     const options = {
-        // allowPartialRange: true,
-        // goToRangeStartOnSelect: true,
         locale: 'en',
-        // returnValue: 'range',
-        // selectRange: true
+        selectRange: false,
+        tileDisabled: ({activeStartDate, date, view}) => {
+            if (reminderMode) {
+                return moment(date).isSame(moment(duedate), 'day')
+            }
+        }
     }
 
     const handleChange = (value) => {
@@ -94,23 +96,40 @@ export default function Calendar({ onSave, onClose }) {
                         </svg>
                     </a>
                 </div>
-        <div className="py-[16px]">
-           <div className="my-[16px] rounded-lg shadow">
-            
-                <CalendarReact {...options} value={value} onChange={handleChange} />   
-                <div className="flex items-center text-[10px] justify-around border-t p-4">
-                    <div className="flex items-center">
-                        <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#FD7983]">00</div>
-                        Reminder date
+                <div className="py-[16px]">
+                    <div className="my-[16px] rounded-lg shadow">
+                            <CalendarReact  
+                                {...options} 
+                                tileClassName={reminderMode ? 'reminder-setting-tile' : ''} 
+                                value={value} 
+                                onChange={handleChange} 
+                            />
+
+                            <div className="flex items-center text-[10px] justify-around border-t p-4">
+                                {
+                                    reminderMode ? (
+                                        <div className="flex items-center">
+                                            <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#FD7983]">00</div>
+                                            Reminder date
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center">
+                                            <div className="relative mr-[5px] w-[37px] !text-[#222] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-white">
+                                                00
+                                                <span className="rounded-full w-[5px] h-[5px] absolute bottom-0 left-[50%] translate-x-[-50%] bg-[#297FFF]"></span>
+                                            </div>
+                                            Today
+                                        </div>
+                                    )
+
+                                }
+                                <div className="flex items-center">
+                                    <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#4ECFE0]">00</div>
+                                    Due Date
+                                </div>
+                        </div>
                     </div>
-                    <div className="flex items-center">
-                        <div className="mr-[5px] w-[37px] text-[14px] h-[37px] text-white flex items-center justify-center rounded-full bg-[#4ECFE0]">00</div>
-                        Due Date
-                    </div>
-            </div>
-           </div>
-           
-        </div>
-        <Button label="Save" {...{disabled: !value}}  className="bg-[#1860CC] text-white text-[12px]" onClick={handleSave} />
-    </div>);
+                </div>
+                <Button label="Save" {...{disabled: !value}}  className="bg-[#1860CC] text-white text-[12px]" onClick={handleSave} />
+        </div>);
 }
