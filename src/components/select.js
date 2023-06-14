@@ -34,7 +34,7 @@ export default function Select(props) {
                 <path d="M1 6L6 1L11 6" stroke="#737373" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
         </div>
-        <div className={`${ ! open ? 'hidden' : ''} dropdown max-h-[200px]  overflow-y-auto absolute z-[9999] left-[0] right-[0] bg-white mt-[6px] rounded-[6px] shadow w-full p-[12px] text-[#222] text-[14px] font-Eina03`}>
+        <div className={`${ ! open ? 'hidden' : ''} dropdown max-h-[200px]  overflow-y-auto absolute z-[9999] left-[0] w-fit bg-white mt-[6px] rounded-[6px] shadow  p-[12px] text-[#222] text-[14px] font-Eina03`}>
             {
                 options.map((option, index) => {
                     return (

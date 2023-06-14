@@ -4,7 +4,7 @@ import Input from "./input";
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
 
-export default function MemberAdd({ label, roles, onUpdate, value }) {
+export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles = [] }) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
@@ -154,7 +154,7 @@ export default function MemberAdd({ label, roles, onUpdate, value }) {
                                                 roles.length ? (
                                                     <div className="ml-auto">
                                                         <Select 
-                                                            options={roles}
+                                                            options={roles.filter(option => ! disabledRoles.includes(option.label))}
                                                             className=" px-[10px] !text-[12px] border-none !py-[0]"
                                                             value={member.role}
                                                             onSelect={(event) => handleUpdateRoleMember(member, event)}

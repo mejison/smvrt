@@ -185,12 +185,14 @@ export default function StepTwo() {
                         value={project.members} 
                         roles={roles} 
                         onUpdate={handleUpdateMembers}
+                        disabledRoles={['Owner']}
                     />
                 </div>
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add external collaborators" 
                         value={project.external_collaborators} 
                         roles={roles}
+                        disabledRoles={['Owner']}
                         onUpdate={handleExternalCollaborators} 
                     />
                 </div>
