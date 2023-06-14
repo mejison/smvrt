@@ -28,6 +28,9 @@ const request = (...data) => {
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
  
+export function getEndPoint() {
+    return API_ENDPOINT
+}
 
 export function initPusher(user) {
     window.echoInstance = new Echo({
@@ -356,6 +359,16 @@ export function create_project(fd) {
 
 export function get_project_notifications(id) {
     return request(API_ENDPOINT + "/api/project/" + id + "/notifications", {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+export function get_archived_projects(params) {
+    const query = new URLSearchParams(params).toString()
+    return request(API_ENDPOINT + "/api/project/archived?" + query, {
         method: "GET",
         headers: {
             ...headers,

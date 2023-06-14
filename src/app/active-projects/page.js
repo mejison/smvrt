@@ -44,7 +44,7 @@ export default function ActiveProject() {
         }
     ]);
 
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState(null);
 
     useEffect(() => {
         api.projects().then(({ data }) => {

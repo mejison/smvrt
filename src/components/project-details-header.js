@@ -2,7 +2,7 @@ import { useState } from "react";
 import ProjectDetailsStepper from "./project-details-stepper";
 import ProjectStatus from "./project-status";
 import { getRoleFromProjectBySlug } from '@/utils/helpers'
-export default function ProjectDetailsHeader({ project, steps, activeStep, roles }) {
+export default function ProjectDetailsHeader({ project, steps = [], activeStep = null, roles }) {
     const [toggle, setToggle] = useState(true)
     const handleToggle = () => {
         setToggle(!toggle)
@@ -34,17 +34,23 @@ export default function ProjectDetailsHeader({ project, steps, activeStep, roles
                 </div>
             </div>
             <div className="bg-[#012D55] w-full relative  rounded-b-[6px]">
-                <a 
-                    onClick={handleToggle}
-                    href="#" 
-                    className="absolute top-[-23px] right-[15px] bg-[#012D55] px-[15px] py-[5px] rounded-t-[6px]">
-                    <svg className={`${toggle ? 'rotate-180': ''}`} width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 6.80756L6.67692 1.13986C6.71836 1.09571 6.76841 1.06052 6.82397 1.03647C6.87954 1.01241 6.93945 1 7 1C7.06055 1 7.12046 1.01241 7.17603 1.03647C7.23159 1.06052 7.28164 1.09571 7.32308 1.13986L13 6.80756" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M1 11.617L6.67692 5.94004C6.7632 5.85547 6.87919 5.80811 7 5.80811C7.12081 5.80811 7.2368 5.85547 7.32308 5.94004L13 11.617" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                </a>
                 {
-                    toggle ? (
+                    steps.length ?
+                    (
+                        <a 
+                                onClick={handleToggle}
+                                href="#" 
+                                className="absolute top-[-23px] right-[15px] bg-[#012D55] px-[15px] py-[5px] rounded-t-[6px]">
+                                <svg className={`${toggle ? 'rotate-180': ''}`} width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 6.80756L6.67692 1.13986C6.71836 1.09571 6.76841 1.06052 6.82397 1.03647C6.87954 1.01241 6.93945 1 7 1C7.06055 1 7.12046 1.01241 7.17603 1.03647C7.23159 1.06052 7.28164 1.09571 7.32308 1.13986L13 6.80756" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <path d="M1 11.617L6.67692 5.94004C6.7632 5.85547 6.87919 5.80811 7 5.80811C7.12081 5.80811 7.2368 5.85547 7.32308 5.94004L13 11.617" stroke="white" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </a>
+                    ): <></>
+                }
+                
+                {
+                    steps.length && toggle ? (
                         <div className="p-[16px]">
                             <ProjectDetailsStepper steps={steps} active={activeStep} />
                         </div>
