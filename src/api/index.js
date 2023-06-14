@@ -28,6 +28,9 @@ const request = (...data) => {
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
  
+export function getEndPoint() {
+    return API_ENDPOINT
+}
 
 export function initPusher(user) {
     window.echoInstance = new Echo({

@@ -3,7 +3,7 @@ import Collaborators from "./collaborators";
 import Textarea from "./textarea";
 
 
-export default function ProjectDetailsInfo({ project }) {
+export default function ProjectDetailsInfo({ project, editable = true }) {
     return (
         <div>
             <Card className="mb-[20px] px-[16px]">
@@ -74,7 +74,7 @@ export default function ProjectDetailsInfo({ project }) {
                                 Collaborators
                             </div>
                             <div className='text-[#405D80] font-bold'>
-                                <Collaborators project={project}/>
+                                <Collaborators project={project} editable={editable} />
                             </div>
                         </div>
                     </div>

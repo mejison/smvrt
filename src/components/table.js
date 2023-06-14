@@ -1,4 +1,4 @@
-export default function Table({ fields, data, onClickRow }) {
+export default function Table({ fields, data = [], onClickRow }) {
     const getValue = (row, field) => {
         if (field.getValue) {
             return field.getValue(row);
@@ -23,7 +23,7 @@ export default function Table({ fields, data, onClickRow }) {
                 </thead>
                 <tbody>
                     {
-                        data.map((item, indexRow) => {
+                        data?.map((item, indexRow) => {
                             return (
                                 <tr key={indexRow} onClick={() => onClickRow(item)} className="cursor-pointer">
                                     {
@@ -34,6 +34,20 @@ export default function Table({ fields, data, onClickRow }) {
                                 </tr>
                             )
                         })
+                    }
+                    {
+                        data === null ? (
+                            <tr>
+                                <td colSpan={fields.length} className="text-center p-3 p-[16px] bg-white border-b text-[14px]">Loading ...</td>
+                            </tr>
+                        ) : <></>
+                    }
+                    {
+                        data?.length === 0 ? (
+                            <tr>
+                                <td colSpan={fields.length} className="text-center p-3 p-[16px] bg-white border-b text-[14px]">Nothing found.</td>
+                            </tr>
+                        ) : <></>
                     }
                 </tbody>
             </table>

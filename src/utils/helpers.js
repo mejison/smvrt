@@ -1,3 +1,5 @@
+import * as api from '@/api'
+
 export const setCookie = (name, value, exdays) => {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
@@ -33,4 +35,9 @@ export const getRoleFromProjectBySlug = (project, role, roles = []) => {
 
 export const getRandomColor = () => {
     return Math.floor(Math.random()*16777215).toString(16);
+}
+
+export const getAbsolutePathToDocument = (path) => {
+    path = path || ''
+    return path ? api.getEndPoint() + '/' + path.replace('public', 'storage') : false
 }

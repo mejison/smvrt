@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import * as api from '@/api'
 import Button from "@/components/button";
 import moment from "moment";
-
+import { useRouter } from "next/navigation";
 export default function ArchivedProjects() {
+    const { push } = useRouter();
+
     const fields = [
         {
             label: "Project name",
@@ -52,7 +54,7 @@ export default function ArchivedProjects() {
         }
     ]);
     const [teams, setTeams] = useState([]);
-    const [archivedProjects, setArchivedProjects] = useState([]);
+    const [archivedProjects, setArchivedProjects] = useState(null);
     const [sorts] = useState([
         {
             label: 'Sort by date',
@@ -102,11 +104,12 @@ export default function ArchivedProjects() {
             .then(({ data }) => {
                 data = data.map(item => {
                     return {
+                        id: item.id,
                         name: item.name,
                         type: item.document?.type?.name,
                         updated_at: moment(item.updated_at).format('ll'),
                         team: item.team?.name,
-                        versions: '1',
+                        versions: item.version,
                     }
                 })
                 setArchivedProjects(data);
@@ -140,6 +143,10 @@ export default function ArchivedProjects() {
 
     const handleChangeFilter = (filter) => {
         getProjects(filter);
+    }
+
+    const handleClickRow = (row) => {
+        push('/archived-projects/' + row.id)
     }
 
 
@@ -228,6 +235,6 @@ export default function ArchivedProjects() {
                 />
             </div>
         </div>
-        <Table fields={fields} data={archivedProjects} />
+        <Table fields={fields} data={archivedProjects} onClickRow={handleClickRow} />
     </div>);
 }
