@@ -62,7 +62,8 @@ export default function StepTwo() {
         setActiveTeam(team)
         setProject({
             ...project,
-            team
+            team,
+            save_for_future: team.value ? true : false,
         })
     }
 
@@ -97,6 +98,11 @@ export default function StepTwo() {
                     visible: true,
                     message: data.message
                 }
+            })
+
+            setProject({
+                ...project,
+                save_for_future: true
             })
             getTeams();
         })
@@ -176,7 +182,7 @@ export default function StepTwo() {
                 </Select>
                 <MembersList 
                     team={activeTeam}
-                    members={activeTeam.members}
+                    members={activeTeam?.members}
                     roles={roles}
                     getTeams={getTeams}
                 />
