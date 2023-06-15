@@ -47,8 +47,8 @@ export default function StepThree() {
     }
     
     return (<div>
-                <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Approvals & Signatures</h3>
-                <p className="font-Eina03 font-bold text-[14px] text-[#222] flex">
+                <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">{/*Approvals & */} Signatures</h3>
+                {/* <p className="font-Eina03 font-bold text-[14px] text-[#222] flex">
                     Does your project require approvals before sending it to a third party?
                     <svg className='ml-[5px]' width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10.2857 19.5714C15.4141 19.5714 19.5714 15.4141 19.5714 10.2857C19.5714 5.15736 15.4141 1 10.2857 1C5.15736 1 1 5.15736 1 10.2857C1 15.4141 5.15736 19.5714 10.2857 19.5714Z" stroke="#B8C2CC" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
@@ -85,15 +85,15 @@ export default function StepThree() {
                         </div>
                         <span className='ml-[6px]'>No</span>
                     </label>
-                </div>
+                </div> */}
                 {
                     require_approvals ? (
                         <>
-                            <MemberAdd label="Add Approvers" 
+                            {/* <MemberAdd label="Add Approvers" 
                                 value={project.approvers} 
                                 onUpdate={handleApprovers} 
                                 roles={[]}
-                            />
+                            /> */}
                             <h3 className='font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px] flex items-center'>Who will sign the final document?</h3>
                             <div>
                                 <Select 
@@ -120,7 +120,7 @@ export default function StepThree() {
                             }
                         </div>
                         <span className="px-[12px] py-[26px] cursor-pointer" onClick={() => setProject({...project, save_for_future: ! project.save_for_future})}>
-                            Save <strong>Approvers</strong> and <strong>Signatories</strong> for this team for future projects
+                            Save {/*<strong>Approvers</strong> and */}<strong>Signatories</strong> for this team for future projects
                         </span>
                     </label>
                 </div>
