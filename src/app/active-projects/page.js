@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import * as api from '@/api'
 import ProjectStatus from "@/components/project-status";
 import { useRouter } from "next/navigation";
+import moment from 'moment'
+
 export default function ActiveProject() {
     const { push } = useRouter();
 
@@ -48,7 +50,15 @@ export default function ActiveProject() {
 
     useEffect(() => {
         api.projects().then(({ data }) => {
-            setProjects(data)
+            setProjects([
+                ...data.map(row => {
+                    return {
+                        ...row,
+                        due_date: moment(row.due_date).format('ll'),
+                        updated_at: moment(row.updated_at).format('ll')
+                    }
+                }),
+            ])
         })
     }, []);
 
