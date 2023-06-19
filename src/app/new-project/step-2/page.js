@@ -215,6 +215,7 @@ export default function StepTwo() {
                     members={activeTeam?.members}
                     roles={roles}
                     getTeams={getTeams}
+                    disabledRoles={['Owner']}
                 />
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add team members" 
