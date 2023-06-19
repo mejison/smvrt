@@ -68,10 +68,14 @@ export default function StepThree() {
         setProject({
             ...project,
             document: upload.file,
-            type: upload.type.value || upload.others,
-            category: upload.category.value,
-        })
-        setPopups({...popups, upload_document: false})
+            type: upload.type,
+            category: upload.category,
+        });
+
+        setPopups({
+            ...popups, 
+            upload_document: false
+        });
     }
 
     const handleEditDocument = (e) => {
