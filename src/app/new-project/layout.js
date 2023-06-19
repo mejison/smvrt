@@ -25,18 +25,18 @@ export default function NewProjectLayout({ children }) {
             label: 'Team & Collaborators',
             slug: 'step-2'
         },
+        // {
+        //     // label: 'Approvals & Signatures',
+        //     label: 'Signatures',
+        //     slug: 'step-3'
+        // },
         {
-            // label: 'Approvals & Signatures',
-            label: 'Signatures',
+            label: 'Edit Document',
             slug: 'step-3'
         },
         {
-            label: 'Edit Document',
-            slug: 'step-4'
-        },
-        {
             label: 'Analyze document',
-            slug: 'step-5'
+            slug: 'step-4'
         }
     ])
 
@@ -162,8 +162,8 @@ export default function NewProjectLayout({ children }) {
                 return ;
             }
 
-            setActiveStep("step-5");
-            push("/new-project/step-5")
+            setActiveStep("step-4");
+            push("/new-project/step-4")
         })
     }
 
@@ -175,7 +175,7 @@ export default function NewProjectLayout({ children }) {
             setActiveStep('')    
         }
        
-        if (['step-2', 'step-3', 'step-4', 'step-5'].includes(step)) {
+        if (['step-2', 'step-3', 'step-4'].includes(step)) {
             setActiveStep(step)
         }
     }, [])
