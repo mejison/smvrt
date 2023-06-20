@@ -219,7 +219,8 @@ export default function StepTwo() {
                 />
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add team members" 
-                        value={project.members} 
+                        value={project.members}
+                        exclude={activeTeam?.members}
                         roles={roles} 
                         onUpdate={handleUpdateMembers}
                         disabledRoles={['Owner']}
@@ -228,6 +229,7 @@ export default function StepTwo() {
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add external collaborators" 
                         value={project.external_collaborators} 
+                        exclude={[...project.members, ...(activeTeam?.members ?? [])]}
                         roles={[]}
                         disabledRoles={['Owner']}
                         onUpdate={handleExternalCollaborators} 

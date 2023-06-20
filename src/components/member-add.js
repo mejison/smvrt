@@ -4,7 +4,7 @@ import Input from "./input";
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
 
-export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles = [] }) {
+export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles = [], exclude = [] }) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
@@ -26,7 +26,8 @@ export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles
         const filled = !member.name || !member.email ? true: false
         const exist = members.find(item => item.email == member.email)
         const isEmail = regexpEmail.test(member.email)
-        return ! filled && ! exist && isEmail
+        const isExclude = exclude.find(item => item.email == member.email)
+        return ! filled && ! exist && isEmail && ! isExclude
     }
 
     useEffect(() => {
