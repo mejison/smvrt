@@ -6,7 +6,7 @@ import { useState } from 'react'
 import AddTeamMember from '@/components/add-team-member.js'
 
 export default function CreateNewTeam(props) {
-    const { onSave, roles } = props
+    const { onSave, roles, disabledRoles = [] } = props
 
     const [teamName, setTeamName] = useState("")
     const [members, setNewMember] = useState([])
@@ -99,7 +99,7 @@ export default function CreateNewTeam(props) {
                         
                         {
                             showAddMember ? (
-                                <AddTeamMember roles={roles} onAddedNewMember={onAddedNewMember} />
+                                <AddTeamMember roles={roles.filter(option => ! disabledRoles.includes(option.label))} onAddedNewMember={onAddedNewMember} />
                             ) : <></>
                         }
                         
