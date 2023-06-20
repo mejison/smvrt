@@ -1,9 +1,65 @@
+import { useState } from "react";
 import Card from "./card";
 import Collaborators from "./collaborators";
 import Textarea from "./textarea";
+import * as api from '@/api'
+import ServerError from "@/popups/server-error.js";
+import ServerSuccess from "@/popups/server-success.js";
+import RequestChangePopUp from "@/popups/request-change";
 
 
-export default function ProjectDetailsInfo({ project, editable = true }) {
+export default function ProjectDetailsInfo({ project, editable = true, roles }) {
+    const [showRequestToChangePopUp, setShowRequestToChangePopUp] = useState(false)
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
+    const handleChangeRole = (member) => {
+        api.request_to_change_role({
+            project: {
+                value: project.id,
+            },
+            role: {
+                value: member.pivot.role_id
+            },
+            user_id: member.id
+        }).then((data) => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: data.message
+                }
+            })
+        })
+    }
+
+    const handleClick = () => {
+        setShowRequestToChangePopUp(true)
+    }
+
+
     return (
         <div>
             <Card className="mb-[20px] px-[16px]">
@@ -58,7 +114,7 @@ export default function ProjectDetailsInfo({ project, editable = true }) {
                                 Team
                             </div>
                             <div className='text-[#405D80] font-bold'>
-                                <a href="#" className="text-[#297FFF] underline">
+                                <a href="#" onClick={handleClick} className="text-[#297FFF] underline">
                                     {project?.team?.name}
                                 </a>
                             </div>
@@ -74,7 +130,7 @@ export default function ProjectDetailsInfo({ project, editable = true }) {
                                 Collaborators
                             </div>
                             <div className='text-[#405D80] font-bold'>
-                                <Collaborators project={project} editable={editable} />
+                                <Collaborators project={project} editable={editable} roles={roles} />
                             </div>
                         </div>
                     </div>
@@ -83,6 +139,28 @@ export default function ProjectDetailsInfo({ project, editable = true }) {
                     <h3 className="font-Eina03 font-bold text-[14px] text-[#222] mb-2">Notes (Quick Summary)</h3>
                     <Textarea value={project.description} className="resize-none" onChange={() =>{}} />
                 </Card>
+
+                <RequestChangePopUp
+                    roles={roles}  
+                    project={project}
+                    members={project?.team?.members || []}
+                    open={showRequestToChangePopUp}
+                    onChange={handleChangeRole}
+                    onClose={() => setShowRequestToChangePopUp(false)} />
+
+                <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                />
         </div>
     );
 }

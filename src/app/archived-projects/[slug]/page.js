@@ -7,10 +7,10 @@ import Document from '@/components/document';
 import Card from '@/components/card';
 
 export default function ArchivedProjectDetails() {
-    const {project} = useProject();
+    const {project, roles} = useProject();
 
     return ( <div className="grid gap-[20px] grid-cols-[400px_1fr] pb-8">
-                <ProjectDetailsInfo project={project} editable={false} />
+                <ProjectDetailsInfo project={project} editable={false} roles={roles} />
                 <Card>
                     {
                         project.document?.path ? (
