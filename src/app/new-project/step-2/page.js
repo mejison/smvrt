@@ -272,6 +272,7 @@ export default function StepTwo() {
                             open={popups.create_new_team}
                             onSave={onCreateTeam}
                             roles={roles}
+                            disabledRoles={['Owner']}
                             onClose={() => setPopUps({...popups, create_new_team: false})}
                         />
 
