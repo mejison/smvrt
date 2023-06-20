@@ -1,16 +1,22 @@
+import RequestChangePopUp from "@/popups/request-change";
 import { getAttrFromName } from "@/utils/helpers";
+import { useEffect, useState } from "react";
 
-export default function Collaborators({ project, editable = true }) {
+export default function Collaborators({ project, editable = true, roles = [] }) {
     const slice = 5;
-    let members = project?.team?.members || [];
+    const [members, setMembers] = useState(project?.team?.members || [])
     let firstFive = members.slice(0, slice)
     let overFive = members.slice(slice, members.length)
 
-    return (<div className="relative">
+    useEffect(() => {
+        setMembers(project?.team?.members || [])
+    }, [project])
+
+    return (<div className="relative" >
                 {
                     firstFive.map((member, index) => {
                         return (
-                            <div key={index} style={{left: `${index * 20}px`, zIndex: index}} className={`border-2 border-[white] absolute top-[50%] w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter`}>
+                            <div key={index} style={{left: `${index * 20}px`, zIndex: index}} className={` cursor-pointer border-2 border-[white] absolute top-[50%] w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter`}>
                                 {
                                     member && member.avatar ? 
                                     <img src={member.avatar} className="w-full h-full object-contain" />
