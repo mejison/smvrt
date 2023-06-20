@@ -31,10 +31,9 @@ export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles
     }
 
     useEffect(() => {
-        if (value && value.length) {
-            setToggle(true)
-        }
-    }, [members])
+        setToggle(value && value.length)
+        setMembers([...value])
+    }, [value])
 
     const handleAdd = (e) => {
         e.preventDefault();

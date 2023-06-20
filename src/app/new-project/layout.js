@@ -59,6 +59,7 @@ export default function NewProjectLayout({ children }) {
         team: '',
         members: [],
         external_collaborators: [],
+        signatories: [],
         documentname: '',
         document: null,
         type: '',
@@ -143,6 +144,10 @@ export default function NewProjectLayout({ children }) {
 
         project.members.forEach(member => {
             fd.append('members[]', JSON.stringify(member))
+        })
+
+        project.signatories.forEach(member => {
+            fd.append('signatories[]', JSON.stringify(member))
         })
 
         fd.set('save_for_future', project.save_for_future ? 1 : 0)
