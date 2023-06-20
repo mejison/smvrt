@@ -78,10 +78,19 @@ export default function Calendar({ onSave, duedate = null, reminder = null, remi
             if (reminderMode) {
                 return moment(date).isSame(moment(duedate), 'day')
             }
-        }
+        },
     }
 
     const handleChange = (value) => {
+        if (reminderMode) {
+            const mDuedate = moment(duedate)
+            const mReminder = moment(value)
+
+            if (mDuedate.diff(mReminder) > 0) {
+                onChangeRange(value)
+            }
+            return ;
+        }
         onChangeRange(value)
     }
 
