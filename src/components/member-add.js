@@ -4,7 +4,7 @@ import Input from "./input";
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
 
-export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles = [], exclude = [] }) {
+export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', disabledRoles = [], exclude = [] }) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
@@ -87,22 +87,24 @@ export default function MemberAdd({ label, roles, onUpdate, value, disabledRoles
 
     return (
         <>
-            <h3 className="font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px] flex items-center">{label}
-                        <a href="#" className="ml-auto" onClick={(e)=> {e.preventDefault(); setToggle(!toggle) }}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g clipPath="url(#clip0_49_9784)">
-                                    <path d="M12 6.85718V17.1429" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M6.85742 12H17.1431" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                    <path d="M18.0003 0.857178H6.00028C3.15996 0.857178 0.857422 3.15971 0.857422 6.00003V18C0.857422 20.8404 3.15996 23.1429 6.00028 23.1429H18.0003C20.8406 23.1429 23.1431 20.8404 23.1431 18V6.00003C23.1431 3.15971 20.8406 0.857178 18.0003 0.857178Z" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                                </g>
-                                <defs>
-                                <clipPath id="clip0_49_9784">
-                                <rect width="24" height="24" fill="white"/>
-                                </clipPath>
-                                </defs>
-                            </svg>
-                        </a>
-                    </h3>
+            <h3 className="relative font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px] flex items-center">{label}
+            <span className="absolute bottom-[-17px] left-0 text-[12px] text-[#888] font-normal">{subtitle}</span>
+                <a href="#" className="ml-auto" onClick={(e)=> {e.preventDefault(); setToggle(!toggle) }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clipPath="url(#clip0_49_9784)">
+                            <path d="M12 6.85718V17.1429" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M6.85742 12H17.1431" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M18.0003 0.857178H6.00028C3.15996 0.857178 0.857422 3.15971 0.857422 6.00003V18C0.857422 20.8404 3.15996 23.1429 6.00028 23.1429H18.0003C20.8406 23.1429 23.1431 20.8404 23.1431 18V6.00003C23.1431 3.15971 20.8406 0.857178 18.0003 0.857178Z" stroke="black" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                        </g>
+                        <defs>
+                        <clipPath id="clip0_49_9784">
+                        <rect width="24" height="24" fill="white"/>
+                        </clipPath>
+                        </defs>
+                    </svg>
+                </a>
+                
+            </h3>
             
             {
                 toggle ? (

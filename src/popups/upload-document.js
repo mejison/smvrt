@@ -5,6 +5,7 @@ import Select from '@/components/select.js';
 import UploadArea from '@/components/upload-area.js';
 import { useEffect, useState } from 'react';
 import * as api from '@/api'
+import SearchDocumentProperty from '@/components/search-document-property.js';
 
 export default function VerifyEmailAddress(props) {
     const { onUpload }  = props;
@@ -84,11 +85,12 @@ export default function VerifyEmailAddress(props) {
                             value={form.type}
                             onSelect={handleChangeTypes}
                         /> */}
-                        <Input 
-                            label="Type"
+                        
+                        <SearchDocumentProperty
+                            value={form.type} 
+                            type="type" 
+                            onInput={(value) => setForm({...form, type: value})}
                             placeholder="Example: NDA, MSA, SOW"
-                            value={form.type}
-                            onInput={(event) => setForm({...form, type: event.target.value})}
                         />
                     </div>
                 </div>
@@ -100,12 +102,12 @@ export default function VerifyEmailAddress(props) {
                             <path d="M10.2856 7.42857C10.6801 7.42857 10.9999 7.10877 10.9999 6.71429C10.9999 6.3198 10.6801 6 10.2856 6C9.89109 6 9.57129 6.3198 9.57129 6.71429C9.57129 7.10877 9.89109 7.42857 10.2856 7.42857Z" stroke="#B8C2CC" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </span>
-                    <Input 
-                        label="Category"
+                    <SearchDocumentProperty 
+                        value={form.category} 
                         placeholder="Example: My Documents, Business, Music, Sales, etc."
-                        value={form.category}
-                        onInput={(event) => setForm({...form, category: event.target.value})}
-                        />
+                        type="category" 
+                        onInput={(value) => setForm({...form, category: value})}
+                    />
                     {/* <Select 
                         label="Category"
                         options={categories}
