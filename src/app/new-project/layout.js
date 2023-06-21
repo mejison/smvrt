@@ -35,7 +35,7 @@ export default function NewProjectLayout({ children }) {
             slug: 'step-3'
         },
         {
-            label: 'Analyze document',
+            label: 'Start Project',
             slug: 'step-4'
         }
     ])
