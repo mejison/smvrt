@@ -230,6 +230,7 @@ export default function StepTwo() {
                 />
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add team members" 
+                        subtitle="Invite members from your company to this project"
                         value={project.members}
                         exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
                         roles={roles} 
@@ -237,17 +238,9 @@ export default function StepTwo() {
                         disabledRoles={['Owner']}
                     />
                 </div>
-                <div className=" mb-[24px]">
-                    <MemberAdd label="Add external collaborators" 
-                        value={project.external_collaborators} 
-                        exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
-                        roles={[]}
-                        disabledRoles={['Owner']}
-                        onUpdate={handleExternalCollaborators} 
-                    />
-                </div>
                 <div className="mb-[24px]">
                     <MemberAdd label="Add Signatory" 
+                        subtitle="Enter the information for the user on your team who will sign the document's final version."
                         value={project.signatories}
                         exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
                         roles={[]} 
@@ -255,6 +248,17 @@ export default function StepTwo() {
                         disabledRoles={['Owner']}
                     />
                 </div>
+                <div className=" mb-[24px]">
+                    <MemberAdd label="Add external collaborators" 
+                        subtitle="Invite 3rd party users from the company or group you're working with to this project."
+                        value={project.external_collaborators} 
+                        exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
+                        roles={[]}
+                        disabledRoles={['Owner']}
+                        onUpdate={handleExternalCollaborators} 
+                    />
+                </div>
+
                 <div className="my-2">
                     {
                         require_approvals ? (
