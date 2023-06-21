@@ -31,7 +31,7 @@ export default function NewProjectLayout({ children }) {
         //     slug: 'step-3'
         // },
         {
-            label: 'Edit Document',
+            label: 'Upload Document',
             slug: 'step-3'
         },
         {
