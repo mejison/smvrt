@@ -14,7 +14,7 @@ export default function StepThree() {
     const {project, setProject} = useNewProject();
 
     const [popups, setPopups] = useState({
-        upload_document: false,
+        upload_document: true,
     });
 
     const [popup, setPopup] = useState({
