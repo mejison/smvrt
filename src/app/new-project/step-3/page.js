@@ -14,7 +14,7 @@ export default function StepThree() {
     const {project, setProject} = useNewProject();
 
     const [popups, setPopups] = useState({
-        upload_document: true,
+        upload_document: false,
     });
 
     const [popup, setPopup] = useState({
@@ -87,7 +87,7 @@ export default function StepThree() {
 
   
     return (<div>
-                <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Analyze document</h3>
+                <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Upload document</h3>
                 <p className='text-[14px] text-[#737373] mb-[24px]'>Please upload your document or select the existing document from your library</p>
                 <Input 
                     placeholder="File name"
