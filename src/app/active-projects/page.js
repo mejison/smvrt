@@ -49,17 +49,19 @@ export default function ActiveProject() {
     const [projects, setProjects] = useState(null);
 
     useEffect(() => {
-        api.projects().then(({ data }) => {
-            setProjects([
-                ...data.map(row => {
-                    return {
-                        ...row,
-                        due_date: moment(row.due_date).format('ll'),
-                        updated_at: moment(row.updated_at).format('ll')
-                    }
-                }),
-            ])
-        })
+        api
+            .projects()
+            .then(({ data }) => {
+                setProjects([
+                    ...data.map(row => {
+                        return {
+                            ...row,
+                            due_date: moment(row.due_date).format('ll'),
+                            updated_at: moment(row.updated_at).format('ll')
+                        }
+                    }),
+                ])
+            })
     }, []);
 
     const handleClickRow = (row) => {
