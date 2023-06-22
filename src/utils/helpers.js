@@ -1,3 +1,5 @@
+import * as api from '@/api'
+
 export const setCookie = (name, value, exdays) => {
     var exdate = new Date();
     exdate.setDate(exdate.getDate() + exdays);
@@ -20,4 +22,22 @@ export const getCookie = (cookie, name) => {
 export const getAttrFromName = (name) => {
     const parts = name.split(' ');
     return parts.length >= 2 ? parts[0].charAt(0).toUpperCase() + " " + parts[1].charAt(0).toUpperCase() : name.charAt(0).toUpperCase()
+}
+
+
+export const getRoleFromProjectBySlug = (project, role, roles = []) => {
+    const members = project.team && project.team.members && project.team.members.length ? project.team.members : [];
+    const targetRole = roles.find(row => row.slug == role) || {};
+    const member = members.find(member => member.pivot.role_id == targetRole.id)
+   
+    return member ? (member.fname ? member.fname + ' ' + member.lname : member.email) : '-';
+}
+
+export const getRandomColor = () => {
+    return Math.floor(Math.random()*16777215).toString(16);
+}
+
+export const getAbsolutePathToDocument = (path) => {
+    path = path || ''
+    return path ? api.getEndPoint() + '/' + path.replace('public', 'storage') : false
 }

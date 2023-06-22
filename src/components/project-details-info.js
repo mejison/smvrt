@@ -1,8 +1,65 @@
+import { useState } from "react";
 import Card from "./card";
+import Collaborators from "./collaborators";
 import Textarea from "./textarea";
+import * as api from '@/api'
+import ServerError from "@/popups/server-error.js";
+import ServerSuccess from "@/popups/server-success.js";
+import RequestChangePopUp from "@/popups/request-change";
 
 
-export default function ProjectDetailsInfo({ project }) {
+export default function ProjectDetailsInfo({ project, editable = true, roles }) {
+    const [showRequestToChangePopUp, setShowRequestToChangePopUp] = useState(false)
+
+    const [popup, setPopup] = useState({
+        server_error: {
+            visible: false,
+            message: '',
+        },
+        server_success: {
+            visible: false,
+            message: '',
+        },
+    })
+
+    const handleChangeRole = (member) => {
+        api.request_to_change_role({
+            project: {
+                value: project.id,
+            },
+            role: {
+                value: member.pivot.role_id
+            },
+            user_id: member.id
+        }).then((data) => {
+            const errors = data.errors ? Object.values(data.errors) : []
+            if (errors.length || data.exception) {
+                const message = Object.values(errors).flat(1).join(' ') || data.message || data.exception
+                setPopup({
+                    ...popup,
+                    server_error: {
+                        visible: true,
+                        message
+                    }
+                })
+                return ;
+            }
+
+            setPopup({
+                ...popup,
+                server_success: {
+                    visible: true,
+                    message: data.message
+                }
+            })
+        })
+    }
+
+    const handleClick = () => {
+        setShowRequestToChangePopUp(true)
+    }
+
+
     return (
         <div>
             <Card className="mb-[20px] px-[16px]">
@@ -56,7 +113,11 @@ export default function ProjectDetailsInfo({ project }) {
                                 </svg>
                                 Team
                             </div>
-                            <div className='text-[#405D80] font-bold'>{project.team}</div>
+                            <div className='text-[#405D80] font-bold'>
+                                <a href="#" onClick={handleClick} className="text-[#297FFF] underline">
+                                    {project?.team?.name}
+                                </a>
+                            </div>
                         </div>
                         <div className='grid gap-[20px] grid-cols-[110px_1fr]'>
                             <div  className='text-[#B8C2CC]  flex items-center'>
@@ -66,10 +127,11 @@ export default function ProjectDetailsInfo({ project }) {
                                 <path d="M9 1.5C9.59674 1.5 10.169 1.73705 10.591 2.15901C11.0129 2.58097 11.25 3.15326 11.25 3.75C11.25 4.34674 11.0129 4.91903 10.591 5.34099C10.169 5.76295 9.59674 6 9 6" stroke="#B8C2CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                 <path d="M10.5996 8.18994C11.4514 8.51399 12.1848 9.08905 12.7026 9.83903C13.2205 10.589 13.4984 11.4786 13.4996 12.3899V13.4999H11.9996" stroke="#B8C2CC" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
                                 </svg>
-
                                 Collaborators
                             </div>
-                            <div className='text-[#405D80] font-bold'>...</div>
+                            <div className='text-[#405D80] font-bold'>
+                                <Collaborators project={project} editable={editable} roles={roles} />
+                            </div>
                         </div>
                     </div>
                 </Card>
@@ -77,6 +139,28 @@ export default function ProjectDetailsInfo({ project }) {
                     <h3 className="font-Eina03 font-bold text-[14px] text-[#222] mb-2">Notes (Quick Summary)</h3>
                     <Textarea value={project.description} className="resize-none" onChange={() =>{}} />
                 </Card>
+
+                <RequestChangePopUp
+                    roles={roles}  
+                    project={project}
+                    members={project?.team?.members || []}
+                    open={showRequestToChangePopUp}
+                    onChange={handleChangeRole}
+                    onClose={() => setShowRequestToChangePopUp(false)} />
+
+                <ServerError 
+                    open={popup.server_error.visible} 
+                    title="Error"
+                    message={popup.server_error.message}
+                    onClose={() => {setPopup({...popup, server_error: { visible: false }})}}
+                />
+
+                <ServerSuccess
+                    open={popup.server_success.visible} 
+                    title="Success"
+                    message={popup.server_success.message}
+                    onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                />
         </div>
     );
 }

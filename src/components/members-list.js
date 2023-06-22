@@ -2,7 +2,7 @@ import { getAttrFromName } from '@/utils/helpers'
 import Select from "@/components/select"
 import * as api from '@/api'
 
-export default function MembersList({ team, members, roles, getTeams }) {
+export default function MembersList({ team, members, roles, getTeams, disabledRoles = [] }) {
     members = members || []
     const onChangeRole = (member, role) => {
         api.update_role_on_team({
@@ -59,7 +59,7 @@ export default function MembersList({ team, members, roles, getTeams }) {
                         { member.email }
                         <div className="ml-auto">
                             <Select 
-                                options={roles}
+                                options={roles.filter(option => ! disabledRoles.includes(option.label))}
                                 value={roles.find(role => role.value == member.role_id)}
                                 className=" px-[10px] !text-[12px] border-none !py-[0]"
                                 onSelect={(newRole) => onChangeRole(member, newRole)}

@@ -25,17 +25,18 @@ export default function NewProjectLayout({ children }) {
             label: 'Team & Collaborators',
             slug: 'step-2'
         },
+        // {
+        //     // label: 'Approvals & Signatures',
+        //     label: 'Signatures',
+        //     slug: 'step-3'
+        // },
         {
-            label: 'Approvals & Signatures',
+            label: 'Upload Document',
             slug: 'step-3'
         },
         {
-            label: 'Edit Document',
+            label: 'Start Project',
             slug: 'step-4'
-        },
-        {
-            label: 'Analyze document',
-            slug: 'step-5'
         }
     ])
 
@@ -54,9 +55,11 @@ export default function NewProjectLayout({ children }) {
         name: '',
         notes: '',
         duedate: '',
+        reminderdate: '',
         team: '',
         members: [],
         external_collaborators: [],
+        signatories: [],
         documentname: '',
         document: null,
         type: '',
@@ -143,6 +146,10 @@ export default function NewProjectLayout({ children }) {
             fd.append('members[]', JSON.stringify(member))
         })
 
+        project.signatories.forEach(member => {
+            fd.append('signatories[]', JSON.stringify(member))
+        })
+
         fd.set('save_for_future', project.save_for_future ? 1 : 0)
 
         api.create_project(fd)
@@ -160,8 +167,8 @@ export default function NewProjectLayout({ children }) {
                 return ;
             }
 
-            setActiveStep("step-5");
-            push("/new-project/step-5")
+            setActiveStep("step-4");
+            push("/new-project/step-4")
         })
     }
 
@@ -173,7 +180,7 @@ export default function NewProjectLayout({ children }) {
             setActiveStep('')    
         }
        
-        if (['step-2', 'step-3', 'step-4', 'step-5'].includes(step)) {
+        if (['step-2', 'step-3', 'step-4'].includes(step)) {
             setActiveStep(step)
         }
     }, [])

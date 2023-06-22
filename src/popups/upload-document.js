@@ -5,6 +5,7 @@ import Select from '@/components/select.js';
 import UploadArea from '@/components/upload-area.js';
 import { useEffect, useState } from 'react';
 import * as api from '@/api'
+import SearchDocumentProperty from '@/components/search-document-property.js';
 
 export default function VerifyEmailAddress(props) {
     const { onUpload }  = props;
@@ -15,14 +16,8 @@ export default function VerifyEmailAddress(props) {
 
     const [form, setForm] = useState({
         others: '',
-        type:  {
-            label: 'Select type',
-            value: '',
-        },
-        category: {
-            label: 'Select category',
-            value: '',
-        },
+        type:  '',
+        category: '',
         file: null
     })
 
@@ -49,6 +44,8 @@ export default function VerifyEmailAddress(props) {
 
     useEffect(() => {
         api.get_categories().then(({ data }) => {
+            data = data || []
+            
             setCategories([
                 {
                     label: 'Select category',
@@ -81,18 +78,20 @@ export default function VerifyEmailAddress(props) {
 
     return (<WrapperModal open={props.open} {...props}>
                 <div className='pt-[15px] mb-[24px]'>
-                    <h3 className='block mb-2 text-sm font-Eina03 font-bold mb-[8px]'>Document Type</h3>
+                    {/* <h3 className='block mb-2 text-sm font-Eina03 font-bold mb-[8px]'>Document Type</h3> */}
                     <div className='grid gap-[16px] grid-cols-[1fr]'>
-                        <Select 
+                        {/* <Select 
                             options={types}
                             value={form.type}
                             onSelect={handleChangeTypes}
-                        />
-                        {/* <Input 
-                            placeholder="Others"
-                            value={form.others}
-                            onInput={(event) => setForm({...form, others: event.target.value})}
                         /> */}
+                        
+                        <SearchDocumentProperty
+                            value={form.type} 
+                            type="type" 
+                            onInput={(value) => setForm({...form, type: value})}
+                            placeholder="Example: NDA, MSA, SOW"
+                        />
                     </div>
                 </div>
                 <div className='mb-[24px] relative'>
@@ -103,12 +102,18 @@ export default function VerifyEmailAddress(props) {
                             <path d="M10.2856 7.42857C10.6801 7.42857 10.9999 7.10877 10.9999 6.71429C10.9999 6.3198 10.6801 6 10.2856 6C9.89109 6 9.57129 6.3198 9.57129 6.71429C9.57129 7.10877 9.89109 7.42857 10.2856 7.42857Z" stroke="#B8C2CC" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                     </span>
-                    <Select 
+                    <SearchDocumentProperty 
+                        value={form.category} 
+                        placeholder="Example: My Documents, Business, Music, Sales, etc."
+                        type="category" 
+                        onInput={(value) => setForm({...form, category: value})}
+                    />
+                    {/* <Select 
                         label="Category"
                         options={categories}
                         value={form.category}
                         onSelect={handleChangeCategory}
-                    />
+                    /> */}
                 </div>
                 <div className='mb-[15px]'>
                     <UploadArea onUpload={handleUpload} />
