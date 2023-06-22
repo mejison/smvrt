@@ -5,58 +5,39 @@ import DashboardOverview from "@/components/dashboard-overview";
 import IconNewProjectBtnSVG from "@/assets/new-project-btn.svg"
 import IconSortBySVG from "@/assets/sort-by.svg"
 import ActiveProjectCard from "@/components/active-project-card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Table from "@/components/table";
 import Select from "@/components/select";
 import { useRouter } from "next/navigation";
 import SortBy from "@/components/sort-by";
+import * as api from '@/api'
+import moment from 'moment'
+import { getRandomColor } from "@/utils/helpers"
+import { useUser } from "@/context/user";
 
 export default function Dashboard() {
-    const [view, setView] = useState('lists');
+    const [view, setView] = useState('cards');
     const {push} = useRouter();
 
-    const projects = [
-        {
-            id: 27,
-            name: 'Zephyr & Virgin Galactic',
-            duedate: '01/10/2023',
-            doctype: 'NDA',
-            owner: 'Kelly Frost',
-            team: 'English',
-        },
-        {
-            id: 27,
-            name: 'Zephyr & Virgin Galactic',
-            duedate: '01/10/2023',
-            doctype: 'NDA',
-            owner: 'Kelly Frost',
-            team: 'English',
-        },
-        {
-            id: 27,
-            name: 'Zephyr & Virgin Galactic',
-            duedate: '01/10/2023',
-            doctype: 'NDA',
-            owner: 'Kelly Frost',
-            team: 'English',
-        },
-        {
-            id: 27,
-            name: 'Zephyr & Virgin Galactic',
-            duedate: '01/10/2023',
-            doctype: 'NDA',
-            owner: 'Kelly Frost',
-            team: 'English',
-        },
-        {
-            id: 27,
-            name: 'Zephyr & Virgin Galactic',
-            duedate: '01/10/2023',
-            doctype: 'NDA',
-            owner: 'Kelly Frost',
-            team: 'English',
-        },
-    ]
+    const {user} = useUser();
+
+    const [statistics, getStatistics] = useState({
+        'on-going': 0,
+        'pending': 0,
+        'complete': 0,
+    });
+
+    useEffect(() => {
+        api
+            .statistics()
+            .then((data) => {
+                getStatistics(data)
+            })
+        
+        getProjects();
+    }, []);
+
+    const [projects, setProjects]  = useState([])
 
     const options = [
         {
@@ -81,7 +62,24 @@ export default function Dashboard() {
         }
     ]
 
-    const handleSelectOption = (option) => {
+    const getProjects = (filter = {}) => {
+        api
+        .projects(filter)
+        .then(({ data }) => {
+            setProjects([
+                ...data.map(row => {
+                    return {
+                        ...row,
+                        color: getRandomColor(),
+                        due_date: moment(row.due_date).format('ll'),
+                        updated_at: moment(row.updated_at).format('ll')
+                    }
+                }),
+            ])
+        })
+    }
+
+    const handleSelectOption = (option, project) => {
         push('/active-projects/' + project.id + '/' + option.value)
     }
 
@@ -98,13 +96,34 @@ export default function Dashboard() {
     }
 
     const handleChangeFilter = (filter) => {
-        console.log(filter)
+        getProjects({
+            sortBy: filter.name,
+            sortValue: filter.value,
+        });
     }
 
+    const getOwner = (team) => {
+        const members = team && team.members || []
+        const [lead] = members
+        return lead && lead.fname + ' ' + lead.lname || lead.email
+    }
+
+    let period = 'now';
+    const today = new Date()
+    const curHr = today.getHours()
+
+    if (curHr < 12) {
+        period = "morning";
+    } else if (curHr < 18) {
+        period = "afternoon";
+    } else {
+        period = "evening";
+    }
+    
     return (<div className="lg:pl-[270px] pl-0 pt-[90px] pr-[15px]">
-                <h3 className="font-Eina03 text-[#222] text-[20px] font-bold mb-4">Good morning, Alex</h3>
+                <h3 className="font-Eina03 text-[#222] text-[20px] font-bold mb-4">Good {period}, {user.fname ? user.fname : (user.name ? user.name : user.email)}</h3>
                 <div className="mb-5">
-                    <DashboardOverview  />
+                    <DashboardOverview data={statistics} />
                 </div>
                 <Card>
                     <div className="flex items-center mb-4">
@@ -221,31 +240,35 @@ export default function Dashboard() {
                                            </div>
                                         </div>
                                     </div>
-                                
+                                    {
+                                        ! projects.length ? (
+                                            <div className="text-[14px] text-center w-full">Records not found.</div>
+                                        ):<></>
+                                    }
                                     {
                                         projects.map((project, index) => {
                                             return (
                                                 <div key={index} className="hover:shadow-[0px_6px_6px_rgba(0,0,0,0.25),-6px_6px_6px_#D3E4FE] grid grid-cols-[250px_1fr_1fr_1fr_1fr] mb-2 items-center gap-3 hover:border-[rgba(0,0,0,.5)] border-[transparent] border shadow-[0px_2px_2px_rgba(211,228,254,0.8)] rounded-[6px] cursor-pointer">
                                                     <div className="text-[12px] text-[#222] font-bold py-3 pl-3 flex items-center">
-                                                        <span className="w-[15px] h-[15px] bg-[#FD6C61] rounded-full flex mr-2"></span>
+                                                        <span style={{backgroundColor: '#' + project.color}} className={`w-[15px] h-[15px] rounded-full flex mr-2`}></span>
                                                         {project.name}
                                                     </div>
                                                     <div className="text-[12px] text-[#222] font-normal">
-                                                        {project.duedate}
+                                                        {project.due_date}
                                                     </div>
                                                     <div className="text-[12px] text-[#36475E] font-normal">
-                                                        {project.doctype}
+                                                        {project?.document?.type?.name}
                                                     </div>
                                                     <div className="text-[12px] text-[#36475E] font-normal">
-                                                        {project.owner}
+                                                        { getOwner(project.team) }
                                                     </div>
                                                     <div className="text-[12px] text-[#36475E] font-normal">
                                                         <div className="flex items-center w-full ">
-                                                           <div className="mr-2">{project.team}</div>
+                                                           <div className="mr-2"></div>
                                                             <Select 
                                                                 options={options} 
                                                                 icon={optionIcon} 
-                                                                onSelect={handleSelectOption}
+                                                                onSelect={(option) => handleSelectOption(option, project)}
                                                             />
                                                         </div>
                                                     </div>

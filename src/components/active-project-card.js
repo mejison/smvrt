@@ -22,10 +22,16 @@ export default function ActiveProjectCard({ project, options }) {
         push('/active-projects/' + project.id + '/' + option.value)
     }
 
+    const getOwner = (team) => {
+        const members = team && team.members || []
+        const [lead] = members
+        return lead && lead.fname + ' ' + lead.lname || lead.email
+    }
+
     return (<div className="rounded-lg shadow p-4">
                 <div className="flex items-center justify-between mb-3">
                     <h3 className="text-[14px] font-bold text-[#222] flex items-center">
-                        <span className="flex w-[15px] h-[15px] bg-[#FD6C61] rounded-full mr-2"></span>
+                        <span style={{backgroundColor: '#' + project.color}} className="flex w-[15px] h-[15px] rounded-full mr-2"></span>
                         { project.name }
                     </h3>
                     <Select 
@@ -55,7 +61,7 @@ export default function ActiveProjectCard({ project, options }) {
                             Date
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project.duedate }
+                            { project.due_date }
                         </div>
                     </div>
                     <div className="grid grid-cols-[1fr_1fr] gap-3 mb-2">
@@ -77,7 +83,7 @@ export default function ActiveProjectCard({ project, options }) {
                             Doc Type
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project.doctype }
+                            { project?.document?.type?.name }
                         </div>
                     </div>
                     <div className="grid grid-cols-[1fr_1fr] gap-3 mb-2">
@@ -90,7 +96,7 @@ export default function ActiveProjectCard({ project, options }) {
                             Owner
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project.owner }
+                            {getOwner(project.team)}
                         </div>
                     </div>
                     <div className="grid grid-cols-[1fr_1fr] gap-3">
@@ -106,10 +112,12 @@ export default function ActiveProjectCard({ project, options }) {
                             Team
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project.team }
+                            { project.team.name }
                         </div>
                     </div>
+                    <div className="pb-8 pt-2">
+                        <Collaborators project={project} />
+                    </div>
                 </div>
-                {/* <Collaborators members={[{x:1}, {x:2}]} /> */}
             </div>);
 }
