@@ -313,8 +313,9 @@ export function mark_as_readed_notification(notification) {
     }).then(data => data.json())
 }
 
-export function projects() {
-    return request(API_ENDPOINT + "/api/profile/projects", {
+export function projects(params = {}) {
+    const query = new URLSearchParams(params).toString()
+    return request(API_ENDPOINT + "/api/profile/projects?" + query, {
         method: "GET",
         headers: {
             ...headers,
@@ -381,6 +382,16 @@ export function get_archived_projects(params) {
 export function search_document_property(params) {
     const query = new URLSearchParams(params).toString()
     return request(API_ENDPOINT + "/api/document/search/propery?" + query, {
+        method: "GET",
+        headers: {
+            ...headers,
+            "authorization": `Bearer ${getToken()}`
+        },
+    }).then(data => data.json())
+}
+
+export function statistics() {
+    return request(API_ENDPOINT + "/api/statistics", {
         method: "GET",
         headers: {
             ...headers,

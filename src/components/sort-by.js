@@ -83,14 +83,16 @@ export default function SortBy({ onChange }) {
         setToggle(!toggle)
     }
 
-    
     const handleChange = (name, value) => {
         const newFilter = {
             ...filter,
             [name]: value
         }
         setFilter(newFilter)
-        onChange(newFilter)
+        onChange({
+            name,
+            value: value.value,
+        })
     }
 
     return (
