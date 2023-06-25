@@ -46,6 +46,7 @@ export default function NewProjectLayout({ children }) {
             message: '',
         },
         server_success: {
+            title: 'Success',
             visible: false,
             message: '',
         },
@@ -128,48 +129,70 @@ export default function NewProjectLayout({ children }) {
     }
 
     const handleCreateProject = () => {
-        const fd = new FormData;
-        for(let key in project) {
-            fd.append(key, project[key])
-        }
-
-        fd.set('final_approver', JSON.stringify(project.final_approver))
-        if (project.team) {
-            fd.set('team', JSON.stringify(project.team))
-        }
-       
-        project.approvers.forEach(member => {
-            fd.append('approvers[]', JSON.stringify(member))
-        })
-
-        project.members.forEach(member => {
-            fd.append('members[]', JSON.stringify(member))
-        })
-
-        project.signatories.forEach(member => {
-            fd.append('signatories[]', JSON.stringify(member))
-        })
-
-        fd.set('save_for_future', project.save_for_future ? 1 : 0)
-
-        api.create_project(fd)
-            .then((data) => {
-            const errors = data.errors ? Object.values(data.errors) : []
-            if (errors.length || data.exception) {
-                const message = Object.values(errors).flat(1).join(' ') || data.message
-                setPopup({
-                    ...popup,
-                    server_error: {
-                        visible: true,
-                        message
-                    }
-                })
-                return ;
+        setPopup({
+            ...popup,
+            server_success: {
+                title: 'Wait',
+                visible: true,
+                message: "We're Analyzing Your Document, Hang Tight ..."
             }
-
-            setActiveStep("step-4");
-            push("/new-project/step-4")
         })
+
+        const delay = 5000; // 5 seconds
+
+        setTimeout(() => {
+            setPopup({
+                ...popup,
+                server_success: {
+                    title: "Success",
+                    visible: false,
+                    message: ""
+                }
+            })
+
+            const fd = new FormData;
+            for(let key in project) {
+                fd.append(key, project[key])
+            }
+    
+            fd.set('final_approver', JSON.stringify(project.final_approver))
+            if (project.team) {
+                fd.set('team', JSON.stringify(project.team))
+            }
+           
+            project.approvers.forEach(member => {
+                fd.append('approvers[]', JSON.stringify(member))
+            })
+    
+            project.members.forEach(member => {
+                fd.append('members[]', JSON.stringify(member))
+            })
+    
+            project.signatories.forEach(member => {
+                fd.append('signatories[]', JSON.stringify(member))
+            })
+    
+            fd.set('save_for_future', project.save_for_future ? 1 : 0)
+    
+            api.create_project(fd)
+                .then((data) => {
+                const errors = data.errors ? Object.values(data.errors) : []
+                if (errors.length || data.exception) {
+                    const message = Object.values(errors).flat(1).join(' ') || data.message
+                    setPopup({
+                        ...popup,
+                        server_error: {
+                            visible: true,
+                            message
+                        }
+                    })
+                    return ;
+                }
+    
+                setActiveStep("step-4");
+                push("/new-project/step-4")
+            })
+        }, delay);
     }
 
     useEffect(() => {
@@ -215,7 +238,7 @@ export default function NewProjectLayout({ children }) {
 
                 <ServerSuccess
                     open={popup.server_success.visible} 
-                    title="Success"
+                    title={popup.server_success.title}
                     message={popup.server_success.message}
                     onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
                     />

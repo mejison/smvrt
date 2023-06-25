@@ -11,6 +11,8 @@ import InvitePopUp from "@/popups/invite";
 import { useProject } from "@/context/project";
 import Prompt from "@/popups/prompt";
 import ServerSuccess from "@/popups/server-success";
+import Highlighter from "react-highlight-words";
+
 
 export default function FullView() {
 
