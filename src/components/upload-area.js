@@ -47,7 +47,7 @@ export default function UploadArea({ onUpload }) {
                                 className="opacity-0 absolute left-0 top-0 text-[70rem]"
                                 type="file"
                                 onChange={handleUpload}
-                                accept="text/*, application/pdf, .doc, .docx, application/msword"
+                                accept="text/*, .doc, .docx, application/msword"
                             /></>
                     )
                         :<></>

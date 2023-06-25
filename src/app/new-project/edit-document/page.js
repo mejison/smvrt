@@ -3,6 +3,7 @@
 import CKeditor from '@/components/ckeditor'
 import { useNewProject } from '@/context/new-project';
 import { useState, useEffect } from 'react';
+import * as api from '@/api'
 
 export default function StepFour() {
     const [editorLoaded, setEditorLoaded] = useState(false);
@@ -16,12 +17,16 @@ export default function StepFour() {
 
     const readFile = () => {
         if (project.document instanceof Blob) {
-            const fr = new FileReader
-            fr.onloadend = () => {
-                setData(fr.result);
-                setEditorLoaded(true);
-            }
-            fr.readAsText(project.document)
+            const fd = new FormData;
+            fd.append('file', project.document)
+            
+            api.convert_file_to_html(fd)
+                .then((data) => {
+                    if (data.data) {
+                        setData(data.data);
+                        setEditorLoaded(true);
+                    }
+            });
             return ;
         }
 

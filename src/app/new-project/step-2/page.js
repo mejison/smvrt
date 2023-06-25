@@ -59,25 +59,39 @@ export default function StepTwo() {
     }, [])
 
     const getApproversOptions = () => {
-        let collaborators = project.external_collaborators.filter(member => member.role.label == "Signatory").map(approver => {
+        let collaborators = project.external_collaborators.filter(member => member.role.slug == "signatory").map(approver => {
             return {
                 label: approver.name,
                 value: approver.email
             }
         });
 
-        let members = project.members.filter(member => member.role.label == "Signatory").map(approver => {
+        let members = project.members.filter(member => member.role.slug == "signatory").map(approver => {
             return {
                 label: approver.name,
                 value: approver.email
             }
         });
 
-        return [
-            {
-                label: 'Not selected',
-                value: null,
-            }, ...members, ...collaborators];
+        let teamMembers = (activeTeam?.members ?? []).filter(member => member.role.slug == "signatory").map(approver => {
+            return {
+                label: approver.name,
+                value: approver.email
+            }
+        });
+
+        const items = [{
+            label: 'Not selected',
+            value: null,
+        }, ...members, ...collaborators, ...teamMembers]
+
+
+        if (items.length >= 2) {
+            console.log(items)
+            // handleSelectFinalApprover(items[1])
+        }
+
+        return [...items];
     }
 
     const handleSelectFinalApprover = (approver) => {
@@ -197,6 +211,13 @@ export default function StepTwo() {
         })
     }
 
+    const canAddManuallySignature = () => {
+        const members = activeTeam && activeTeam.members ? [...activeTeam?.members] : []
+        const signatory = members.filter(item => item.role.slug == "signatory");
+
+        return ! signatory.length;
+    }
+
     return (<div>
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Team & Collaborators</h3>
                 <Select 
@@ -238,16 +259,21 @@ export default function StepTwo() {
                         disabledRoles={['Owner']}
                     />
                 </div>
-                <div className="mb-[24px]">
-                    <MemberAdd label="Add Signatory" 
-                        subtitle="Enter the information for the user on your team who will sign the document's final version."
-                        value={project.signatories}
-                        exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
-                        roles={[]} 
-                        onUpdate={handleUpdateSignatory}
-                        disabledRoles={['Owner']}
-                    />
-                </div>
+                {
+                    canAddManuallySignature() ? (
+                        <div className="mb-[24px]">
+                            <MemberAdd label="Add Signatory" 
+                                subtitle="Enter the information for the user on your team who will sign the document's final version."
+                                value={project.signatories}
+                                exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
+                                roles={[]} 
+                                onUpdate={handleUpdateSignatory}
+                                disabledRoles={['Owner']}
+                            />
+                        </div>
+                    ) : <></>
+                }
+
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add external collaborators" 
                         subtitle="Invite 3rd party users from the company or group you're working with to this project."
