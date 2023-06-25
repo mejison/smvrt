@@ -91,7 +91,9 @@ export default function Calendar({ onSave, duedate = null, reminder = null, remi
             }
             return ;
         }
-        onChangeRange(value)
+        if (value < new Date()) {
+            onChangeRange(value)
+        }
     }
 
     return (<div className="shadow p-[24px] rounded-[6px] min-w-[320px] max-w-[320px] bg-white">
