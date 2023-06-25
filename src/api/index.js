@@ -399,3 +399,14 @@ export function statistics() {
         },
     }).then(data => data.json())
 }
+
+export function convert_file_to_html(data) {
+    return request(API_ENDPOINT + "/api/document/convert-to-html", {
+        method: "POST",
+        headers: {
+            "authorization": `Bearer ${getToken()}`,
+            'accept': 'application/json',
+        },
+        body: data,
+    }).then(data => data.json())
+}
