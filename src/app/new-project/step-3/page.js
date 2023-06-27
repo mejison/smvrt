@@ -7,11 +7,15 @@ import { useNewProject } from '@/context/new-project'
 import { useRouter } from 'next/navigation'
 import * as api from '@/api'
 import Prompt from "@/popups/prompt";
+import { useUser } from '@/context/user';
+
+
 
 export default function StepThree() {
     const { push } = useRouter();
     
     const {project, setProject} = useNewProject();
+    const {user} = useUser();
 
     const [popups, setPopups] = useState({
         upload_document: false,
@@ -29,6 +33,22 @@ export default function StepThree() {
             ...popups,
             upload_document: true
         })
+    }
+
+    const isEditor = () => {
+        let members = []
+        if (project.team) {
+            members = [...project.team.members]
+        }
+
+        if (project.members) {
+            members = [...members, project.members]
+        }
+
+        const meInTeam = members.find(member => member.email == user.email)
+
+        return ['Editor'].includes(meInTeam.role.label)
+
     }
 
     const handleConfirm = (value) => {
@@ -81,7 +101,11 @@ export default function StepThree() {
     const handleEditDocument = (e) => {
         e.preventDefault();
         if (project.document) {
-            push("/new-project/edit-document")
+            if (isEditor()) {
+                push("/new-project/edit-document")
+            } else {
+                push("/new-project/view-document")
+            }
         }
     }
 
@@ -153,7 +177,7 @@ export default function StepThree() {
                         </div>
                     ) :<></>
                 }
-                <Button disabled={!project.document} onClick={handleEditDocument} className={`${!project.document ? 'bg-[#B8C2CC]' : 'bg-[#1860CC]'} text-white w-full text-[14px]`} label="Edit document" />
+                <Button disabled={!project.document} onClick={handleEditDocument} className={`${!project.document ? 'bg-[#B8C2CC]' : 'bg-[#1860CC]'} text-white w-full text-[14px]`} label={isEditor() ? 'Edit document' : 'View document'} />
             
                 <UploadDocument 
                     title="Upload document" 
