@@ -47,7 +47,7 @@ export default function StepThree() {
 
         const meInTeam = members.find(member => member.email == user.email)
 
-        return ['Editor'].includes(meInTeam.role.label)
+        return ['Editor'].includes(meInTeam?.role?.label)
 
     }
 

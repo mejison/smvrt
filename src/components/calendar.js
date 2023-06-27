@@ -86,12 +86,12 @@ export default function Calendar({ onSave, duedate = null, reminder = null, remi
             const mDuedate = moment(duedate)
             const mReminder = moment(value)
 
-            if (mDuedate.diff(mReminder) > 0) {
+            if (mDuedate.diff(mReminder) > 0 && mReminder > new Date()) {
                 onChangeRange(value)
             }
             return ;
         }
-        if (value < new Date()) {
+        if (value > new Date()) {
             onChangeRange(value)
         }
     }
