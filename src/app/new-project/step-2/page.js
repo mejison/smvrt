@@ -386,7 +386,7 @@ export default function StepTwo() {
 
                     {
                         activeTeam.members ? (
-                            <label className="font-Eina03 text-[12px] text-[#222] flex items-center">
+                            <label className="font-Eina03 text-[12px] text-[#222] flex items-center" onClick={() => setProject({...project, save_for_future: ! project.save_for_future})}>
                                 <div className={`w-[18px] h-[18px] ${project.save_for_future != false ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
                                     {
                                         project.save_for_future ? (
@@ -398,7 +398,7 @@ export default function StepTwo() {
                                         ) : <></>
                                     }
                                 </div>
-                                    <span className="px-[12px] py-[26px] cursor-pointer" onClick={() => setProject({...project, save_for_future: ! project.save_for_future})}>
+                                    <span className="px-[12px] py-[26px] cursor-pointer select-none" >
                                         Save {/*<strong>Approvers</strong> and */}<strong>Signatories</strong> for this team for future projects
                                     </span>
                             </label>
