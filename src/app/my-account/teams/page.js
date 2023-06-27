@@ -18,6 +18,7 @@ import Image from 'next/image'
 import IncomingRequestsToChangeRoles from "@/components/incoming-requests-to-change-roles";
 
 import { useUser } from '@/context/user';
+import Prompt from "@/popups/prompt";
 
 export default function Teams () {
     const { push } = useRouter();
@@ -58,7 +59,11 @@ export default function Teams () {
     const [activeTeam, setActiveTeam] = useState({ label: 'Select the team', value: '', members: [] })
     const [popups, setPopUps] = useState({
         add_member: false,
-        create_new_team: false
+        create_new_team: false,
+        confirm_remove: {
+            visible: false,
+            message: '',
+        },
     })
 
     const changeTab = (tab) => {
@@ -130,7 +135,32 @@ export default function Teams () {
         })
     }
 
-    const handleRemoveMember = (member) => {
+    const handleConfirmRemove = (member) => {
+        handleRemoveMember(member, true);
+        setPopUps({
+            ...popups,
+            confirm_remove: {
+                visible: false
+            }
+        });
+    }
+
+    const handleRemoveMember = (member, confirm = false) => {
+        if ( ! confirm ) {
+            console.log(member)
+            setPopUps({
+                ...popups,
+                confirm_remove: {
+                    member: member,
+                    visible: true,
+                    message: `
+                        You are about to remove <strong>${member.name ? member.name : member.email}</strong> from the <strong>${activeTeam.name}</strong> team. Would your like to continue?
+                        `
+                },
+            })
+            return;
+        }
+
         api.remove_member_from_team({
             team_id: activeTeam.id,
             email: member.email
@@ -367,6 +397,14 @@ export default function Teams () {
                     title="Success"
                     message={popup.server_success.message}
                     onClose={() => {setPopup({...popup, server_success: { visible: false }})}}  
+                />
+
+                <Prompt 
+                    open={popups.confirm_remove.visible} 
+                    title="Remove Team Member"
+                    message={popups.confirm_remove.message}
+                    onClose={() => {setPopUps({...popups, confirm_remove: { ...popups.confirm_remove, visible: false }})}}  
+                    onConfirm={() => {handleConfirmRemove(popups.confirm_remove.member)}}
                 />
         </div>
     );
