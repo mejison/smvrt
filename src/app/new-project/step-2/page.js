@@ -3,7 +3,7 @@ import Select from "@/components/select";
 import { useState, useEffect } from "react";
 import CreateNewTeam from "@/popups/create-new-team";
 import * as api from '@/api'
-
+import { getAttrFromName } from '@/utils/helpers'
 import ServerError from '@/popups/server-error';
 import ServerSuccess from '@/popups/server-success';
 import MembersList from "@/components/members-list";
@@ -25,6 +25,7 @@ export default function StepTwo() {
             message: '',
         },
         server_success: {
+            title: 'Success',
             visible: false,
             message: '',
         },
@@ -113,6 +114,23 @@ export default function StepTwo() {
             save_for_future: team.value ? true : false,
             signatories: [...signatories]
         })
+
+        setPopUps({
+            ...popups,
+            server_success: {
+                title: 'Your Role',
+                visible: true,
+                message: `<div>
+                            Please check the box that applies to your role for this project:
+                            <div class="mb-3 mt-3">
+                                <strong>Viewer:</strong> I will read and comment on the document, but <strong>will not</strong> edit, redline or make changes to the legal document. 
+                            </div>
+                            <div class="mb-3">
+                                <strong>Editor:</strong> I <strong>will</strong> edit and redline the document and read and comment within the document.
+                            </div>
+                        </div>`
+            }
+        })
     }
 
     const handleCreateNewTeam = () => {
@@ -143,6 +161,7 @@ export default function StepTwo() {
             setPopUps({
                 ...popups,
                 server_success: {
+                    title: 'Success',
                     visible: true,
                     message: data.message
                 }
@@ -218,6 +237,41 @@ export default function StepTwo() {
         return ! signatory.length;
     }
 
+    const handleRemoveMember = (member) => {
+        setActiveTeam({
+            ...activeTeam,
+            members: activeTeam.members.filter(item => item.email != member.email)
+        })
+    }
+
+    const onChangeRole = (member, role) => {
+        const newActiveTeam = {
+            ...activeTeam,
+            members: [
+                ...activeTeam.members.map(item => {
+                    if (item.email == member.email) {
+                        return {
+                            ...item,
+                            role_id: role.value,
+                            role: {
+                                id: role.value,
+                                label: role.label,
+                                slug: role.slug,
+                            }
+                        }
+                    }
+                    return {...item}
+                })
+            ]
+        }
+
+        setActiveTeam(newActiveTeam)
+        setProject({
+            ...project,
+            team: newActiveTeam,
+        })
+    }
+
     return (<div>
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Team & Collaborators</h3>
                 <Select 
@@ -242,13 +296,42 @@ export default function StepTwo() {
                         Create new team
                     </div>
                 </Select>
-                <MembersList 
-                    team={activeTeam}
-                    members={activeTeam?.members}
-                    roles={roles}
-                    getTeams={getTeams}
-                    disabledRoles={['Owner']}
-                />
+                <div className="mt-3">
+                {
+                    (activeTeam?.members || []).map((member, index) => {
+                        return (
+                            <div className="grid grid-cols-[210px_1fr_85px] gap-[16px] mb-[12px] font-Eina03 text-[14px]" key={`${activeTeam.id}-${index}`}>
+                                <div className="rounded-[6px] py-[5px] px-[4px] bg-white flex items-center">
+                                    <div className="w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter">
+                                        
+                                        {
+                                            member.user && member.user.avatar ? 
+                                            <img src={member.user.avatar} className="w-full h-full object-contain" />
+                                            :
+                                            getAttrFromName(member.name ? member.name : member.email)
+                                        }
+                                    </div>
+                                    <h3>{ member.name ? member.name : member.email }</h3>
+                                </div>
+                                <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
+                                    { member.email }
+                                    <div className="ml-auto">
+                                        <Select 
+                                            options={roles.filter(option => ! ["Owner"].includes(option.label))}
+                                            value={roles.find(role => role.value == member.role_id)}
+                                            className=" px-[10px] !text-[12px] border-none !py-[0]"
+                                            onSelect={(newRole) => onChangeRole(member, newRole)}
+                                        />
+                                    </div>
+                                </div>
+                                <a href="#" onClick={(e) => {e.preventDefault();  handleRemoveMember(member)}} className="rounded-[6px] text-center border font-bold text-[12px] border-[#737373] text-[#737373] py-[10px] px-[12px] bg-white">
+                                    Remove
+                                </a>
+                            </div>
+                        )
+                    })
+                }
+                </div>
                 <div className=" mb-[24px]">
                     <MemberAdd label="Add team members" 
                         subtitle="Invite members from your company to this project"
@@ -340,7 +423,7 @@ export default function StepTwo() {
 
                 <ServerSuccess
                     open={popups.server_success.visible} 
-                    title="Success"
+                    title={popups.server_success.title} 
                     message={popups.server_success.message}
                     onClose={() => {setPopUps({...popups, server_success: { visible: false }})}}  
                 />
