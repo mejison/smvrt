@@ -10,10 +10,13 @@ import MembersList from "@/components/members-list";
 import Button from "@/components/button";
 import MemberAdd from "@/components/member-add";
 import { useNewProject } from '@/context/new-project'
-
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/user";
+
 export default function StepTwo() {
     const { push } = useRouter();
+
+    const { user } = useUser();
 
     const [require_approvals, setRequireApprovals] = useState(true);
     const {project, setProject, handleNext} = useNewProject();
@@ -39,6 +42,7 @@ export default function StepTwo() {
     ])
 
     const [roles, setRoles] = useState([])
+    const [leads, setLeads] = useState({})
 
     useEffect(() => {
         api.roles()
@@ -272,8 +276,40 @@ export default function StepTwo() {
         })
     }
 
+    const updateLeads = (member) => {
+        if ( ! leads[member.email]) {
+            leads[member.email] = false
+        }
+
+        leads[member.email] = ! leads[member.email]
+        setLeads({
+            ...leads,
+        })
+
+        console.log(leads)
+    }
+
     return (<div>
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Team & Collaborators</h3>
+                {
+                    ! activeTeam.value && (user && user.email) ? (
+                        <div className="grid grid-cols-[210px_1fr_85px] items-center gap-[16px] mb-[12px] font-Eina03 text-[14px]">
+                            <div className="rounded-[6px] py-[5px] px-[4px] bg-white flex items-center">
+                                <div className="w-[32px] h-[32px] rounded-full overflow-hidden bg-[#1ED9C6] mr-[9px] text-center flex items-center justify-center font-bold text-white tracking-tighter">
+                                    {
+                                        user.avatar ? 
+                                        <img src={user.avatar} className="w-full h-full object-contain" />
+                                        : getAttrFromName(user.fname ? user.fname + ' ' + user.lname : user.email)
+                                    }
+                                </div>
+                                <h3>{ user.fname ? user.fname + ' ' + user.lname : user.email }</h3>
+                            </div>
+                            <div>
+                                {user.email}
+                            </div>
+                        </div>
+                    ) : <></>
+                }
                 <Select 
                     label="Select the team" 
                     options={teams} 
@@ -313,9 +349,28 @@ export default function StepTwo() {
                                     </div>
                                     <h3>{ member.name ? member.name : member.email }</h3>
                                 </div>
+                                
                                 <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
-                                    { member.email }
-                                    <div className="ml-auto">
+                                    <div className="mr-auto"> { member.email }</div>
+                                    <div className="ml-auto text-right">
+                                        <label className="font-Eina03 text-[12px] text-[#222] flex items-center" onClick={(e) => { updateLeads(member) }}>
+                                            <div className={`w-[18px] h-[18px] ${ leads[member.email]  ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
+                                               {
+                                                 leads[member.email] ? (
+                                                        <span>
+                                                            <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                <path fillRule="evenodd" clipRule="evenodd" d="M10.7851 1.31402C10.9568 1.47146 10.9684 1.73832 10.811 1.91007L4.62349 8.66007C4.54573 8.7449 4.43671 8.79428 4.32166 8.79678C4.20662 8.79928 4.09555 8.75468 4.01419 8.67331L1.20169 5.86081C1.03694 5.69606 1.03694 5.42894 1.20169 5.26419C1.36644 5.09944 1.63356 5.09944 1.79831 5.26419L4.29925 7.76513L10.189 1.33993C10.3465 1.16818 10.6133 1.15658 10.7851 1.31402Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            </svg>
+                                                        </span>
+                                                ) : <></>
+                                               }
+                                            </div>
+                                            <span className="cursor-pointer select-none ml-2" >
+                                                Lead
+                                            </span>
+                                        </label>
+                                    </div>
+                                    <div className="ml-auto max-w-[100px]">
                                         <Select 
                                             options={roles.filter(option => ! ["Owner"].includes(option.label))}
                                             value={roles.find(role => role.value == member.role_id)}
