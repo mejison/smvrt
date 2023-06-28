@@ -3,8 +3,9 @@ import Input from "./input";
 
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
+import { useNewProject } from "@/context/new-project";
 
-export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', disabledRoles = [], exclude = [] }) {
+export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', disabledRoles = [], exclude = [], withLead = false}) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
@@ -12,6 +13,8 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
         role: null
     })
     const [toggle, setToggle] = useState(false)
+
+    const {project, setProject} = useNewProject();
     
     const onChange = (field, value) => {
         setMember({
@@ -85,6 +88,18 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
         onUpdate(newList);
     }
 
+    const updateLeads = (member) => {
+        if ( ! project.leads[member.email]) {
+            project.leads[member.email] = false
+        }
+
+        project.leads[member.email] = ! project.leads[member.email]
+        setProject({
+            ...project,
+            leads: {...project.leads},
+        })
+    }
+
     return (
         <>
             <h3 className="relative font-Eina03 font-bold text-[14px] text-[#222] mt-[56px] mb-[24px] flex items-center">{label}
@@ -154,13 +169,37 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
                                             { member.email }
                                             {
                                                 roles.length ? (
-                                                    <div className="ml-auto">
-                                                        <Select 
-                                                            options={roles.filter(option => ! disabledRoles.includes(option.label))}
-                                                            className=" px-[10px] !text-[12px] border-none !py-[0]"
-                                                            value={member.role}
-                                                            onSelect={(event) => handleUpdateRoleMember(member, event)}
-                                                        />
+                                                    <div  className="ml-auto  flex">
+                                                        {
+                                                            withLead ? (
+                                                                <div>
+                                                                    <label className="font-Eina03 text-[#222] flex items-center" onClick={(e) => { updateLeads(member) }}>
+                                                                        <div className={`w-[18px] h-[18px] ${ project.leads[member.email]  ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
+                                                                        {
+                                                                            project.leads[member.email] ? (
+                                                                                    <span>
+                                                                                        <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                            <path fillRule="evenodd" clipRule="evenodd" d="M10.7851 1.31402C10.9568 1.47146 10.9684 1.73832 10.811 1.91007L4.62349 8.66007C4.54573 8.7449 4.43671 8.79428 4.32166 8.79678C4.20662 8.79928 4.09555 8.75468 4.01419 8.67331L1.20169 5.86081C1.03694 5.69606 1.03694 5.42894 1.20169 5.26419C1.36644 5.09944 1.63356 5.09944 1.79831 5.26419L4.29925 7.76513L10.189 1.33993C10.3465 1.16818 10.6133 1.15658 10.7851 1.31402Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
+                                                                                        </svg>
+                                                                                    </span>
+                                                                            ) : <></>
+                                                                        }
+                                                                        </div>
+                                                                        <span className="cursor-pointer select-none ml-2" >
+                                                                            Lead
+                                                                        </span>
+                                                                    </label>
+                                                                </div>
+                                                            ) : <></>
+                                                        }
+                                                        <div className="ml-auto">
+                                                            <Select 
+                                                                options={roles.filter(option => ! disabledRoles.includes(option.label))}
+                                                                className=" px-[10px] !text-[12px] border-none !py-[0]"
+                                                                value={member.role}
+                                                                onSelect={(event) => handleUpdateRoleMember(member, event)}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 ) : <></>
                                             }

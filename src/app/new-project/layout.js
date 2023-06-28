@@ -54,6 +54,7 @@ export default function NewProjectLayout({ children }) {
 
     const [project, setProject] = useState({
         name: '',
+        leads: {},
         notes: '',
         duedate: '',
         reminderdate: '',
@@ -117,6 +118,11 @@ export default function NewProjectLayout({ children }) {
             if ( ! project.name || ! project.duedate) { 
                 return false;
             }
+        }
+
+        if (activeStep == steps[1].slug) {
+            const existLead = !! Object.values(project.leads).filter(value => value).length
+            return existLead
         }
 
         if (activeStep == steps[3].slug) {
