@@ -42,7 +42,6 @@ export default function StepTwo() {
     ])
 
     const [roles, setRoles] = useState([])
-    const [leads, setLeads] = useState({})
 
     useEffect(() => {
         api.roles()
@@ -119,22 +118,54 @@ export default function StepTwo() {
             signatories: [...signatories]
         })
 
-        setPopUps({
-            ...popups,
-            server_success: {
-                title: 'Your Role',
-                visible: true,
-                message: `<div>
-                            Please check the box that applies to your role for this project:
-                            <div class="mb-3 mt-3">
-                                <strong>Viewer:</strong> I will read and comment on the document, but <strong>will not</strong> edit, redline or make changes to the legal document. 
-                            </div>
-                            <div class="mb-3">
-                                <strong>Editor:</strong> I <strong>will</strong> edit and redline the document and read and comment within the document.
-                            </div>
-                        </div>`
+        if(team.members && team.members.length) {
+            const inTeam = team.members.find(item => item.email == user.email)
+            if (inTeam) {
+                setProject({
+                    ...project,
+                    leads: {
+                        ...project.leads,
+                        [user.email]: true,
+                    }
+                })
             }
-        })
+
+            const editorExist = team.members.find(item => item.role.slug == 'editor')
+            if ( ! editorExist) {
+                const membersWithNewEditor = team.members.map((member) => {
+                    return member.email == user.email ? {
+                        ...member, 
+                        role_id: 4,
+                        role: {
+                            id: 4, 
+                            name: 'Editor', 
+                            slug: 'editor',
+                        }
+                    } : member
+                })
+
+                setActiveTeam({
+                    ...team,
+                    members: membersWithNewEditor
+                })
+            }
+        }
+        // setPopUps({
+        //     ...popups,
+        //     server_success: {
+        //         title: 'Your Role',
+        //         visible: true,
+        //         message: `<div>
+        //                     Please check the box that applies to your role for this project:
+        //                     <div class="mb-3 mt-3">
+        //                         <strong>Viewer:</strong> I will read and comment on the document, but <strong>will not</strong> edit, redline or make changes to the legal document. 
+        //                     </div>
+        //                     <div class="mb-3">
+        //                         <strong>Editor:</strong> I <strong>will</strong> edit and redline the document and read and comment within the document.
+        //                     </div>
+        //                 </div>`
+        //     }
+        // })
     }
 
     const handleCreateNewTeam = () => {
@@ -277,16 +308,15 @@ export default function StepTwo() {
     }
 
     const updateLeads = (member) => {
-        if ( ! leads[member.email]) {
-            leads[member.email] = false
+        if ( ! project.leads[member.email]) {
+            project.leads[member.email] = false
         }
 
-        leads[member.email] = ! leads[member.email]
-        setLeads({
-            ...leads,
+        project.leads[member.email] = ! project.leads[member.email]
+        setProject({
+            ...project,
+            leads: {...project.leads},
         })
-
-        console.log(leads)
     }
 
     return (<div>
@@ -353,10 +383,10 @@ export default function StepTwo() {
                                 <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
                                     <div className="mr-auto"> { member.email }</div>
                                     <div className="ml-auto text-right">
-                                        <label className="font-Eina03 text-[12px] text-[#222] flex items-center" onClick={(e) => { updateLeads(member) }}>
-                                            <div className={`w-[18px] h-[18px] ${ leads[member.email]  ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
+                                        <label className="font-Eina03 text-[#222] flex items-center" onClick={(e) => { updateLeads(member) }}>
+                                            <div className={`w-[18px] h-[18px] ${ project.leads[member.email]  ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
                                                {
-                                                 leads[member.email] ? (
+                                                 project.leads[member.email] ? (
                                                         <span>
                                                             <svg width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                 <path fillRule="evenodd" clipRule="evenodd" d="M10.7851 1.31402C10.9568 1.47146 10.9684 1.73832 10.811 1.91007L4.62349 8.66007C4.54573 8.7449 4.43671 8.79428 4.32166 8.79678C4.20662 8.79928 4.09555 8.75468 4.01419 8.67331L1.20169 5.86081C1.03694 5.69606 1.03694 5.42894 1.20169 5.26419C1.36644 5.09944 1.63356 5.09944 1.79831 5.26419L4.29925 7.76513L10.189 1.33993C10.3465 1.16818 10.6133 1.15658 10.7851 1.31402Z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
@@ -394,6 +424,7 @@ export default function StepTwo() {
                         exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
                         roles={roles} 
                         onUpdate={handleUpdateMembers}
+                        withLead={true}
                         disabledRoles={['Owner']}
                     />
                 </div>
@@ -407,6 +438,7 @@ export default function StepTwo() {
                                 roles={[]} 
                                 onUpdate={handleUpdateSignatory}
                                 disabledRoles={['Owner']}
+                                withLead={true}
                             />
                         </div>
                     ) : <></>
@@ -420,6 +452,7 @@ export default function StepTwo() {
                         roles={[]}
                         disabledRoles={['Owner']}
                         onUpdate={handleExternalCollaborators} 
+                        withLead={true}
                     />
                 </div>
 
