@@ -12,6 +12,7 @@ import MemberAdd from "@/components/member-add";
 import { useNewProject } from '@/context/new-project'
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/user";
+import Info from "@/components/info";
 
 export default function StepTwo() {
     const { push } = useRouter();
@@ -63,21 +64,8 @@ export default function StepTwo() {
     }, [])
 
     const getApproversOptions = () => {
-        let collaborators = project.external_collaborators.filter(member => member.role.slug == "signatory").map(approver => {
-            return {
-                label: approver.name,
-                value: approver.email
-            }
-        });
-
-        let members = project.members.filter(member => member.role.slug == "signatory").map(approver => {
-            return {
-                label: approver.name,
-                value: approver.email
-            }
-        });
-
-        let teamMembers = (activeTeam?.members ?? []).filter(member => member.role.slug == "signatory").map(approver => {
+       
+        let members = (activeTeam?.members ?? []).filter(member => member.role.slug == "signatory").map(approver => {
             return {
                 label: approver.name,
                 value: approver.email
@@ -87,13 +75,9 @@ export default function StepTwo() {
         const items = [{
             label: 'Not selected',
             value: null,
-        }, ...members, ...collaborators, ...teamMembers]
+        }, ...members, ...(project.signatories).map(item => ({label: item.name, value: item.email}))]
 
 
-        if (items.length >= 2) {
-            console.log(items)
-            // handleSelectFinalApprover(items[1])
-        }
 
         return [...items];
     }
@@ -397,16 +381,22 @@ export default function StepTwo() {
                                             </div>
                                             <span className="cursor-pointer select-none ml-2" >
                                                 Lead
+                                                <div className="ml-3 inline-block">
+                                                    <Info type="project" />
+                                                </div>
                                             </span>
                                         </label>
                                     </div>
-                                    <div className="ml-auto max-w-[100px]">
+                                    <div className="ml-auto max-w-[100px] flex items-center">
                                         <Select 
-                                            options={roles.filter(option => ! ["Owner"].includes(option.label))}
+                                            options={roles.filter(option => ! ["Owner", "Lead", "Signatory"].includes(option.label))}
                                             value={roles.find(role => role.value == member.role_id)}
                                             className=" px-[10px] !text-[12px] border-none !py-[0]"
                                             onSelect={(newRole) => onChangeRole(member, newRole)}
                                         />
+                                        <div className="inline-block">
+                                            <Info type="document" />
+                                        </div>
                                     </div>
                                 </div>
                                 <a href="#" onClick={(e) => {e.preventDefault();  handleRemoveMember(member)}} className="rounded-[6px] text-center border font-bold text-[12px] border-[#737373] text-[#737373] py-[10px] px-[12px] bg-white">
@@ -425,7 +415,7 @@ export default function StepTwo() {
                         roles={roles} 
                         onUpdate={handleUpdateMembers}
                         withLead={true}
-                        disabledRoles={['Owner']}
+                        disabledRoles={['Owner', 'Lead', 'Signatory']}
                     />
                 </div>
                 {
@@ -437,7 +427,7 @@ export default function StepTwo() {
                                 exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
                                 roles={[]} 
                                 onUpdate={handleUpdateSignatory}
-                                disabledRoles={['Owner']}
+                                disabledRoles={['Owner', 'Lead', 'Signatory']}
                                 withLead={true}
                             />
                         </div>
@@ -450,7 +440,7 @@ export default function StepTwo() {
                         value={project.external_collaborators} 
                         exclude={[...project.members, ...project.external_collaborators, ...project.signatories, ...(activeTeam?.members ?? [])]}
                         roles={[]}
-                        disabledRoles={['Owner']}
+                        disabledRoles={['Owner', 'Lead', 'Signatory']}
                         onUpdate={handleExternalCollaborators} 
                         withLead={true}
                     />
@@ -498,7 +488,7 @@ export default function StepTwo() {
                             open={popups.create_new_team}
                             onSave={onCreateTeam}
                             roles={roles}
-                            disabledRoles={['Owner']}
+                            disabledRoles={['Owner', 'Lead', 'Signatory']}
                             onClose={() => setPopUps({...popups, create_new_team: false})}
                         />
 
