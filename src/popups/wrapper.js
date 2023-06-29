@@ -12,7 +12,7 @@ export default function WrapperModal({ className = '', children, open, title, ic
                             icon ? (<Image src={ icon } alt="time" width="25" height="25"  className="mr-[10px]"/>) : <></>
                         }
                         <h3 className="">{ title }</h3>
-                        <a href="#" className="times" onClick={onClose}>
+                        <a href="#" className="times" onClick={(e) => {e.preventDefault(); onClose()}}>
                             <Image src={ timesSVG } alt="time" width="24" height="24" />
                             </a>
                         </div>
@@ -20,7 +20,7 @@ export default function WrapperModal({ className = '', children, open, title, ic
             </dialog>
             {
                 open ? (
-                    <div onClick={onClose} className="overlay fixed left-0 top-0 bottom-0 right-0  w-full h-full z-[9999]"></div>
+                    <div onClick={(e) => {e.preventDefault(); onClose()}} className="overlay fixed left-0 top-0 bottom-0 right-0  w-full h-full z-[9999]"></div>
                 ) : <></>
             }
         </div>

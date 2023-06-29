@@ -4,6 +4,7 @@ import Input from "./input";
 import { getAttrFromName } from '@/utils/helpers'
 import Select from "./select";
 import { useNewProject } from "@/context/new-project";
+import Info from "./info";
 
 export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', disabledRoles = [], exclude = [], withLead = false}) {
     const [members, setMembers] = useState([...value])
@@ -187,18 +188,24 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
                                                                         </div>
                                                                         <span className="cursor-pointer select-none ml-2" >
                                                                             Lead
+                                                                            <div className="ml-3 inline-block">
+                                                                                <Info type="project" />     
+                                                                            </div>
                                                                         </span>
                                                                     </label>
                                                                 </div>
                                                             ) : <></>
                                                         }
-                                                        <div className="ml-auto">
+                                                        <div className="ml-auto flex items-center">
                                                             <Select 
                                                                 options={roles.filter(option => ! disabledRoles.includes(option.label))}
-                                                                className=" px-[10px] !text-[12px] border-none !py-[0]"
+                                                                className="inline-block px-[10px] !text-[12px] border-none !py-[0]"
                                                                 value={member.role}
                                                                 onSelect={(event) => handleUpdateRoleMember(member, event)}
                                                             />
+                                                            <div className="mr-auto">
+                                                                <Info type="document" />
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 ) : <></>

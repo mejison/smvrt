@@ -6,7 +6,7 @@ export default function Stepper({ steps, active, onChange }) {
     }
 
     const activeIndex = steps.findIndex((curr) => curr.slug === active) + 1
-    const procentageProgress = (110 / steps.length);
+    const procentageProgress = (100 / steps.length);
     const completedSteps = steps.slice(0, activeIndex - 1).map(step => step.slug);
     
     return (<div className="relative flex justify-around w-full pt-[50px]">
