@@ -410,3 +410,14 @@ export function convert_file_to_html(data) {
         body: data,
     }).then(data => data.json())
 }
+
+export function openAI_summarize_document(data) {
+    return request(API_ENDPOINT + "/api/openai/create-req", {
+        method: "POST",
+        headers: {
+            "authorization": `Bearer ${getToken()}`,
+            'accept': 'application/json',
+        },
+        body: JSON.stringify(data),
+    }).then(data => data.json())
+}
