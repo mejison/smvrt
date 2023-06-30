@@ -37,8 +37,11 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
     useEffect(() => {
         setToggle(value && value.length)
         setMembers([...value])
+    }, [value])
+
+    useEffect(() => {
         setToggle(open)
-    }, [value, open])
+    }, [open])
 
     const handleAdd = (e) => {
         e.preventDefault();
