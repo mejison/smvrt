@@ -19,6 +19,7 @@ export default function StepTwo() {
 
     const { user } = useUser();
 
+    const [openSignatoryCreator, setOpenSignatoryCreator] = useState(false);
     const [require_approvals, setRequireApprovals] = useState(true);
     const {project, setProject, handleNext} = useNewProject();
 
@@ -65,17 +66,32 @@ export default function StepTwo() {
 
     const getApproversOptions = () => {
        
-        let members = (activeTeam?.members ?? []).filter(member => member.role.slug == "signatory").map(approver => {
+        let members = (activeTeam?.members ?? []).map(approver => {
             return {
                 label: approver.name,
                 value: approver.email
             }
         });
-
+        
         const items = [{
             label: 'Not selected',
             value: null,
-        }, ...members, ...(project.signatories).map(item => ({label: item.name, value: item.email}))]
+        }, ...members, ...(project.signatories).map(item => ({label: item.name, value: item.email})), {
+            label: (() => {
+                return (
+                    <div className="flex items-center">
+                        <svg className="mr-2" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 5.30774V12.6924" stroke="black" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M5.30762 9.00012H12.6922" stroke="black" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M13.3077 1H4.69231C2.6531 1 1 2.6531 1 4.69231V13.3077C1 15.3469 2.6531 17 4.69231 17H13.3077C15.3469 17 17 15.3469 17 13.3077V4.69231C17 2.6531 15.3469 1 13.3077 1Z" stroke="black" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+
+                        Other
+                    </div>
+                )
+            })(),
+            value: 'other'
+        }]
 
 
 
@@ -83,6 +99,11 @@ export default function StepTwo() {
     }
 
     const handleSelectFinalApprover = (approver) => {
+        if (approver.value == 'other') {
+            setOpenSignatoryCreator(false)
+            setTimeout(() => {setOpenSignatoryCreator(true)}, 0)
+            return ;
+        }
         setProject({
             ...project,
             final_approver: approver
@@ -427,6 +448,7 @@ export default function StepTwo() {
                                 onUpdate={handleUpdateSignatory}
                                 disabledRoles={['Owner', 'Lead', 'Signatory']}
                                 withLead={true}
+                                open={openSignatoryCreator}
                             />
                         </div>
                     ) : <></>
