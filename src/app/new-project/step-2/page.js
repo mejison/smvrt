@@ -358,8 +358,8 @@ export default function StepTwo() {
                                 </div>
                                 
                                 <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
-                                    <div className="mr-auto"> { member.email }</div>
-                                    <div className="ml-auto text-right">
+                                    <div className=""> { member.email }</div>
+                                    <div className="ml-auto">
                                         <label className="font-Eina03 text-[#222] flex items-center" onClick={(e) => { updateLeads(member) }}>
                                             <div className={`w-[18px] h-[18px] ${ project.leads[member.email]  ? 'bg-[#4ECFE0]' : 'border-2 border-[#D4D4D4]'} rounded-[3px] text-white flex items-center justify-center`}>
                                                {
@@ -380,7 +380,7 @@ export default function StepTwo() {
                                             </span>
                                         </label>
                                     </div>
-                                    <div className="ml-auto max-w-[100px] flex items-center">
+                                    <div className="max-w-[100px] flex items-center">
                                         <Select 
                                             options={roles.filter(option => ! ["Owner", "Lead", "Signatory"].includes(option.label))}
                                             value={roles.find(role => {
