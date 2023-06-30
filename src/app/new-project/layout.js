@@ -121,8 +121,8 @@ export default function NewProjectLayout({ children }) {
         }
 
         if (activeStep == steps[1].slug) {
-            const existLead = !! Object.values(project.leads).filter(value => value).length
-            return existLead
+            // const existLead = !! Object.values(project.leads).filter(value => value).length
+            // return existLead
         }
 
         if (activeStep == steps[3].slug) {
