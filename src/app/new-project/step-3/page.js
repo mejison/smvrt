@@ -114,7 +114,7 @@ export default function StepThree() {
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Upload document</h3>
                 <p className='text-[14px] text-[#737373] mb-[24px]'>Please upload your document or select the existing document from your library</p>
                 <Input 
-                    placeholder="File name"
+                    placeholder="Document name"
                     className="mb-[24px]"
                     value={project.documentname}
                     onInput={(event) => setProject({...project, documentname: event.target.value})}
