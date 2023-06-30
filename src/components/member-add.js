@@ -6,14 +6,14 @@ import Select from "./select";
 import { useNewProject } from "@/context/new-project";
 import Info from "./info";
 
-export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', disabledRoles = [], exclude = [], withLead = false}) {
+export default function MemberAdd({ label, roles, onUpdate, value, subtitle = '', open = false, disabledRoles = [], exclude = [], withLead = false}) {
     const [members, setMembers] = useState([...value])
     const [member, setMember] = useState({
         name: '',
         email: '',
         role: null
     })
-    const [toggle, setToggle] = useState(false)
+    const [toggle, setToggle] = useState(open)
 
     const {project, setProject} = useNewProject();
     
@@ -37,7 +37,8 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
     useEffect(() => {
         setToggle(value && value.length)
         setMembers([...value])
-    }, [value])
+        setToggle(open)
+    }, [value, open])
 
     const handleAdd = (e) => {
         e.preventDefault();
