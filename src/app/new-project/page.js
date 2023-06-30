@@ -53,9 +53,7 @@ export default function NewProject() {
             </div>
             <Textarea 
                 label="Notes (Quick Summary)"
-                placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod 
-                tempor incididunt ut labore et dolore magna aliqua. Pellentesque diam volutpat commodo 
-                sed egestas egestas fringilla."
+                placeholder="Provide a brief description of your project here."
                 className="resize-none"
                 maxLength="300"
                 value={project.notes}

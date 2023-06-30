@@ -123,33 +123,26 @@ export default function StepTwo() {
                         role: {
                             id: 4, 
                             name: 'Editor', 
+                            label: 'Editor',
                             slug: 'editor',
                         }
-                    } : member
+                    } : {...member}
                 })
 
                 setActiveTeam({
                     ...team,
                     members: membersWithNewEditor
                 })
+
+                setProject({
+                    ...project,
+                    team: {
+                        ...team,
+                        members: membersWithNewEditor
+                    }
+                })
             }
         }
-        // setPopUps({
-        //     ...popups,
-        //     server_success: {
-        //         title: 'Your Role',
-        //         visible: true,
-        //         message: `<div>
-        //                     Please check the box that applies to your role for this project:
-        //                     <div class="mb-3 mt-3">
-        //                         <strong>Viewer:</strong> I will read and comment on the document, but <strong>will not</strong> edit, redline or make changes to the legal document. 
-        //                     </div>
-        //                     <div class="mb-3">
-        //                         <strong>Editor:</strong> I <strong>will</strong> edit and redline the document and read and comment within the document.
-        //                     </div>
-        //                 </div>`
-        //     }
-        // })
     }
 
     const handleCreateNewTeam = () => {
@@ -390,7 +383,12 @@ export default function StepTwo() {
                                     <div className="ml-auto max-w-[100px] flex items-center">
                                         <Select 
                                             options={roles.filter(option => ! ["Owner", "Lead", "Signatory"].includes(option.label))}
-                                            value={roles.find(role => role.value == member.role_id)}
+                                            value={roles.find(role => {
+                                                if (member.role.label && ['Viewer', 'Editor'].includes(member.role.label)) {
+                                                    return role.value == member.role_id
+                                                }
+                                                return role.label == 'Editor'
+                                            })}
                                             className=" px-[10px] !text-[12px] border-none !py-[0]"
                                             onSelect={(newRole) => onChangeRole(member, newRole)}
                                         />
