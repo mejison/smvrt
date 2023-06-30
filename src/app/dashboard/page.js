@@ -257,7 +257,7 @@ export default function Dashboard() {
                                                         {project.due_date}
                                                     </div>
                                                     <div className="text-[12px] text-[#36475E] font-normal">
-                                                        {project?.document?.type?.name}
+                                                        {project?.document?.type}
                                                     </div>
                                                     <div className="text-[12px] text-[#36475E] font-normal">
                                                         { getOwner(project.team) }

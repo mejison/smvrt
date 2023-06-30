@@ -17,7 +17,7 @@ export default function ActiveProject() {
         {
             label: 'Doc Type',
             getValue: (row) => {
-                return row['document'] && row['document']['type'] && row['document']['type']['name'] || '';
+                return row['document'] && row['document'] && row['document']['type'] || '';
             }
         },
         {

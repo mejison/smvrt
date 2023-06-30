@@ -184,6 +184,10 @@ export default function NewProjectLayout({ children }) {
             project.members.forEach(member => {
                 fd.append('members[]', JSON.stringify(member))
             })
+
+            project.external_collaborators.forEach(member => {
+                fd.append('external_collaborators[]', JSON.stringify(member))
+            })
     
             project.signatories.forEach(member => {
                 fd.append('signatories[]', JSON.stringify(member))

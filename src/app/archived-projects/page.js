@@ -106,7 +106,7 @@ export default function ArchivedProjects() {
                     return {
                         id: item.id,
                         name: item.name,
-                        type: item.document?.type?.name,
+                        type: item.document?.type,
                         updated_at: moment(item.updated_at).format('ll'),
                         team: item.team?.name,
                         versions: item.version,

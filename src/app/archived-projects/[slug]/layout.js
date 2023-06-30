@@ -46,7 +46,7 @@ export default function ArchivedProjectLayout({ children }) {
                     ...project,
                     id: data.id,
                     name: data.name,
-                    doctype: data.document.type.name,
+                    doctype: data.document.type,
                     updated_at: moment(data.updated_at).format('ll'),
                     created_at: moment(data.created_at).format('ll'),
                     status: data.status,

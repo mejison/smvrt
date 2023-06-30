@@ -83,7 +83,7 @@ export default function ActiveProjectCard({ project, options }) {
                             Doc Type
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project?.document?.type?.name }
+                            { project?.document?.type }
                         </div>
                     </div>
                     <div className="grid grid-cols-[1fr_1fr] gap-3 mb-2">
