@@ -16,6 +16,7 @@ import ServerSuccess from '@/popups/server-success';
 
 export default function NewProjectLayout({ children }) {
     const { push } = useRouter();
+    
     const [steps, setSteps] = useState([
         {
             label: 'Add project details',
@@ -55,6 +56,7 @@ export default function NewProjectLayout({ children }) {
     const [project, setProject] = useState({
         name: '',
         leads: {},
+        user: {},
         notes: '',
         duedate: '',
         reminderdate: '',
@@ -221,7 +223,7 @@ export default function NewProjectLayout({ children }) {
         const step = segments.pop()
        
         if (['new-project'].includes(step)) {
-            setActiveStep('')    
+            setActiveStep('')
         }
        
         if (['step-2', 'step-3', 'step-4'].includes(step)) {

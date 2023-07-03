@@ -6,9 +6,11 @@ import DatePicker from "@/components/datepicker";
 import { useState } from "react";
 import { useNewProject } from '@/context/new-project'
 import moment from "moment";
+import { useEffect } from "react";
+
 export default function NewProject() {
     const {project, setProject} = useNewProject();
-
+   
     const handleChange = (value, field) => {
         setProject({
             ...project,

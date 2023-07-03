@@ -13,7 +13,7 @@ import { useUser } from '@/context/user';
 
 export default function StepThree() {
     const { push } = useRouter();
-    
+
     const {project, setProject} = useNewProject();
     const {user} = useUser();
 
@@ -109,7 +109,13 @@ export default function StepThree() {
         }
     }
 
-  
+    useEffect(() => {
+        setProject({
+            ...project,
+            user: user.id
+        })
+    }, [])
+
     return (<div>
                 <h3 className="font-Eina03 font-bold text-[20px] text-[#222] mt-[56px] mb-[24px]">Upload document</h3>
                 <p className='text-[14px] text-[#737373] mb-[24px]'>Please upload your document or select the existing document from your library</p>
