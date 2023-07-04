@@ -41,7 +41,7 @@ export default function ActiveProject() {
             getValue: (row) => {
                 const members = row['team'] && row['team']['members'] || []
                 const [lead] = members;
-                return (lead && lead.fname + ' ' + lead.lname) || lead && lead.email;
+                return (lead && lead.fname + ' ' + lead.lname) || lead && lead?.email;
             }
         }
     ]);
