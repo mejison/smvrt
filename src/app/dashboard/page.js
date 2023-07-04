@@ -105,7 +105,7 @@ export default function Dashboard() {
     const getOwner = (team) => {
         const members = team && team.members || []
         const [lead] = members
-        return lead && lead.fname + ' ' + lead.lname || lead.email
+        return (lead && lead.fname + ' ' + lead.lname) || lead && lead?.email
     }
 
     let period = 'now';

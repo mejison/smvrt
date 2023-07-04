@@ -25,7 +25,7 @@ export default function ActiveProjectCard({ project, options }) {
     const getOwner = (team) => {
         const members = team && team.members || []
         const [lead] = members
-        return lead && lead.fname + ' ' + lead.lname || lead.email
+        return lead && lead.fname + ' ' + lead.lname || lead?.email
     }
 
     return (<div className="rounded-lg shadow p-4">
@@ -112,7 +112,7 @@ export default function ActiveProjectCard({ project, options }) {
                             Team
                         </div>
                         <div className="text-[#222] text-[12px]">
-                            { project.team.name }
+                            { project?.team?.name }
                         </div>
                     </div>
                     <div className="pb-8 pt-2">
