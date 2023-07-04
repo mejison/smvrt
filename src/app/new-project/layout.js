@@ -60,6 +60,8 @@ export default function NewProjectLayout({ children }) {
         notes: '',
         duedate: '',
         reminderdate: '',
+        content: '',
+        ai_summary: '',
         team: '',
         members: [],
         external_collaborators: [],
@@ -153,12 +155,14 @@ export default function NewProjectLayout({ children }) {
                 .then((data) => {
                     return new Promise((resolve, reject) => resolve(data.data))
             });
-
+        
+       
         api.openAI_summarize_document({
             content,
         }).then((data) => {
-            
-            console.log({ data })
+
+            project.ai_summary = data?.data?.choices.map(item => item.text).join('')
+            project.content = content;
 
             setPopup({
                 ...popup,

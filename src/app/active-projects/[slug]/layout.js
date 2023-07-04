@@ -92,7 +92,9 @@ export default function ProjectDetailsLayout({ children }) {
                     lead: getRoleFromProjectBySlug(project, 'lead', roles),
                     owner: getRoleFromProjectBySlug(project, 'owner', roles),
                     description: data.summary ?? '',
-                    team: data.team
+                    team: data.team,
+                    ai_summary: data.ai_summary,
+                    document: data.document,
                 })
             })
 
