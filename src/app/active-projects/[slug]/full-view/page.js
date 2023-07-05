@@ -80,10 +80,13 @@ export default function FullView() {
     }
 
     const handleClickDescription = async (event) => {
-        const content = event.target.innerText;
         setDescription('Loading ...')
-
-       const openAiResponse = await api.openAI_summarize_document(content)
+        const content = event?.target?.closest('span')?.parentNode?.innerText
+        const openAiResponse = await api.openAI_summarize_document({
+        content: content,
+        max_tokens: '80',
+        prompt: 'Summarize below sentence: ',
+       })
         .then(({ data }) => {
            return new Promise((resolve, reject) => {
             resolve(data.choices.map(row => row.text).join(' '))

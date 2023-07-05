@@ -23,6 +23,7 @@ export default function FullViewDescription({ content = '',  onClick}) {
             
             html = html.replace(regexp, (match) => {
                 if (match.replace(/<[^>]*>?/gm, '').length >= replaceSize) {
+                    const plainText = 
                     console.log(match.replace(/<[^>]*>?/gm, ''), match.length)
                     return `<span  style="${style}">
                                 <span style="position: absolute; top: -20px; left: -0px; cursor: pointer">

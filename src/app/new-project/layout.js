@@ -151,14 +151,23 @@ export default function NewProjectLayout({ children }) {
         const fd = new FormData;
         fd.append('file', project.document)
             
-        const content = await api.convert_file_to_html(fd)
+        let content = await api.convert_file_to_html(fd)
                 .then((data) => {
                     return new Promise((resolve, reject) => resolve(data.data))
             });
         
-       
+        let plainText = content
+        const tempElement = document.createElement('div')
+        const bodyStart = plainText.indexOf('<body')
+        if (bodyStart != null) {
+            plainText = plainText.slice(content.indexOf('<body'), plainText.length)
+        }
+        
+        plainText = plainText.replace(/\n/gi, ' ').replace(/(<([^>]+)>)/gi, "")
+        tempElement.innerHTML = plainText
+
         api.openAI_summarize_document({
-            content,
+            content: tempElement.innerText.trim(),
         }).then((data) => {
 
             project.ai_summary = data?.data?.choices.map(item => item.text).join('')
