@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function DescriptionBox({ title = 'Description box', description }) {
     const maxSize = 125
     const [cut, setCut] = useState(description.length > maxSize);
     const [toggle, setToggle] = useState(false);
+
+    useEffect(() => {
+        if (description.length) {
+            setToggle(false)
+        } else {
+            setToggle(true)
+        }
+    }, [description])
+
     const handleCut = () => {
         setCut( ! cut);
     }
