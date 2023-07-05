@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export default function FullViewDescription({ content = '',  onClick}) {
     const [html, setHtml] = useState('');
-    const replaceSize = 300;
+    const replaceSize = 400;
 
     useEffect(() => {
         const regexps = [/(<p\b[^>]*>)(.*?)(<\/p>)/gis, /(<ul\b[^>]*>)(.*?)(<\/ul>)/gis]
@@ -22,7 +22,8 @@ export default function FullViewDescription({ content = '',  onClick}) {
         regexps.forEach(regexp => {
             
             html = html.replace(regexp, (match) => {
-                if (match.length > replaceSize) {
+                if (match.replace(/<[^>]*>?/gm, '').length >= replaceSize) {
+                    console.log(match.replace(/<[^>]*>?/gm, ''), match.length)
                     return `<span  style="${style}">
                                 <span style="position: absolute; top: -20px; left: -0px; cursor: pointer">
                                     <svg onClick="handleClickDescription(event)" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
