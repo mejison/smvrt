@@ -12,7 +12,8 @@ import { useProject } from "@/context/project";
 import Prompt from "@/popups/prompt";
 import ServerSuccess from "@/popups/server-success";
 import Highlighter from "react-highlight-words";
-
+import FullViewDescription from "@/components/full-view";
+import * as api from '@/api'
 
 export default function FullView() {
 
@@ -33,9 +34,8 @@ export default function FullView() {
 
     const [activeTab, setActiveTab] = useState(tabs[0]);
 
-    const description = `All the Lorem Ipsum generators on the Internet tend to repeat 
-                        predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
-                        `
+    const [description, setDescription] = useState('');
+
     const [popup, setPopUp] = useState({
         share: false,
         invite: false,
@@ -79,6 +79,21 @@ export default function FullView() {
            })
     }
 
+    const handleClickDescription = async (event) => {
+        const content = event.target.innerText;
+        setDescription('Loading ...')
+
+       const openAiResponse = await api.openAI_summarize_document(content)
+        .then(({ data }) => {
+           return new Promise((resolve, reject) => {
+            resolve(data.choices.map(row => row.text).join(' '))
+           })
+        })
+
+        // console.log(openAiResponse)
+        setDescription(openAiResponse)
+    }
+
     return (<div className="relative grid grid-cols-[1fr_400px] gap-2 items-center mb-6">
         <div className="grid grid-cols-[1fr_1fr] gap-3 absolute right-0 top-[-70px]">
             <Button 
@@ -106,8 +121,8 @@ export default function FullView() {
                         <p>{ project.ai_summary }</p>
                     </div>
                 ) : (
-                    <div className="max-h-[500px] overflow-y-auto text-[14px] pt-4 mt-2" dangerouslySetInnerHTML={{ __html: project?.document?.content }}>
-                        
+                    <div className="max-h-[500px] overflow-y-auto text-[14px] pt-4 mt-2" >
+                        <FullViewDescription content={project?.document?.content} onClick={handleClickDescription} />
                     </div>
                 )
             }
