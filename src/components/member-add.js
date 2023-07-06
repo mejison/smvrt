@@ -15,7 +15,7 @@ export default function MemberAdd({ label, roles, onUpdate, value, subtitle = ''
     })
     const [toggle, setToggle] = useState(open)
 
-    const {project, setProject} = useNewProject();
+    let {project, setProject} = useNewProject() ? useNewProject() : {project: {}, setProject: () => {}}
     
     const onChange = (field, value) => {
         setMember({
