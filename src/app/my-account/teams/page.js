@@ -221,6 +221,10 @@ export default function Teams () {
         })
     }
 
+    const getRoleByLabel = (label) => {
+        return roles.find(role => role.label == label)
+    }
+
     const onAddedNewMember = (members) => {
         api.add_member_to_team({
             team_id: activeTeam.id,
@@ -254,6 +258,7 @@ export default function Teams () {
     }
 
     const onChangeRole = (member, role) => {
+        console.log(role)
         api.update_role_on_team({
             team_id: activeTeam.id,
             email: member.email,
@@ -335,10 +340,28 @@ export default function Teams () {
                                     </div>
                                     <div className="flex items-center rounded-[6px] py-[10px] px-[12px] bg-white">
                                         { member.email }
-                                        <div className="ml-auto">
+                                        <div className="ml-auto items-center  flex mr-5">
+                                            <label className="flex items-center cursor-pointer">
+                                                <input 
+                                                    onChange={() => {onChangeRole(member, {label: "Signatory", value:  getRoleByLabel("Signatory")?.value })}}
+                                                    className="mr-2" 
+                                                    checked={roles.find(role => role.value == member.role_id)?.label == "Signatory"} 
+                                                    type="checkbox" />
+                                                Signatory
+                                            </label>
+                                            <label className="ml-3 flex items-center cursor-pointer">
+                                                <input 
+                                                    onChange={() => {onChangeRole(member, {label: "Lead", value: getRoleByLabel("Lead")?.value })}}
+                                                    className="mr-2" 
+                                                    checked={roles.find(role => role.value == member.role_id)?.label == "Lead"} 
+                                                    type="checkbox" />
+                                                Lead
+                                            </label>
+                                        </div>
+                                        <div className="">
                                             <Select 
-                                                options={roles}
-                                                value={roles.find(role => role.value == member.role_id)}
+                                                options={roles.filter(role => ! ['Lead', 'Owner', 'Signatory'].includes(role.label))}
+                                                value={roles.filter(role => ! ['Lead', 'Owner', 'Signatory'].includes(role.label)).find(role => role.value == member.role_id) ?? {label: 'Set role', value: ""}}
                                                 className=" px-[10px] !text-[12px] border-none !py-[0]"
                                                 onSelect={(newRole) => onChangeRole(member, newRole)}
                                             />
